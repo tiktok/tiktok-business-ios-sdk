@@ -17,7 +17,7 @@ The TikTok Business SDK is the easiest way to log events (e.g. app install, purc
 
   s.homepage         = 'https://ads.tiktok.com/marketing_api/docs?rid=rscv11ob9m9&id=1683138352999426'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = 'ByteDance'
+  s.author           = 'TikTok'
   s.source           = { :git => 'https://github.com/bytedance/tiktok-business-ios-sdk.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '9.0'
