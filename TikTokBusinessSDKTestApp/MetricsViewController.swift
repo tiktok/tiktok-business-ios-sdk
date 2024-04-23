@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020. Bytedance Inc.
+// Copyright (c) 2020. TikTok Inc.
 //
 // This source code is licensed under the MIT license found in
 // the LICENSE file in the root directory of this source tree.
@@ -128,7 +128,7 @@ class MetricsViewController: UIViewController {
     
     @IBAction func identify(_ sender: UIButton) {
         // enter identify values here
-        TikTokBusiness.identify(withExternalID: "123", phoneNumber: nil, email: "test@bytedance.com")
+        TikTokBusiness.identify(withExternalID: "123", phoneNumber: nil, email: "test@tiktok.com")
     }
     
     @IBAction func logout(_ sender: UIButton) {

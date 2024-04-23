@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'TikTokBusinessSDK'
-  s.version          = '0.1.19'
+  s.version          = '0.1.20'
   s.summary          = 'TikTok Business SDK for iOS'
 
   s.description      = <<-DESC
@@ -18,7 +18,7 @@ The TikTok Business SDK is the easiest way to log events (e.g. app install, purc
   s.homepage         = 'https://ads.tiktok.com/marketing_api/docs?rid=rscv11ob9m9&id=1683138352999426'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = 'TikTok'
-  s.source           = { :git => 'https://github.com/bytedance/tiktok-business-ios-sdk.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/tiktok/tiktok-business-ios-sdk.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '9.0'
 
