@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020. Bytedance Inc.
+// Copyright (c) 2020. TikTok Inc.
 //
 // This source code is licensed under the MIT license found in
 // the LICENSE file in the root directory of this source tree.
@@ -19,7 +19,7 @@
 #import "TikTokSKAdNetworkConversionConfiguration.h"
 #import "TikTokBusinessSDKMacros.h"
 
-#define SDK_VERSION @"0.1.17"
+#define SDK_VERSION @"0.1.20"
 
 @interface TikTokRequestHandler()
 
@@ -667,7 +667,7 @@
 + (NSDictionary *)getLibrary
 {
     NSDictionary *library = @{
-        @"name": @"bytedance/tiktok-business-ios-sdk",
+        @"name": @"tiktok/tiktok-business-ios-sdk",
         @"version": SDK_VERSION
     };
 

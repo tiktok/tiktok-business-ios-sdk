@@ -3,7 +3,7 @@
 //  TikTokBusinessSDK
 //
 //  Created by ByteDance on 2022/11/3.
-//  Copyright © 2022 bytedance. All rights reserved.
+//  Copyright © 2022 TikTok. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
