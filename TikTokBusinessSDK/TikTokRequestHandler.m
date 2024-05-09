@@ -18,8 +18,7 @@
 #import "TikTokAppEventUtility.h"
 #import "TikTokSKAdNetworkConversionConfiguration.h"
 #import "TikTokBusinessSDKMacros.h"
-
-#define SDK_VERSION @"0.1.20"
+#import "TikTokBusiness+private.h"
 
 @interface TikTokRequestHandler()
 
@@ -37,7 +36,7 @@
     
     self.logger = [TikTokFactory getLogger];
     // Default API version
-    self.apiVersion = @"v.1.1";
+    self.apiVersion = @"v1.2";
     // Default API domain
     self.apiDomain = @"business-api.tiktok.com";
     return self;
@@ -50,7 +49,8 @@
 {
     NSNumber *configMonitorStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"https://business-api.tiktok.com/open_api/business_sdk_config/get/?app_id=", config.appId, @"&sdk_version=", SDK_VERSION, @"&tiktok_app_id=", config.tiktokAppId];
+    NSArray *ttAppIds = [self splitTTAppIDs:config.tiktokAppId];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"https://business-api.tiktok.com/open_api/business_sdk_config/get/?app_id=", config.appId, @"&sdk_version=", SDK_VERSION, @"&tiktok_app_id=", TTSafeString(ttAppIds.firstObject)];
     [request setURL:[NSURL URLWithString:url]];
     [request setValue:[[TikTokBusiness getInstance] accessToken] forHTTPHeaderField:@"Access-Token"];
     [request setHTTPMethod:@"GET"];
@@ -94,13 +94,8 @@
                     @"meta": configMonitorEndMeta
                 };
                 TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorUserAgentStartProperties withType:@"monitor"];
-                NSMutableArray *appEventsToBeFlushed = [[NSMutableArray alloc] init];
-                [appEventsToBeFlushed addObject:configMonitorEndEvent];
                 @synchronized(self) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [TikTokAppEventStore persistAppEvents:appEventsToBeFlushed];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                    });
+                    [[TikTokBusiness getQueue] addEvent:configMonitorEndEvent];
                 }
                 completionHandler(isSwitchOn, isGlobalConfigFetched);
                 return;
@@ -130,13 +125,8 @@
                     @"meta": configMonitorEndMeta
                 };
                 TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorUserAgentStartProperties withType:@"monitor"];
-                NSMutableArray *appEventsToBeFlushed = [[NSMutableArray alloc] init];
-                [appEventsToBeFlushed addObject:configMonitorEndEvent];
                 @synchronized(self) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [TikTokAppEventStore persistAppEvents:appEventsToBeFlushed];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                    });
+                    [[TikTokBusiness getQueue] addEvent:configMonitorEndEvent];
                 }
                 completionHandler(isSwitchOn, isGlobalConfigFetched);
                 return;
@@ -169,13 +159,8 @@
                 @"meta": configMonitorEndMeta
             };
             TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorUserAgentStartProperties withType:@"monitor"];
-            NSMutableArray *appEventsToBeFlushed = [[NSMutableArray alloc] init];
-            [appEventsToBeFlushed addObject:configMonitorEndEvent];
             @synchronized(self) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [TikTokAppEventStore persistAppEvents:appEventsToBeFlushed];
-                    [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                });
+                [[TikTokBusiness getQueue] addEvent:configMonitorEndEvent];
             }
             [self.logger verbose:@"[TikTokRequestHandler] Request global config response: %@", requestResponse];
         }
@@ -192,21 +177,19 @@
     TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfoWithSdkPrefix:@""];
 
     // APP Info
-    NSDictionary *app = [TikTokRequestHandler getAPPWithDeviceInfo:deviceInfo config:config];
+    NSDictionary *app = [self getAPPWithDeviceInfo:deviceInfo config:config];
+    NSArray *ttAppIds = [self splitTTAppIDs:config.tiktokAppId];
 
     // Device Info
-    NSDictionary *device = [TikTokRequestHandler getDeviceInfo:deviceInfo withConfig:config];
+    NSDictionary *device = [self getDeviceInfo:deviceInfo withConfig:config isMonitor:NO];
 
     // Library Info
-    NSDictionary *library = [TikTokRequestHandler getLibrary];
+    NSDictionary *library = [self getLibrary];
     
     // format events into object[]
     NSMutableArray *batch = [[NSMutableArray alloc] init];
-    NSMutableArray *monitorBatch = [[NSMutableArray alloc] init];
     NSMutableArray *appEventsToBeFlushed = [[NSMutableArray alloc] init];
-    NSMutableArray *monitorEventsToBeFlushed = [[NSMutableArray alloc] init];
     for (TikTokAppEvent* event in eventsToBeFlushed) {
-        NSLog(@"Event is of type: %@", event.type);
         if(![event.type isEqual:@"monitor"]){
             NSMutableDictionary *user = [NSMutableDictionary new];
             if(event.userInfo != nil) {
@@ -214,13 +197,16 @@
             }
             [user setObject:event.anonymousID forKey:@"anonymous_id"];
             
+            NSMutableDictionary *tempAppDict = [app mutableCopy];
+            [tempAppDict setValue:ttAppIds forKey:@"tiktok_app_ids"];
+            
             NSDictionary *context = @{
-                @"app": app,
+                @"app": tempAppDict.copy,
                 @"device": device,
                 @"library": library,
                 @"locale": deviceInfo.localeInfo,
                 @"ip": deviceInfo.ipInfo,
-                @"user_agent": [TikTokRequestHandler getUserAgentWithDeviceInfo:deviceInfo],
+                @"user_agent": [self getUserAgentWithDeviceInfo:deviceInfo],
                 @"user": user,
             };
             
@@ -230,6 +216,7 @@
                 @"timestamp":event.timestamp,
                 @"context": context,
                 @"properties": event.properties,
+                @"event_id" : event.eventID
             }.mutableCopy;
             
             if ([TikTokBusiness isLDUMode]) {
@@ -238,34 +225,6 @@
             
             [batch addObject:eventDict];
             [appEventsToBeFlushed addObject:event];
-        } else {
-            
-            NSMutableDictionary *tempAppDict = [app mutableCopy];
-            NSString *appNamespace = [tempAppDict objectForKey:@"namespace"];
-            [tempAppDict removeObjectForKey:@"namespace"];
-            [tempAppDict setObject:appNamespace forKey:@"app_namespace"];
-            
-            NSDictionary *tempMonitorDict = @{
-                @"type": [event.properties objectForKey:@"monitor_type"] == nil ? @"metric" : [event.properties objectForKey:@"monitor_type"],
-                @"name": [event.properties objectForKey:@"monitor_name"] == nil ? @"" : [event.properties objectForKey:@"monitor_name"],
-                @"meta": [event.properties objectForKey:@"meta"] == nil ? @{} : [event.properties objectForKey:@"meta"],
-                @"extra": [event.properties objectForKey:@"extra"] == nil ? @{} : [event.properties objectForKey:@"extra"],
-            };
-            
-            NSMutableDictionary *monitorDict = @{
-                @"monitor": tempMonitorDict,
-                @"app": tempAppDict,
-                @"library": library,
-                @"device": device,
-                @"log_extra": @{}
-            }.mutableCopy;
-            
-            if ([TikTokBusiness isLDUMode]) {
-                [monitorDict setValue:@(YES) forKey:@"limited_data_use"];
-            }
-            
-            [monitorBatch addObject:monitorDict];
-            [monitorEventsToBeFlushed addObject:event];
         }
     }
     
@@ -285,7 +244,8 @@
         
         if(config.tiktokAppId){
             // make sure the tiktokAppId is an integer value
-            [parametersDict setValue:@([config.tiktokAppId integerValue]) forKey:@"tiktok_app_id"];
+            NSString *ttAppId = TTSafeString(ttAppIds.firstObject);
+            [parametersDict setValue:@([ttAppId longLongValue]) forKey:@"tiktok_app_id"];
         } else {
             [parametersDict setValue:config.appId forKey:@"app_id"];
         }
@@ -304,7 +264,7 @@
         
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
         
-        NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@", @"https://", self.apiDomain == nil ? @"ads-api.tiktok.com" : self.apiDomain, @"/open_api/", self.apiVersion == nil ? @"v1.1" : self.apiVersion, @"/app/batch/"];
+        NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@", @"https://", self.apiDomain == nil ? @"business-api.tiktok.com" : self.apiDomain, @"/open_api/", self.apiVersion == nil ? @"v1.2" : self.apiVersion, @"/app/batch/"];
         [request setURL:[NSURL URLWithString:url]];
         [request setHTTPMethod:@"POST"];
         [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -315,6 +275,8 @@
         if(self.session == nil) {
             self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
         }
+        
+        __block NSNumber *networkStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
         [[self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             
             // handle basic connectivity issues
@@ -335,6 +297,26 @@
                 
                 if (statusCode != 200) {
                     [self.logger error:@"[TikTokRequestHandler] HTTP error status code: %lu", statusCode];
+                    NSNumber *networkEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+                    id dataDictionary = [TikTokTypeUtility JSONObjectWithData:data options:0 error:nil origin:NSStringFromClass([self class])];
+                    NSString *log_id = @"";
+                    if([dataDictionary isKindOfClass:[NSDictionary class]]) {
+                        log_id = [dataDictionary objectForKey:@"request_id"];
+                    }
+                    NSDictionary *apiErrorMeta = @{
+                        @"ts": networkEndTime,
+                        @"latency": [NSNumber numberWithInt:[networkEndTime intValue] - [networkStartTime intValue]],
+                        @"api_type": self.apiVersion ?: @"v1.2",
+                        @"status_code": @(statusCode),
+                        @"log_id":log_id
+                    };
+                    NSDictionary *apiErrorProperties = @{
+                        @"monitor_type": @"metric",
+                        @"monitor_name": @"api_err",
+                        @"meta": apiErrorMeta
+                    };
+                    TikTokAppEvent *monitorApiErrorEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:apiErrorProperties withType:@"monitor"];
+                    [[TikTokBusiness getQueue] addEvent:monitorApiErrorEvent];
                     @synchronized(self) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [TikTokAppEventStore persistAppEvents:appEventsToBeFlushed];
@@ -393,6 +375,61 @@
             [self.logger info:@"[TikTokRequestHandler] Request response: %@", requestResponse];
         }] resume];
     }
+}
+
+- (void)sendMonitorRequest:(NSArray *)eventsToBeFlushed
+              withConfig:(TikTokConfig *)config {
+    TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfoWithSdkPrefix:@""];
+
+    // APP Info
+    NSDictionary *app = [self getAPPWithDeviceInfo:deviceInfo config:config];
+
+    // Device Info
+    NSDictionary *device = [self getDeviceInfo:deviceInfo withConfig:config isMonitor:YES];
+
+    // Library Info
+    NSDictionary *library = [self getLibrary];
+    
+    // format events into object[]
+    NSMutableArray *monitorBatch = [[NSMutableArray alloc] init];
+    NSMutableArray *monitorEventsToBeFlushed = [[NSMutableArray alloc] init];
+    for (TikTokAppEvent* event in eventsToBeFlushed) {
+        NSLog(@"Event is of type: %@", event.type);
+        if([event.type isEqualToString:@"monitor"]) {
+            
+            NSMutableDictionary *tempAppDict = [app mutableCopy];
+            NSString *appNamespace = [tempAppDict objectForKey:@"namespace"];
+            [tempAppDict removeObjectForKey:@"namespace"];
+            [tempAppDict setObject:appNamespace forKey:@"app_namespace"];
+            [tempAppDict setValue:config.tiktokAppId forKey:@"tiktok_app_id"];
+            
+            NSDictionary *tempMonitorDict = @{
+                @"type": [event.properties objectForKey:@"monitor_type"] == nil ? @"metric" : [event.properties objectForKey:@"monitor_type"],
+                @"name": [event.properties objectForKey:@"monitor_name"] == nil ? @"" : [event.properties objectForKey:@"monitor_name"],
+                @"meta": [event.properties objectForKey:@"meta"] == nil ? @{} : [event.properties objectForKey:@"meta"],
+                @"extra": [event.properties objectForKey:@"extra"] == nil ? @{} : [event.properties objectForKey:@"extra"],
+            };
+            
+            NSMutableDictionary *monitorDict = @{
+                @"monitor": tempMonitorDict,
+                @"app": tempAppDict.copy,
+                @"library": library,
+                @"device": device,
+                @"log_extra": @{}
+            }.mutableCopy;
+            
+            if ([TikTokBusiness isLDUMode]) {
+                [monitorDict setValue:@(YES) forKey:@"limited_data_use"];
+            }
+            
+            [monitorBatch addObject:monitorDict];
+            [monitorEventsToBeFlushed addObject:event];
+        }
+    }
+    
+    if(self.logger == nil) {
+        self.logger = [TikTokFactory getLogger];
+    }
     
     if(monitorBatch.count > 0){
         NSLog(@"MonitorBatchCount count was greater than 0!");
@@ -406,7 +443,9 @@
         
         if(config.tiktokAppId){
             // make sure the tiktokAppId is an integer value
-            [parametersDict setValue:@([config.tiktokAppId integerValue]) forKey:@"tiktok_app_id"];
+            NSArray *ttAppIds = [self splitTTAppIDs:config.tiktokAppId];
+            NSString *ttAppId = TTSafeString(ttAppIds.firstObject);
+            [parametersDict setValue:@([ttAppId longLongValue]) forKey:@"tiktok_app_id"];
         }
         
         if ([TikTokBusiness isDebugMode]
@@ -437,7 +476,7 @@
                 [self.logger error:@"[TikTokRequestHandler] error in connection: %@", error];
                 @synchronized(self) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [TikTokAppEventStore persistAppEvents:monitorEventsToBeFlushed];
+                        [TikTokAppEventStore persistMonitorEvents:monitorEventsToBeFlushed];
                         [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
                     });
                 }
@@ -452,7 +491,7 @@
                     [self.logger error:@"[TikTokRequestHandler] HTTP error status code: %lu", statusCode];
                     @synchronized(self) {
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [TikTokAppEventStore persistAppEvents:monitorEventsToBeFlushed];
+                            [TikTokAppEventStore persistMonitorEvents:monitorEventsToBeFlushed];
                             [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
                         });
                     }
@@ -475,7 +514,7 @@
                     NSLog(@"THis is where the code reaches!!");
                     @synchronized(self) {
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [TikTokAppEventStore persistAppEvents:monitorEventsToBeFlushed];
+                            [TikTokAppEventStore persistMonitorEvents:monitorEventsToBeFlushed];
                             [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
                         });
                     }
@@ -501,7 +540,7 @@
                     [self.logger error:@"[TikTokRequestHandler] code error: %@, message: %@", code, message];
                     @synchronized(self) {
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [TikTokAppEventStore persistAppEvents:monitorEventsToBeFlushed];
+                            [TikTokAppEventStore persistMonitorEvents:monitorEventsToBeFlushed];
                             [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
                         });
                     }
@@ -516,101 +555,7 @@
     }
 }
 
-- (void)sendCrashReport:(NSDictionary *)crashReport
-             withConfig:(TikTokConfig *)config
-  withCompletionHandler:(void (^)(void))completionHandler
-{
-    TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfoWithSdkPrefix:@""];
-
-    NSDictionary *tempApp = [TikTokRequestHandler getAPPWithDeviceInfo:deviceInfo config:config];
-    NSMutableDictionary *app = [[NSMutableDictionary alloc] initWithDictionary:tempApp];
-    [app setValue:deviceInfo.appNamespace forKey:@"app_namespace"];
-    [app removeObjectForKey:@"namespace"];
-    NSDictionary *device = [TikTokRequestHandler getDeviceInfo:deviceInfo withConfig:config];
-    NSDictionary *library = [TikTokRequestHandler getLibrary];
-    NSDictionary *user = [TikTokRequestHandler getUser];
-
-    NSDictionary *context = @{
-        @"app": app,
-        @"device": device,
-        @"library": library,
-        @"user_agent":[TikTokRequestHandler getUserAgentWithDeviceInfo:deviceInfo],
-        @"user": user,
-        @"crash_report": crashReport,
-    };
-
-    NSMutableDictionary *parametersDict = [[NSMutableDictionary alloc] initWithDictionary:context];
-
-    if(config.tiktokAppId){
-        // make sure the tiktokAppId is an integer value
-        [parametersDict setValue:@([config.tiktokAppId integerValue]) forKey:@"tiktok_app_id"];
-    } else {
-        [parametersDict setValue:config.appId forKey:@"app_id"];
-    }
-
-    NSData *postData = [TikTokTypeUtility dataWithJSONObject:parametersDict options:NSJSONWritingPrettyPrinted error:nil origin:NSStringFromClass([self class])];
-    NSString *postLength = [NSString stringWithFormat:@"%lu", [postData length]];
-
-    NSString *postDataJSONString = [[NSString alloc] initWithData:postData encoding:NSUTF8StringEncoding];
-    [self.logger verbose:@"[TikTokRequestHandler] Access token: %@", [[TikTokBusiness getInstance] accessToken]];
-    [self.logger verbose:@"[TikTokRequestHandler] postDataJSON: %@", postDataJSONString];
-
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-
-    NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@", @"https://", self.apiDomain == nil ? @"business-api.tiktok.com" : self.apiDomain, @"/open_api/", self.apiVersion == nil ? @"v1.2" : self.apiVersion, @"/app/monitor/"];
-    [request setURL:[NSURL URLWithString:url]];
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:[[TikTokBusiness getInstance] accessToken] forHTTPHeaderField:@"Access-Token"];
-
-    [request setValue:@"1" forHTTPHeaderField:@"x-use-ppe"];
-    [request setValue:@"ppe_yuzhong" forHTTPHeaderField:@"x-tt-env"];
-
-
-    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    [request setHTTPBody:postData];
-
-    if(self.session == nil) {
-        self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    }
-    [[self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        // handle basic connectivity issues
-        if(error) {
-            [self.logger error:@"[TikTokRequestHandler] error in connection: %@", error];
-            return;
-        }
-
-        // handle HTTP errors
-        if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-            NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
-
-            if (statusCode != 200) {
-                [self.logger error:@"[TikTokRequestHandler] HTTP error status code: %lu", statusCode];
-                return;
-            }
-
-            id dataDictionary = [TikTokTypeUtility JSONObjectWithData:data options:0 error:nil origin:NSStringFromClass([self class])];
-            NSLog(@"dataDictionary: %@", dataDictionary);
-            if([dataDictionary isKindOfClass:[NSDictionary class]]) {
-                NSNumber *code = [dataDictionary objectForKey:@"code"];
-                NSString *message = [dataDictionary objectForKey:@"message"];
-
-                if([code intValue] == 0) {
-                    completionHandler();
-                } else {
-                    [self.logger error:@"[TikTokRequestHandler] Response error code: %lu; message %@", statusCode, message];
-                }
-            }
-        }
-    }] resume];
-}
-
-+ (NSString *)getSDKVersion
-{
-    return SDK_VERSION;
-}
-
-+ (NSDictionary *)getAPPWithDeviceInfo:(TikTokDeviceInfo *)deviceInfo
+- (NSDictionary *)getAPPWithDeviceInfo:(TikTokDeviceInfo *)deviceInfo
                                 config:(TikTokConfig *)config
 {
     NSDictionary *tempApp = @{
@@ -629,8 +574,9 @@
     return [app copy];
 }
 
-+ (NSDictionary *)getDeviceInfo:(TikTokDeviceInfo *)deviceInfo
+- (NSDictionary *)getDeviceInfo:(TikTokDeviceInfo *)deviceInfo
                      withConfig:(TikTokConfig *)config
+                      isMonitor:(BOOL)isMonitor
 {
     // ATT Authorization Status switch determined at flush
     // default status is NOT_APPLICABLE
@@ -658,13 +604,17 @@
     NSMutableDictionary *device = [[NSMutableDictionary alloc] initWithDictionary:tempDevice];
 
     if(config.tiktokAppId){
-        [device setValue:deviceInfo.systemVersion forKey:@"version"];
+        if (isMonitor) {
+            [device setValue:deviceInfo.systemVersion forKey:@"version"];
+        } else {
+            [device setValue:deviceInfo.systemVersion forKey:@"os_version"];
+        }
     }
 
     return [device copy];
 }
 
-+ (NSDictionary *)getLibrary
+- (NSDictionary *)getLibrary
 {
     NSDictionary *library = @{
         @"name": @"tiktok/tiktok-business-ios-sdk",
@@ -674,17 +624,35 @@
     return library;
 }
 
-+ (NSDictionary *)getUser
+- (NSDictionary *)getUser
 {
     NSMutableDictionary *user = [NSMutableDictionary new];
-    [user setObject:[TikTokIdentifyUtility getOrGenerateAnonymousID] forKey:@"anonymous_id"];
+    [user setObject:[[TikTokIdentifyUtility sharedInstance] getOrGenerateAnonymousID] forKey:@"anonymous_id"];
 
     return [user copy];
 }
 
-+ (NSString *)getUserAgentWithDeviceInfo:(TikTokDeviceInfo *)deviceInfo
+- (NSString *)getUserAgentWithDeviceInfo:(TikTokDeviceInfo *)deviceInfo
 {
     return ( [deviceInfo getUserAgent] != nil) ? [NSString stringWithFormat:@"%@ %@", ([deviceInfo getUserAgent]), ([deviceInfo fallbackUserAgent])]  : [deviceInfo fallbackUserAgent];
 }
+
+- (NSArray<NSString *> *)splitTTAppIDs:(NSString *)ttAppIds {
+    NSMutableArray<NSString *> *resultArray = [NSMutableArray array];
+    
+    if (!TTCheckValidString(ttAppIds)) {
+        return resultArray.copy;
+    }
+    
+    NSString *processedString = [ttAppIds stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSArray<NSString *> *components = [processedString componentsSeparatedByString:@","];
+    for (NSString *component in components) {
+        if (TTCheckValidString(component)) {
+            [resultArray addObject:component];
+        }
+    }
+    return resultArray.copy;
+}
+
 
 @end

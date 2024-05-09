@@ -20,14 +20,34 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearPersistedAppEvents;
 
 /**
- * @brief Method to read events in disk, append events in queue, and write combined into disk
+ * @brief Method to clear persisted monitor events
+ */
++ (void)clearPersistedMonitorEvents;
+
+/**
+ * @brief Method to read app events in disk, append events in queue, and write combined into disk
  */
 + (void)persistAppEvents:(NSArray *)queue;
+
+/**
+ * @brief Method to read monitor events in disk, append events in queue, and write combined into disk
+ */
++ (void)persistMonitorEvents:(NSArray *)queue;
 
 /**
  * @brief Method to return the array of saved app event states and deletes them.
  */
 + (NSArray *)retrievePersistedAppEvents;
+
+/**
+ * @brief Method to return the array of saved monitor event states and deletes them.
+ */
++ (NSArray *)retrievePersistedMonitorEvents;
+
+/**
+ * @brief Method to return the number of saved app event.
+ */
++ (NSUInteger)persistedAppEventsCount;
 
 @end
 

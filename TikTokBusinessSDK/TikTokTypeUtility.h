@@ -7,6 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+/** VALID CHECKING**/
+#define TTCheckValidString(__string)                (__string && [__string isKindOfClass:[NSString class]] && [__string length])
+#define TTCheckValidNumber(__aNumber)               (__aNumber && [__aNumber isKindOfClass:[NSNumber class]])
+#define TTCheckValidArray(__aArray)                 (__aArray && [__aArray isKindOfClass:[NSArray class]] && [__aArray count])
+#define TTCheckValidDictionary(__aDictionary)       (__aDictionary && [__aDictionary isKindOfClass:[NSDictionary class]] && [__aDictionary count])
+#define TTCheckValidDate(__aDate)                   (__aDate && [__aDate isKindOfClass:[NSDate class]])
+#define TTCheckValidData(__aData)                   (__aData && [__aData isKindOfClass:[NSData class]])
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TikTokTypeUtility : NSObject
@@ -46,6 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)dictionary:(NSMutableDictionary *)dictionary
          setObject:(nullable id)object
             forKey:(nullable id<NSCopying>)key;
+
+/**
+ * @brief  Match a string with defined regex pattern and return the matched part.
+ */
++ (NSString *)matchString:(NSString *)inputString withRegex:(NSString *)pattern;
 
 @end
 

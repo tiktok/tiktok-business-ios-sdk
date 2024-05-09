@@ -6,142 +6,300 @@
 //
 
 import UIKit
+import TikTokBusinessSDK
+import SwiftUI
 
-class FormViewController: UIViewController {
+class FormViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
     var titleName = "Enter the fields"
+    var parentVC: EventViewController?
     
     var eventToField =
         [
             "MonitorEvent": [],
             "CustomEvent": [],
-            "LaunchAPP": [],
-            "InstallApp": [],
-            "2Dretention": [],
-            "AddPaymentInfo": ["app_id", "idfa", "attribution"],
-            "AddToCart": ["content_type", "sku_id", "description", "currency", "value"],
-            "AddToWishList": ["page_type", "content_id", "description", "currency", "value"],
-            "Checkout": ["description", "sku_id", "number_of_items", "payment_unavailable", "currency", "value", "game_item_type", "game_item_id", "room_type", "currency", "value", "location", "checkin_date", "checkout_date", "number_of_rooms", "number_of_nights"],
+            "AddToCart": ["content_type","content_id","description","currency","value"],
+            "AddToWishlist": ["content_type","content_id","description","currency","value"],
+            "Checkout": ["content_type","content_id","description","currency","value"],
+            "Purchase": ["content_type","content_id","description","currency","value"],
+            "ViewContent": ["content_type","content_id","description","currency","value"],
+            "AchieveLevel": [],
+            "AddPaymentInfo": [],
             "CompleteTutorial": [],
-            "ViewContent": ["page_type", "sku_id", "description", "currency", "value", "Search_string", "room_type", "location", "checkin_date", "checkout_date", "number_of_rooms", "number_of_nights", "outbound_origination_city", "outbound_destination_city", "return_origination_city", "return_destination_city", "class", "number_of_passenger"],
-            "CreateGroup": ["group_name", "group_logo", "group_description", "group_type", "group_id"],
-            "CreateRole": ["role_type"],
+            "CreateGroup": [],
+            "CreateRole": [],
             "GenerateLead": [],
-            "InAppAdClick": ["ad_type"],
-            "InAppAdImpr": ["ad_type"],
-            "JoinGroup": ["level_numer"],
-            "AchieveLevel": ["level_number", "score"],
-            "LoanApplication": ["loan_type", "application_id"],
-            "LoanApproval": ["value"],
-            "LoanDisbursal": ["value"],
+            "InAppADClick": [],
+            "InAppADImpr": [],
+            "InstallApp": [],
+            "JoinGroup": [],
+            "LaunchAPP": [],
+            "LoanApplication": [],
+            "LoanApproval": [],
+            "LoanDisbursal": [],
             "Login": [],
-            "Purchase": ["page_type", "sku_id", "description", "number_of_items", "coupon_used", "currency", "value", "group_type", "game_item_id", "room_type", "location", "checkin_date", "checkout_date", "number_of_rooms", "number_of_nights", "outbound_origination_city", "outbound_destination_city", "return_origination_city", "return_destination_city", "class", "number_of_passenger", "service_type", "service_id"],
-            "Rate": ["page_type", "sku_id", "content", "rating_value", "max_rating_value", "rate"],
-            "Registration": ["registration_method"],
-            "Search": ["search_string", "checkin_date", "checkout_date", "number_of_rooms", "number_of_nights", "origination_city", "destination_city", "departure_date", "return_date", "class", "number_of_passenger"],
-            "SpendCredits": ["game_item_type", "game_item_id", "level_number"],
-            "StartTrial": ["order_id", "currency"],
-            "Subscribe": ["order_id", "currency"],
-            "Share": ["content_type", "content_id", "share_destination"],
-            "Contact": [],
-            "UnlockAchievement": ["description", "achievement_type"]
+            "Rate": [],
+            "Registration": [],
+            "Search": [],
+            "SpendCredits": [],
+            "StartTrial": [],
+            "Subscribe": [],
+            "UnlockAchievement": []
     ]
     
-    var payload = ""
+    var contentsEventNames = ["AddToCart", "AddToWishlist", "Checkout", "Purchase", "ViewContent"]
+    var contentFields = ["price", "quantity", "content_id", "content_category", "content_name", "brand"]
+    var contentParameters = [UITextField]()
+    
     var fields = [UITextField]()
     var parameters = [UITextField]()
+    var event : TikTokBaseEvent = TikTokBaseEvent()
+    var tableView = UITableView()
+    var contentTableView = UITableView()
+    var hasContent = false
+    var contentLabel = UILabel()
+    var createPayload = UIButton(type: .system)
+    var addContent = UIButton(type: .system)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = titleName
         
+        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+        
+        title = titleName
+        if contentsEventNames.contains(titleName) {
+            if titleName == "AddToCart" {
+                event = TikTokAddToCartEvent()
+            } else if titleName == "AddToWishlist" {
+                event = TikTokAddToWishlistEvent()
+            } else if titleName == "Checkout" {
+                event = TikTokCheckoutEvent()
+            } else if titleName == "Purchase" {
+                event = TikTokPurchaseEvent()
+            } else if titleName == "ViewContent" {
+                event = TikTokViewContentEvent()
+            } else {
+                event = TikTokContentsEvent(name: titleName)
+            }
+            hasContent = true
+        } else {
+            event = TikTokBaseEvent(eventname: titleName)
+            hasContent = false
+        }
         let fieldsNames = eventToField[titleName]
         
-        let createPayload = UIButton(frame: CGRect(x: 10.0, y:100.0, width: UIScreen.main.bounds.size.width - 80.0, height: 50.0))
-        let addField = UIButton(frame: CGRect(x: UIScreen.main.bounds.size.width - 60.0, y:100.0, width: 50.0, height: 50.0))
+        createPayload.frame = CGRect(x: 10.0, y:100.0, width: UIScreen.main.bounds.size.width / 2 - 45.0, height: 50.0)
         createPayload.backgroundColor = .blue
-        addField.backgroundColor = .purple
-        createPayload.setTitle("Create Payload", for: .normal)
-        addField.setTitle("+", for: .normal)
+        createPayload.setTitleColor(.white, for: .normal)
+        createPayload.setTitle("Create Event", for: .normal)
+        createPayload.layer.cornerRadius = 10
         createPayload.addTarget(self, action: #selector(self.didCreatePayload(sender:)), for: .touchUpInside)
-        addField.addTarget(self, action: #selector(self.addFieldToEvent(sender:)), for: .touchUpInside)
+        
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addFieldToEvent(sender:)))
+        navigationItem.rightBarButtonItem = addButton
+        
+        addContent.frame = CGRect(x: UIScreen.main.bounds.size.width / 2 - 25.0, y:100.0, width: UIScreen.main.bounds.size.width / 2 - 45.0, height: 50.0)
+        addContent.backgroundColor = .blue
+        addContent.setTitle("Add Contents", for: .normal)
+        addContent.setTitleColor(.white, for: .normal)
+        addContent.layer.cornerRadius = 10
+        addContent.addTarget(self, action: #selector(self.didAddContents(sender:)), for: .touchUpInside)
 
         self.view.addSubview(createPayload)
-        self.view.addSubview(addField)
+        self.view.addSubview(addContent)
+        
+        tableView = UITableView(frame: CGRect(x: 10, y:160.0, width: UIScreen.main.bounds.size.width - 20, height:260.0), style: .plain)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.layer.borderWidth = 1
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        self.view.addSubview(tableView)
+        
+        contentLabel = UILabel(frame: CGRect(x: 10, y: 450, width: 100, height: 40))
+        contentLabel.text = "Contents:"
+        contentLabel.isHidden = true
+        self.view.addSubview(contentLabel)
+        
+        contentTableView = UITableView(frame: CGRect(x: 10, y:480.0, width: UIScreen.main.bounds.size.width - 20, height:240.0), style: .plain)
+        contentTableView.dataSource = self
+        contentTableView.delegate = self
+        contentTableView.layer.borderWidth = 1
+        contentTableView.register(UITableViewCell.self, forCellReuseIdentifier: "contentCell")
+        contentTableView.isHidden = true
+        self.view.addSubview(contentTableView)
+        
+        
         for fieldIndex in 0 ..< fieldsNames!.count {
-            let field = UITextField(frame: CGRect(x: 10.0, y:(100.0 + CGFloat((fieldIndex + 1) * 60)), width: UIScreen.main.bounds.size.width/2 - 15.0, height: 50.0))
+            let field = UITextField(frame: CGRect(x: 10, y: 5, width: 140, height: 30))
             field.text = fieldsNames?[fieldIndex]
-            field.backgroundColor = .yellow
+//            field.backgroundColor = .yellow
+            field.borderStyle = .roundedRect
             field.tag = fieldIndex
             field.autocorrectionType = .no
-            let parameter = UITextField(frame: CGRect(x:UIScreen.main.bounds.size.width/2 + 5.0, y:(100.0 + CGFloat((fieldIndex + 1) * 60)), width: UIScreen.main.bounds.size.width/2 - 15.0, height: 50.0))
+            field.delegate = self
+            let parameter = UITextField(frame: CGRect(x: 160, y: 5, width: 200, height: 30))
             parameter.text = randomText(from: 5, to: 20)
-            parameter.backgroundColor = .red
+            parameter.borderStyle = .roundedRect
             parameter.tag = fieldIndex
             parameter.autocorrectionType = .no
+            parameter.delegate = self
             self.fields.append(field)
             self.parameters.append(parameter)
-            self.view.addSubview(field)
-            self.view.addSubview(parameter)
+        }
+        
+        for fieldIndex in 0 ..< contentFields.count {
+            let parameter = UITextField(frame: CGRect(x: 160, y: 5, width: 200, height: 30))
+            parameter.borderStyle = .roundedRect
+            parameter.tag = fieldIndex
+            parameter.autocorrectionType = .no
+            parameter.delegate = self
+            self.contentParameters.append(parameter)
         }
     }
     
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if (tableView == self.tableView) {
+            return self.fields.count
+        } else {
+            return self.contentFields.count
+        }
+        
+    }
     
-    @IBAction func didCreatePayload(sender: UIButton) {
-
-        self.payload = "{\n"
-        self.payload += "\t\"event_name\": \""
-        self.payload += self.titleName
-        self.payload += "\",\n"
-        
-        
-        for fieldIndex in 0 ..< fields.count {
-            self.payload += "\t\""
-            if let field = self.fieldsForTag(tag: fieldIndex){
-                self.payload += field.text!
-                self.payload += "\": \""
-            }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 40.0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if (tableView == self.tableView) {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
             
-            if let parameter = self.parametersForTag(tag: fieldIndex){
-                self.payload += parameter.text!
-                self.payload += "\",\n"
+            let field = self.fields[indexPath.row]
+            let parameter = self.parameters[indexPath.row]
+            
+            cell.addSubview(field)
+            cell.addSubview(parameter)
+            cell.selectionStyle = .none
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "contentCell", for: indexPath)
+            cell.textLabel?.text = contentFields[indexPath.row]
+            let parameter = self.contentParameters[indexPath.row]
+            cell.addSubview(parameter)
+            cell.selectionStyle = .none
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if editingStyle == .delete {
+            if (tableView == self.tableView) {
+                self.fields.remove(at: indexPath.row)
+                self.parameters.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            } else {
+                self.contentFields.remove(at: indexPath.row)
+                self.contentParameters.remove(at: indexPath.row)
+                contentTableView.deleteRows(at: [indexPath], with: .fade)
             }
         }
-        self.payload = self.payload + "}"
-        performSegue(withIdentifier: "segueToEvent", sender: self)
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    @objc func didAddContents(sender: UIButton) {
+        if hasContent {
+            self.contentTableView.isHidden = false
+            self.contentLabel.isHidden = false
+        }
+    }
+    
+    
+    @objc func didCreatePayload(sender: UIButton) {
+        if let event = self.event as? TikTokContentsEvent {
+            for fieldIndex in 0 ..< fields.count {
+                let field = fields[fieldIndex]
+                let parameter = self.parameters[fieldIndex]
+                if parameter.text!.isEmpty {
+                    continue
+                }
+                if field.text == "content_type" {
+                    event.setContentType(parameter.text!)
+                } else if field.text == "content_id" {
+                    event.setContentId(parameter.text!)
+                } else if field.text == "description" {
+                    event.setDescription(parameter.text!)
+                } else if field.text == "currency" {
+                    event.setCurrency(TTCurrency(rawValue: parameter.text!))
+                } else if field.text == "value" {
+                    event.setValue(parameter.text!)
+                } else {
+                    event.addProperty(withKey: field.text!, value: parameter.text!)
+                }
+                    
+            }
+            if hasContent {
+                let contentParams = TikTokContentParams()
+                for contentIndex in 0 ..< contentFields.count {
+                    let key = contentFields[contentIndex]
+                    let parameter = self.contentParameters[contentIndex]
+                    let value = parameter.text!
+                    if value.isEmpty {
+                        continue
+                    }
+                    if key == "price", let number = NumberFormatter().number(from: value) {
+                        contentParams.price = NSNumber(value: number.floatValue)
+                    } else if key == "quantity", let number = NumberFormatter().number(from: value) {
+                        contentParams.quantity = NSInteger(number.intValue)
+                    } else if key == "content_id" {
+                        contentParams.contentId = value
+                    } else if key == "content_category" {
+                        contentParams.contentCategory = value
+                    } else if key == "content_name" {
+                        contentParams.contentName = value
+                    } else if key == "brand" {
+                        contentParams.brand = value
+                    }
+                }
+                event.setContents([contentParams])
+            }
+            self.event = event
+        } else {
+            for fieldIndex in 0 ..< fields.count {
+                let fieldText = fields[fieldIndex].text!
+                let parameterText = self.parameters[fieldIndex].text!
+                if parameterText.isEmpty {
+                    continue
+                }
+                event.addProperty(withKey: fieldText, value: parameterText)
+            }
+                
+        }
+        parentVC?.eventToPost = self.event
+        navigationController?.popViewController(animated: true)
         
     }
     
-    @IBAction func addFieldToEvent(sender: UIButton) {
-        
-        let field = UITextField(frame: CGRect(x: 10.0, y:(100.0 + CGFloat((self.fields.count + 1) * 60)), width: UIScreen.main.bounds.size.width/2 - 15.0, height: 50.0))
-        field.backgroundColor = .yellow
+    @objc func addFieldToEvent(sender: UIButton) {
+        let field = UITextField(frame: CGRect(x: 10, y: 5, width: 140, height: 30))
+        field.borderStyle = .roundedRect
         field.tag = self.fields.count
         field.autocorrectionType = .no
-        let parameter = UITextField(frame: CGRect(x:UIScreen.main.bounds.size.width/2 + 5.0, y:(100.0 + CGFloat((self.fields.count + 1) * 60)), width: UIScreen.main.bounds.size.width/2 - 15.0, height: 50.0))
+        let parameter = UITextField(frame: CGRect(x: 160, y: 5, width: 200, height: 30))
+        parameter.borderStyle = .roundedRect
         parameter.text = randomText(from: 5, to: 20)
-        parameter.backgroundColor = .red
         parameter.tag = self.fields.count
         parameter.autocorrectionType = .no
+        
+        
         self.fields.append(field)
         self.parameters.append(parameter)
-        self.view.addSubview(field)
-        self.view.addSubview(parameter)
-    }
-    
-    func fieldsForTag( tag: Int ) -> UITextField? {
-        return self.fields.filter({ $0.tag == tag }).first
-    }
-    
-    func parametersForTag( tag: Int ) -> UITextField? {
-        return self.parameters.filter({ $0.tag == tag }).first
-    }
-    
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let vc = segue.destination as! EventViewController
-        vc.payload = self.payload
-        vc.eventTitle = self.titleName
+        tableView.reloadData()
     }
     
     
@@ -174,14 +332,11 @@ class FormViewController: UIViewController {
         }
         return text
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
-    */
+    
 
 }

@@ -7,8 +7,8 @@
 
 #import "TikTokConfig.h"
 #import "TikTokLogger.h"
-#import "TikTokAppEventQueue.h"
-#import "TikTokRequestHandler.h"
+#import "TikTokBaseEvent.h"
+#import "TikTokConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL userTrackingEnabled;
 @property (nonatomic) BOOL isRemoteSwitchOn;
+@property (nonatomic) BOOL isGlobalConfigFetched;
 @property (nonatomic) NSString *accessToken;
 @property (nonatomic) NSString *anonymousID;
 @property (nonatomic, assign, readonly) BOOL isDebugMode;
@@ -41,22 +42,24 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief This method should be called whenever an event needs to be tracked
  *
- * @note See TikTokAppEvent.h for more event options.
+ * @note See TikTokBaseEvent.h for more event options.
  *
  * @param eventName This parameter should be a string object. You can find the list of
  *                  supported events in the documentation.
- *                  Custom events can be tracked by simply passing in custom names.
+ *                  You can either track a standardized event by passing a TTEventName or
+ *                  trac a custom event by simply passing a custom name.
 */
 + (void)trackEvent: (NSString *)eventName;
 
 /**
  * @brief This method should be called whenever an event needs to be tracked
  *
- * @note See TikTokAppEvent.h for more event options.
+ * @note See TikTokBaseEvent.h for more event options.
  *
  * @param eventName This parameter should be a string object. You can find the list of
  *                  supported events in the documentation.
- *                  Custom events can be tracked by simply passing in custom names.
+ *                  You can either track a standardized event by passing a TTEventName or
+ *                  trac a custom event by simply passing a custom name.
  * @param properties This parameter should be a dictionary. For supported events,
  *                       the parameters passed should be formatted according to the
  *                       structure provided in the documentation. For custom events,
@@ -64,7 +67,41 @@ NS_ASSUME_NONNULL_BEGIN
 */
 + (void)trackEvent: (NSString *)eventName withProperties: (NSDictionary *)properties;
 
+/**
+ * @brief This method should be called whenever an event needs to be tracked
+ *
+ * @note See TikTokBaseEvent.h for more event options.
+ *
+ * @param eventName This parameter should be a string object. You can find the list of
+ *                  supported events in the documentation.
+ *                  You can either track a standardized event by passing a TTEventName or
+ *                  trac a custom event by simply passing a custom name.
+ * @param type This parameter should be a string object ('track' or 'identify').
+*/
 + (void)trackEvent: (NSString *)eventName withType: (NSString *)type;
+
+/**
+ * @brief This method should be called whenever an event needs to be tracked
+ *
+ * @note See TikTokBaseEvent.h for more event options.
+ *
+ * @param eventName This parameter should be a string object. You can find the list of
+ *                  supported events in the documentation.
+ *                  You can either track a standardized event by passing a TTEventName or
+ *                  trac a custom event by simply passing a custom name.
+ * @param eventId This parameter should be a string object. You can define a custom event identifier.
+*/
++ (void)trackEvent: (NSString *)eventName withId: (NSString *)eventId;
+
+/**
+ * @brief This method should be called whenever an event needs to be tracked
+ *
+ * @note See TikTokBaseEvent.h for more event options.
+ *
+ * @param event This parameter should be a TikTokBaseEvent object. You can use TikTokContentsEvent
+ *              or build a custom TikTokBaseEvent.
+*/
++ (void)trackTTEvent: (TikTokBaseEvent *)event;
 
 /**
  * @brief Use this method to enable or disable event tracking. Tracked events will still be cached locally until tracking is enabled again
@@ -111,14 +148,6 @@ NS_ASSUME_NONNULL_BEGIN
  *        AppTrackingTransparency dialog is displayed in iOS 14.0 and onwards
 */
 + (BOOL)isUserTrackingEnabled;
-
-/**
- * @brief This method is used internally to keep track of event queue state
- *        The event queue is populated by several tracked events and then
- *        flushed to the Marketing API endpoint every 15 seconds or when the
- *        event queue has 100 events
-*/
-+ (TikTokAppEventQueue *)getQueue;
 
 /**
  * @brief Use this method to get the count of events that are currently in
@@ -203,29 +232,16 @@ NS_ASSUME_NONNULL_BEGIN
 */
 + (NSString *)getTestEventCode;
 
-- (void)initializeSdk:(nullable TikTokConfig *)tiktokConfig;
-- (void)trackEvent: (NSString *)eventName;
-- (void)trackEvent: (NSString *)eventName withProperties: (NSDictionary *)properties;
-- (void)trackEvent: (NSString *)eventName withType: (NSString *)type;
-- (void)trackEventAndEagerlyFlush: (NSString *)eventName;
-- (void)trackEventAndEagerlyFlush: (NSString *)eventName withProperties: (NSDictionary *)properties;
-- (void)trackEventAndEagerlyFlush: (NSString *)eventName withType: (NSString *)type;
-- (void)setCustomUserAgent: (NSString *)customUserAgent;
-- (void)updateAccessToken: (nonnull NSString *)accessToken;
-- (void)identifyWithExternalID:(nullable NSString *)externalID
-               phoneNumber:(nullable NSString *)phoneNumber
-                         email:(nullable NSString *)email;
-- (void)logout;
-- (void)explicitlyFlush;
-- (BOOL)appInForeground;
-- (BOOL)appInBackground;
-- (BOOL)appIsInactive;
-- (nullable NSString *)idfa;
-- (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion;
-- (void)getGlobalConfig:(TikTokConfig *)config
-  isFirstInitialization:(BOOL)isFirstInitialization;
+/**
+ *  @brief Produce a test exception
+*/
 +(void)produceFatalError;
--(void)produceFatalError;
+
+/**
+ *  @brief Method to get TikTok iOS SDK Version
+*/
++ (NSString *)getSDKVersion;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -18,7 +18,7 @@ class MetricsViewController: UIViewController {
     @IBOutlet weak var secondsUntilFlush: UILabel!
     @IBOutlet weak var remainingNumberOfEventsUntilFlush: UILabel!
     
-    let events = ["CustomEvent", "LaunchAPP", "InstallApp", "2Dretention", "AddPaymentInfo", "AddToCart", "AddToWishList", "Checkout", "CompleteTutorial", "ViewContent", "CreateGroup", "CreateRole", "GenerateLead", "InAppAdClick", "InAppAdImpr", "JoinGroup", "AchieveLevel", "LoanApplication", "LoanApproval", "LoanDisbursal", "Login", "Purchase", "Rate", "Registration", "Search", "SpendCredits", "StartTrial", "Subscribe", "Share", "Contact", "UnlockAchievement"]
+    let events = ["CustomEvent", "LaunchAPP", "InstallApp", "2Dretention", "AddPaymentInfo", "AddToCart", "AddToWishList", "Checkout", "CompleteTutorial", "ViewContent", "CreateGroup", "CreateRole", "GenerateLead", "InAppADClick", "InAppADImpr", "JoinGroup", "AchieveLevel", "LoanApplication", "LoanApproval", "LoanDisbursal", "Login", "Purchase", "Rate", "Registration", "Search", "SpendCredits", "StartTrial", "Subscribe", "Share", "Contact", "UnlockAchievement"]
     
     var eventToField =
         [
@@ -35,8 +35,8 @@ class MetricsViewController: UIViewController {
             "CreateGroup": ["group_name", "group_logo", "group_description", "group_type", "group_id"],
             "CreateRole": ["role_type"],
             "GenerateLead": [],
-            "InAppAdClick": ["ad_type"],
-            "InAppAdImpr": ["ad_type"],
+            "InAppADClick": ["ad_type"],
+            "InAppADImpr": ["ad_type"],
             "JoinGroup": ["level_numer"],
             "AchieveLevel": ["level_number", "score"],
             "LoanApplication": ["loan_type", "application_id"],

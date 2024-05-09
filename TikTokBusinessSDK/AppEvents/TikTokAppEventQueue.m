@@ -14,8 +14,10 @@
 #import "TikTokLogger.h"
 #import "TikTokFactory.h"
 #import "TikTokErrorHandler.h"
+#import "TikTokTypeUtility.h"
 
-#define FLUSH_LIMIT 100
+#define APP_FLUSH_LIMIT 100
+#define MONITOR_FLUSH_LIMIT 5
 #define API_LIMIT 50
 #define FLUSH_PERIOD_IN_SECONDS 15
 
@@ -165,18 +167,37 @@
         [self.logger verbose:@"[TikTokAppEventQueue] Remote switch is off, no event added"];
         return;
     }
-    [self.eventQueue addObject:event];
-    if(self.eventQueue.count >= FLUSH_LIMIT) {
-        [self flush:TikTokAppEventsFlushReasonEventThreshold];
+    if ([event.type isEqualToString:@"monitor"]) {
+        [self.monitorQueue addObject:event];
+        if (self.monitorQueue.count >= MONITOR_FLUSH_LIMIT) {
+            [self flushMonitorEvents];
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryMonitorQueueUpdated" object:nil];
+    } else {
+        [self.eventQueue addObject:event];
+        if(self.eventQueue.count >= APP_FLUSH_LIMIT) {
+            [self flush:TikTokAppEventsFlushReasonEventThreshold];
+        }
+        [self calculateAndSetRemainingEventThreshold];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryEventQueueUpdated" object:nil];
     }
-    [self calculateAndSetRemainingEventThreshold];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryEventQueueUpdated" object:nil];
+    
 }
 
 - (void)flush:(TikTokAppEventsFlushReason)flushReason
 {
+    if (!TTCheckValidString(self.config.appId)) {
+        [self.logger info:@"[TikTokAppEventQueue] Invalid App ID, no flush logic invoked"];
+        return;
+    }
+    
     if([[TikTokBusiness getInstance] isRemoteSwitchOn] == NO) {
         [self.logger info:@"[TikTokAppEventQueue] Remote switch is off, no flush logic invoked"];
+        return;
+    }
+    
+    if ([[TikTokBusiness getInstance] isGlobalConfigFetched] == NO) {
+        [self.logger info:@"[TikTokAppEventQueue] Global config not fetched, no flush logic invoked"];
         return;
     }
     
@@ -187,11 +208,11 @@
         [self.logger info:@"[TikTokAppEventQueue] Flush logic not invoked due to delay for ATT"];
         return;
     }
-    
+    NSNumber *flushStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     if(![[preferences objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
         [preferences setObject:@"true" forKey:@"HasFirstFlushOccurred"];
     }
-    
+    NSInteger flushSize = 0;
     @try {
         @synchronized (self) {
             [self.logger info:@"[TikTokAppEventQueue] Start flush, with flush reason: %lu current queue count: %lu", flushReason, self.eventQueue.count];
@@ -201,12 +222,56 @@
             NSMutableArray *eventsToBeFlushed = [NSMutableArray arrayWithArray:eventsFromDisk];
             NSArray *copiedEventQueue = [self.eventQueue copy];
             [eventsToBeFlushed addObjectsFromArray:copiedEventQueue];
+            flushSize = eventsToBeFlushed.count;
             [self.eventQueue removeAllObjects];
             [self calculateAndSetRemainingEventThreshold];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryEventQueueUpdated" object:nil];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self flushOnMainQueue:eventsToBeFlushed forReason:flushReason];
+                [self flushOnMainQueue:eventsToBeFlushed forReason:flushReason isMonitor:NO];
+            });
+        }
+    } @catch (NSException *exception) {
+        [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flush" exception:exception];
+    }
+    if (flushSize > 0) {
+        NSNumber *flushEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+        NSDictionary *flushMeta = @{
+            @"ts": flushEndTime,
+            @"latency": [NSNumber numberWithInt:[flushEndTime intValue] - [flushStartTime intValue]],
+            @"type": [self stringForReason:flushReason],
+            @"interval": @(self.config.initialFlushDelay ?: FLUSH_PERIOD_IN_SECONDS),
+            @"size":@(flushSize)
+        };
+        NSDictionary *monitorFlushProperties = @{
+            @"monitor_type": @"metric",
+            @"monitor_name": @"flush",
+            @"meta": flushMeta
+        };
+        TikTokAppEvent *monitorFlushEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorFlushProperties withType:@"monitor"];
+        [self addEvent:monitorFlushEvent];
+    }
+}
+
+
+- (void)flushMonitorEvents {
+    if([[TikTokBusiness getInstance] isRemoteSwitchOn] == NO) {
+        [self.logger info:@"[TikTokAppEventQueue] Remote switch is off, no flush logic invoked"];
+        return;
+    }
+    
+    @try {
+        @synchronized (self) {
+            NSArray *eventsFromDisk = [TikTokAppEventStore retrievePersistedMonitorEvents];
+            [TikTokAppEventStore clearPersistedMonitorEvents];
+            NSMutableArray *eventsToBeFlushed = [NSMutableArray arrayWithArray:eventsFromDisk];
+            NSArray *copiedEventQueue = [self.monitorQueue copy];
+            [eventsToBeFlushed addObjectsFromArray:copiedEventQueue];
+            [self.monitorQueue removeAllObjects];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryMonitorQueueUpdated" object:nil];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self flushOnMainQueue:eventsToBeFlushed forReason:TikTokAppEventsFlushReasonExplicitlyFlush isMonitor:YES];
             });
         }
     } @catch (NSException *exception) {
@@ -216,6 +281,7 @@
 
 - (void)flushOnMainQueue:(NSMutableArray *)eventsToBeFlushed
                forReason:(TikTokAppEventsFlushReason)flushReason
+               isMonitor:(BOOL)isMonitor
 {
     @try {
         [self.logger info:@"[TikTokAppEventQueue] Total number events to be flushed: %lu", eventsToBeFlushed.count];
@@ -235,16 +301,21 @@
                 }
                 
                 for (NSArray *eventChunk in eventChunks) {
-                    [self.requestHandler sendBatchRequest:eventChunk withConfig:self.config];
+                    if (isMonitor) {
+                        [self.requestHandler sendMonitorRequest:eventChunk withConfig:self.config];
+                    } else {
+                        [self.requestHandler sendBatchRequest:eventChunk withConfig:self.config];
+                    }
                 }
             } else {
-                [TikTokAppEventStore persistAppEvents:eventsToBeFlushed];
+                if (isMonitor) {
+                    [TikTokAppEventStore persistMonitorEvents:eventsToBeFlushed];
+                } else {
+                    [TikTokAppEventStore persistAppEvents:eventsToBeFlushed];
+                }
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
                 if([[TikTokBusiness getInstance] accessToken] == nil) {
                     [self.logger info:@"[TikTokAppEventQueue] Request not sent because access token is null"];
-                }
-                if(self.config.appId == nil) {
-                    [self.logger info:@"[TikTokAppEventQueue] Request not sent because application ID is null"];
                 }
             }
         }
@@ -256,7 +327,33 @@
 
 - (void)calculateAndSetRemainingEventThreshold
 {
-    self.remainingEventsUntilFlushThreshold = FLUSH_LIMIT - (int)self.eventQueue.count;
+    self.remainingEventsUntilFlushThreshold = APP_FLUSH_LIMIT - (int)self.eventQueue.count;
+}
+
+- (NSString *)stringForReason:(TikTokAppEventsFlushReason)reason {
+    switch (reason) {
+        case TikTokAppEventsFlushReasonTimer:
+            return @"TIMER";
+            break;
+        case TikTokAppEventsFlushReasonEventThreshold:
+            return @"THRESHOLD";
+            break;
+        case TikTokAppEventsFlushReasonEagerlyFlushingEvent:
+            return @"IDENTIFY";
+            break;
+        case TikTokAppEventsFlushReasonAppBecameActive:
+            return @"START_UP";
+            break;
+        case TikTokAppEventsFlushReasonExplicitlyFlush:
+            return @"FORCE_FLUSH";
+            break;
+        case TikTokAppEventsFlushReasonLogout:
+            return @"LOGOUT";
+            break;
+        default:
+            return @"";
+            break;
+    }
 }
 
 @end

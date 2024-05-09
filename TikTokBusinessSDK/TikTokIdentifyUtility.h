@@ -11,18 +11,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TikTokIdentifyUtility : NSObject
 
-+ (NSString *)getOrGenerateAnonymousID;
+@property (nonatomic, strong, nullable) NSString *externalID;
+@property (nonatomic, strong, nullable) NSString *phoneNumber;
+@property (nonatomic, strong, nullable) NSString *email;
+@property (nonatomic, assign) BOOL isIdentified;
 
-+ (NSString *)generateNewAnonymousID;
++ (instancetype)sharedInstance;
 
-+ (void)setUserInfoDefaultsWithExternalID:(nullable NSString *)externalID
-                              phoneNumber:(nullable NSString *)phoneNumber
-                                    email:(nullable NSString *)email
-                                   origin:(nullable NSString *)origin;
+- (NSString *)getOrGenerateAnonymousID;
 
-+ (NSDictionary *)getUserInfoDictionaryFromNSUserDefaults;
+- (NSString *)generateNewAnonymousID;
 
-+ (void)resetNSUserDefaults;
+- (void)setUserInfoWithExternalID:(nullable NSString *)externalID
+                      phoneNumber:(nullable NSString *)phoneNumber
+                            email:(nullable NSString *)email
+                           origin:(nullable NSString *)origin;
+
+- (NSDictionary *)getUserInfoDictionary;
+
+- (void)resetUserInfo;
 
 @end
 

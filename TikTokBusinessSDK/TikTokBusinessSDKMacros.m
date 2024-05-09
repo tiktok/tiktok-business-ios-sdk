@@ -2,7 +2,7 @@
 //  TikTokBusinessSDKMacros.m
 //  TikTokBusinessSDK
 //
-//  Created by ByteDance on 2022/11/3.
+//  Created by TikTok on 2022/11/3.
 //  Copyright © 2022 TikTok. All rights reserved.
 //
 

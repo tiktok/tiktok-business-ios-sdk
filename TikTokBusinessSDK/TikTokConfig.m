@@ -10,6 +10,7 @@
 #import "TikTokBusiness.h"
 #import "TikTokFactory.h"
 #import "TikTokUserAgentCollector.h"
+#import "TikTokTypeUtility.h"
 
 @interface TikTokConfig()
 
@@ -20,12 +21,12 @@
 
 @implementation TikTokConfig: NSObject
 
-+ (TikTokConfig *)configWithAccessToken:(NSString *)accessToken appId:(NSString *)appId tiktokAppId:(NSNumber *)tiktokAppId
++ (TikTokConfig *)configWithAccessToken:(nonnull NSString *)accessToken appId:(nonnull NSString *)appId tiktokAppId:(nonnull NSString *)tiktokAppId
 {
     return [[TikTokConfig alloc] initWithAccessToken:accessToken appId:appId tiktokAppId:tiktokAppId];
 }
 
-+ (TikTokConfig *)configWithAppId:(NSString *)appId tiktokAppId:(NSNumber *)tiktokAppId
++ (TikTokConfig *)configWithAppId:(nonnull NSString *)appId tiktokAppId:(nonnull NSString *)tiktokAppId
 {
     return [[TikTokConfig alloc] initWithAppId:appId tiktokAppId:tiktokAppId];
 }
@@ -108,15 +109,19 @@
     [self.logger info:@"[TikTokConfig] Initial flush delay set to: %lu", seconds];
 }
 
-- (id)initWithAccessToken:(NSString *)accessToken appId:(NSString *)appId tiktokAppId:(NSNumber *)tiktokAppId
+- (id)initWithAccessToken:(nonnull NSString *)accessToken appId:(nonnull NSString *)appId tiktokAppId:(nonnull NSString *)tiktokAppId
 {
     self = [super init];
     
     if(self == nil) return nil;
     
+    //regex check
+    NSString *validAppId = [TikTokTypeUtility matchString:appId withRegex:@"^\\d*$"];
+    NSString *validTTAppId = [TikTokTypeUtility matchString:tiktokAppId withRegex:@"^(\\d+,)*\\d+$"];
+    
     _accessToken = accessToken;
-    _appId = appId;
-    _tiktokAppId = tiktokAppId;
+    _appId = validAppId;
+    _tiktokAppId = validTTAppId;
     _trackingEnabled = YES;
     _automaticTrackingEnabled = YES;
     _installTrackingEnabled = YES;
@@ -125,22 +130,25 @@
     _paymentTrackingEnabled = YES;
     _appTrackingDialogSuppressed = NO;
     _SKAdNetworkSupportEnabled = YES;
-    _userAgentCollectionEnabled = YES;
     _debugModeEnabled = NO;
     
     self.logger = [TikTokFactory getLogger];
     return self;
 }
 
-- (id)initWithAppId:(NSString *)appId tiktokAppId:(NSNumber *)tiktokAppId
+- (id)initWithAppId:(nonnull NSString *)appId tiktokAppId:(nonnull NSString *)tiktokAppId
 {
     self = [super init];
     
     if(self == nil) return nil;
     
+    //regex check
+    NSString *validAppId = [TikTokTypeUtility matchString:appId withRegex:@"^\\d*$"];
+    NSString *validTTAppId = [TikTokTypeUtility matchString:tiktokAppId withRegex:@"^(\\d+,)*\\d+$"];
+    
     _accessToken = @"";
-    _appId = appId;
-    _tiktokAppId = tiktokAppId;
+    _appId = validAppId;
+    _tiktokAppId = validTTAppId;
     _trackingEnabled = YES;
     _automaticTrackingEnabled = YES;
     _installTrackingEnabled = YES;
@@ -149,7 +157,6 @@
     _paymentTrackingEnabled = YES;
     _appTrackingDialogSuppressed = NO;
     _SKAdNetworkSupportEnabled = YES;
-    _userAgentCollectionEnabled = YES;
     _debugModeEnabled = NO;
     
     self.logger = [TikTokFactory getLogger];

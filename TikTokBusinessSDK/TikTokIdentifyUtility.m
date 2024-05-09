@@ -10,8 +10,28 @@
 
 @implementation TikTokIdentifyUtility
 
++ (instancetype)sharedInstance {
+    static TikTokIdentifyUtility *_shared = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _shared = [[TikTokIdentifyUtility alloc] init];
+    });
+    return _shared;
+}
 
-+ (NSString *)getOrGenerateAnonymousID
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _phoneNumber = nil;
+        _email = nil;
+        _externalID = nil;
+        _isIdentified = NO;
+    }
+    return self;
+}
+
+- (NSString *)getOrGenerateAnonymousID
 {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *anonymousIDkey = @"AnonymousID";
@@ -28,72 +48,55 @@
     return anonymousID;
 }
 
-+ (NSString *)generateNewAnonymousID
+- (NSString *)generateNewAnonymousID
 {
     NSString *uuid = [[NSUUID UUID] UUIDString];
     return uuid;
 }
 
-+ (void)setUserInfoDefaultsWithExternalID:(nullable NSString *)externalID
-                              phoneNumber:(nullable NSString *)phoneNumber
-                                    email:(nullable NSString *)email
-                                   origin:(nullable NSString *)origin
+- (void)setUserInfoWithExternalID:(nullable NSString *)externalID
+                      phoneNumber:(nullable NSString *)phoneNumber
+                            email:(nullable NSString *)email
+                           origin:(nullable NSString *)origin
 {
     NSString* hashedExternalID = [TikTokTypeUtility toSha256:externalID origin:origin];
     NSString* hashedPhoneNumber = [TikTokTypeUtility toSha256:phoneNumber origin:origin];
     NSString* hashedEmail = [TikTokTypeUtility toSha256:email origin:origin];
     
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
- 
-    NSString *isIdentifiedKey = @"IsIdentified";
-    NSString *externalIDKey = @"ExternalID";
-    NSString *phoneNumberKey = @"PhoneNumber";
-    NSString *emailKey = @"Email";
-    
-    [preferences setObject:@"true" forKey:isIdentifiedKey];
-    [preferences setObject:hashedExternalID forKey:externalIDKey];
-    [preferences setObject:hashedPhoneNumber forKey:phoneNumberKey];
-    [preferences setObject:hashedEmail forKey:emailKey];
-    [preferences synchronize];
+    self.externalID = hashedExternalID;
+    self.email = hashedEmail;
+    self.phoneNumber = hashedPhoneNumber;
+    self.isIdentified = YES;
 }
 
-+ (NSDictionary *)getUserInfoDictionaryFromNSUserDefaults
+- (NSDictionary *)getUserInfoDictionary
 {
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSMutableDictionary *userInfo = [NSMutableDictionary new];
     
-    NSString *externalIDKey = @"ExternalID";
-    NSString *phoneNumberKey = @"PhoneNumber";
-    NSString *emailKey = @"Email";
-    
-    if ([preferences objectForKey:externalIDKey] != nil) {
-        [userInfo setObject:[preferences stringForKey:externalIDKey] forKey:@"external_id"];
+    if (TTCheckValidString(self.externalID)) {
+        [userInfo setObject:self.externalID forKey:@"external_id"];
     }
-    if ([preferences objectForKey:phoneNumberKey] != nil) {
-        [userInfo setObject:[preferences stringForKey:phoneNumberKey] forKey:@"phone_number"];
+    if (TTCheckValidString(self.phoneNumber)) {
+        [userInfo setObject:self.phoneNumber forKey:@"phone_number"];
     }
-    if ([preferences objectForKey:emailKey] != nil) {
-        [userInfo setObject:[preferences stringForKey:emailKey] forKey:@"email"];
+    if (TTCheckValidString(self.email)) {
+        [userInfo setObject:self.email forKey:@"email"];
     }
     
     return userInfo;
 }
 
-+ (void)resetNSUserDefaults
+- (void)resetUserInfo
 {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *isIdentifiedKey = @"IsIdentified";
     NSString *anonymousIDkey = @"AnonymousID";
-    NSString *externalIDKey = @"ExternalID";
-    NSString *phoneNumberKey = @"PhoneNumber";
-    NSString *emailKey = @"Email";
-    
     [preferences setObject:nil forKey:anonymousIDkey];
-    [preferences setObject:nil forKey:externalIDKey];
-    [preferences setObject:nil forKey:phoneNumberKey];
-    [preferences setObject:nil forKey:emailKey];
-    [preferences setObject:@"false" forKey:isIdentifiedKey];
     [preferences synchronize];
+    
+    _email = nil;
+    _externalID = nil;
+    _phoneNumber = nil;
+    _isIdentified = NO;
 }
 
 

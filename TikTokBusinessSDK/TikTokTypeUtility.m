@@ -96,4 +96,19 @@
   }
 }
 
++ (NSString *)matchString:(NSString *)inputString withRegex:(NSString *)pattern {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&error];
+    if (regex) {
+        NSRange range = [regex rangeOfFirstMatchInString:inputString options:0 range:NSMakeRange(0, [inputString length])];
+        if (range.location != NSNotFound) {
+            NSString *matchedString = [inputString substringWithRange:range];
+            return matchedString;
+        }
+    } else {
+        NSLog(@"Error creating regex: %@", [error localizedDescription]);
+    }
+    return @"";
+}
+
 @end
