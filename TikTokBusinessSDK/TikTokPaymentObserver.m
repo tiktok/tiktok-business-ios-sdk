@@ -286,7 +286,7 @@ static NSMutableArray *g_pendingRequestors;
 {
     NSMutableDictionary *eventParameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
     [eventParameters setObject:[[NSNumber numberWithDouble:valueToSum] stringValue] forKey:@"value"];
-    [[TikTokBusiness getInstance] trackEvent:eventName withProperties:eventParameters];
+    [TikTokBusiness trackEvent:eventName withProperties:eventParameters];
 }
 
 - (NSData *)fetchDeviceReceipt

@@ -10,6 +10,7 @@
 #import "TikTokFactory.h"
 #import "TikTokTypeUtility.h"
 #import "TikTokRequestHandler.h"
+#import "TikTokBusinessSDKMacros.h"
 
 #define TTSDK_CRASH_PATH_NAME @"monitoring"
 #define TTSDK_KEYWORDS  [NSArray arrayWithObjects: @"TikTokBusinessSDK",nil]
@@ -33,7 +34,7 @@ static void handleUncaughtException(NSException *exception)
     NSArray<NSString *> *callStack = [exception callStackSymbols];
     if([TikTokErrorHandler _callstack:callStack containsTTSDKInfo:TTSDK_KEYWORDS]) {
         NSMutableArray<NSString *> *crash_info = [[NSMutableArray alloc]init];
-        [crash_info addObject:[NSString stringWithFormat:@"%@: %@", kTTSDKVersion, [TikTokRequestHandler getSDKVersion]]];
+        [crash_info addObject:[NSString stringWithFormat:@"%@: %@", kTTSDKVersion, SDK_VERSION]];
         [crash_info addObject:[NSString stringWithFormat:@"%@: %@", kTTSDKCrashName, [exception name]]];
         [crash_info addObject:[NSString stringWithFormat:@"%@: %@", kTTSDKCrashReason, [exception reason]]];
         [crash_info addObjectsFromArray:callStack];

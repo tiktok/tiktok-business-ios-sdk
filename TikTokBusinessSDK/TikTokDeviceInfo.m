@@ -10,6 +10,10 @@
 #import <AdSupport/ASIdentifierManager.h>
 #import "UIDevice+TikTokAdditions.h"
 #import "TikTokUserAgentCollector.h"
+#import "TikTokAppEventUtility.h"
+#import "TikTokBusiness.h"
+#import "TikTokAppEvent.h"
+#import "TikTokBusiness+private.h"
 
 @interface TikTokDeviceInfo()
 
@@ -79,9 +83,37 @@
 
 
 static NSString * getIDFA(void) {
+    NSNumber *idfaStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     ASIdentifierManager *sharedASIdentifierManager = [ASIdentifierManager sharedManager];
     NSUUID *adID = [sharedASIdentifierManager advertisingIdentifier];
     NSString *IDFA = [adID UUIDString];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        BOOL success = IDFA.length && ![IDFA isEqualToString:@"00000000-0000-0000-0000-000000000000"];
+        NSNumber *idfaEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+        NSDictionary *idfaStartMeta = @{
+            @"ts": idfaStartTime,
+        };
+        NSDictionary *idfaStartProperties = @{
+            @"monitor_type": @"metric",
+            @"monitor_name": @"did_start",
+            @"meta": idfaStartMeta
+        };
+        NSDictionary *idfaEndMeta = @{
+            @"ts": idfaEndTime,
+            @"latency": [NSNumber numberWithInt:[idfaEndTime intValue] - [idfaStartTime intValue]],
+            @"success": @(success),
+        };
+        NSDictionary *idfaEndProperties = @{
+            @"monitor_type": @"metric",
+            @"monitor_name": @"did_end",
+            @"meta": idfaEndMeta
+        };
+        TikTokAppEvent *idfaStartEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:idfaStartProperties withType:@"monitor"];
+        TikTokAppEvent *idfaEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:idfaEndProperties withType:@"monitor"];
+        [[TikTokBusiness getQueue] addEvent:idfaStartEvent];
+        [[TikTokBusiness getQueue] addEvent:idfaEndEvent];
+    });
     return IDFA;
 }
 

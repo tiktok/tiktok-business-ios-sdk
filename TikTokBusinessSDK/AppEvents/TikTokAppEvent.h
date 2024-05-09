@@ -40,6 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, nullable) NSDictionary *userInfo;
 
+/**
+ * @brief Event ID defined by advertisers.
+ */
+@property (nonatomic) NSString *eventID;
+
 - (instancetype)initWithEventName: (NSString *)eventName;
 
 - (instancetype)initWithEventName: (NSString *)eventName
@@ -51,6 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithEventName: (NSString *)eventName
                    withProperties: (NSDictionary *)properties
                          withType: (NSString *)type;
+
+- (instancetype)initWithEventName: (NSString *)eventName
+                   withProperties: (NSDictionary *)properties
+                         withType: (NSString *)type
+                      withEventId: (NSString *)eventID;
 @end
 
 NS_ASSUME_NONNULL_END

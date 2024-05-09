@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readonly, nonnull) NSString *accessToken;
 @property (nonatomic, copy, readonly, nonnull) NSString *appId;
-@property (nonatomic, readonly) NSNumber * tiktokAppId;
+@property (nonatomic, readonly) NSString * tiktokAppId;
 @property (nonatomic, assign) BOOL trackingEnabled;
 @property (nonatomic, assign) BOOL automaticTrackingEnabled;
 @property (nonatomic, assign) BOOL installTrackingEnabled;
@@ -23,15 +23,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL paymentTrackingEnabled;
 @property (nonatomic, assign) BOOL appTrackingDialogSuppressed;
 @property (nonatomic, assign) BOOL SKAdNetworkSupportEnabled;
-@property (nonatomic, assign) BOOL userAgentCollectionEnabled;
 @property (nonatomic, assign) BOOL debugModeEnabled;
 @property (nonatomic, assign) BOOL LDUModeEnabled;
 
 @property (nonatomic) long initialFlushDelay;
 
-+ (nullable TikTokConfig *)configWithAccessToken:(NSString *)accessToken
-                                           appId:(NSString *)appId
-                                     tiktokAppId:(NSNumber *)tiktokAppId;
++ (nullable TikTokConfig *)configWithAccessToken:(nonnull NSString *)accessToken
+                                           appId:(nonnull NSString *)appId
+                                     tiktokAppId:(nonnull NSString *)tiktokAppId;
 
 - (void)disableTracking;
 - (void)disableAutomaticTracking;
@@ -47,8 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enableDebugMode;
 - (void)enableLDUMode;
 
-- (nullable id)initWithAppId:(NSString *)appId
-                       tiktokAppId:(NSNumber *)tiktokAppId;
+- (nullable id)initWithAppId:(nonnull NSString *)appId
+                       tiktokAppId:(nonnull NSString *)tiktokAppId;
 
 @end
 

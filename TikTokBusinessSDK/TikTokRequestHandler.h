@@ -32,41 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Method to interact with '/app/monitor' endpoint
  */
-- (void)sendCrashReport:(NSDictionary *)crashReport
-             withConfig:(TikTokConfig *)config
-  withCompletionHandler:(void (^)(void))completionHandler;
-
-/**
- * @brief Method to get TikTok iOS SDK Version
- */
-+ (NSString *)getSDKVersion;
-
-/**
- * @brief Method to get TikTok iOS APP info
- */
-+ (NSDictionary *)getAPPWithDeviceInfo:(TikTokDeviceInfo *)deviceInfo
-                                config:(TikTokConfig *)config;
-
-/**
- * @brief Method to get iOS Device info
- */
-+ (NSDictionary *)getDeviceInfo:(TikTokDeviceInfo *)deviceInfo
-                     withConfig:(TikTokConfig *)config;
-
-/**
- * @brief Method to get TikTok iOS SDK library info
- */
-+ (NSDictionary *)getLibrary;
-
-/**
- * @brief Method to get TikTok iOS user info
- */
-+ (NSDictionary *)getUser;
-
-/**
- * @brief Method to get user agent info
- */
-+ (NSString *)getUserAgentWithDeviceInfo:(TikTokDeviceInfo *)deviceInfo;
+- (void)sendMonitorRequest:(NSArray *)eventsToBeFlushed
+                withConfig:(TikTokConfig *)config;
 
 @end
 

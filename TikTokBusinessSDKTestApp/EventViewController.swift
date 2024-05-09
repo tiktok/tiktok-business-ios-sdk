@@ -9,60 +9,65 @@ import UIKit
 import TikTokBusinessSDK
 import StoreKit
 
-class EventViewController: UIViewController, SKPaymentTransactionObserver {
+class EventViewController: UIViewController {
     
-    @IBOutlet weak var eventTextField: UITextField!
-    @IBOutlet weak var finalPayloadTextField: UITextView!
-    @IBOutlet weak var numberOfEventsField: UITextField!
-    @IBOutlet weak var randomEvents: UIButton!
+    var eventTextField =  UITextField()
+    var finalPayloadTextView = UITextView()
+    var numberOfEventsField = UITextField()
+    let selectEventButton = UIButton(type: .system)
+    let postEventButton = UIButton(type: .system)
+    let postTTEventButton = UIButton(type: .system)
+    let generateRandomEventsButton = UIButton(type: .system)
+    let flushButton = UIButton(type: .system)
+    let crashButton = UIButton(type: .system)
     
     let delegate = UIApplication.shared.delegate as! AppDelegate
     var eventPickerView = UIPickerView()
     
-    let events = ["MonitorEvent", "CustomEvent", "LaunchAPP", "InstallApp", "2Dretention", "AddPaymentInfo", "AddToCart", "AddToWishList", "Checkout", "CompleteTutorial", "ViewContent", "CreateGroup", "CreateRole", "GenerateLead", "InAppAdClick", "InAppAdImpr", "JoinGroup", "AchieveLevel", "LoanApplication", "LoanApproval", "LoanDisbursal", "Login", "Purchase", "Rate", "Registration", "Search", "SpendCredits", "StartTrial", "Subscribe", "Share", "Contact", "UnlockAchievement"]
+    let events = ["MonitorEvent","CustomEvent","AddToCart","AddToWishlist","Checkout","Purchase","ViewContent","AchieveLevel","AddPaymentInfo","CompleteTutorial","CreateGroup","CreateRole","GenerateLead","InAppADClick","InAppADImpr","InstallApp","JoinGroup","LaunchAPP","LoanApplication","LoanApproval","LoanDisbursal","Login","Rate","Registration","Search","SpendCredits","StartTrial","Subscribe","UnlockAchievement"]
+    
+    
     
     var eventToField =
         [
             "MonitorEvent": [],
             "CustomEvent": [],
-            "LaunchAPP": [],
-            "InstallApp": [],
-            "2Dretention": [],
-            "AddPaymentInfo": ["app_id", "idfa", "attribution"],
-            "AddToCart": ["content_type", "sku_id", "description", "currency", "value"],
-            "AddToWishList": ["page_type", "content_id", "description", "currency", "value"],
-            "Checkout": ["description", "sku_id", "number_of_items", "payment_unavailable", "currency", "value", "game_item_type", "game_item_id", "room_type", "currency", "value", "location", "checkin_date", "checkout_date", "number_of_rooms", "number_of_nights"],
+            "AddToCart": ["content_type","content_id","description","currency","value"],
+            "AddToWishlist": ["content_type","content_id","description","currency","value"],
+            "Checkout": ["content_type","content_id","description","currency","value"],
+            "Purchase": ["content_type","content_id","description","currency","value"],
+            "ViewContent": ["content_type","content_id","description","currency","value"],
+            "AchieveLevel": [],
+            "AddPaymentInfo": [],
             "CompleteTutorial": [],
-            "ViewContent": ["page_type", "sku_id", "description", "currency", "value", "Search_string", "room_type", "location", "checkin_date", "checkout_date", "number_of_rooms", "number_of_nights", "outbound_origination_city", "outbound_destination_city", "return_origination_city", "return_destination_city", "class", "number_of_passenger"],
-            "CreateGroup": ["group_name", "group_logo", "group_description", "group_type", "group_id"],
-            "CreateRole": ["role_type"],
+            "CreateGroup": [],
+            "CreateRole": [],
             "GenerateLead": [],
-            "InAppAdClick": ["ad_type"],
-            "InAppAdImpr": ["ad_type"],
-            "JoinGroup": ["level_numer"],
-            "AchieveLevel": ["level_number", "score"],
-            "LoanApplication": ["loan_type", "application_id"],
-            "LoanApproval": ["value"],
-            "LoanDisbursal": ["value"],
+            "InAppADClick": [],
+            "InAppADImpr": [],
+            "InstallApp": [],
+            "JoinGroup": [],
+            "LaunchAPP": [],
+            "LoanApplication": [],
+            "LoanApproval": [],
+            "LoanDisbursal": [],
             "Login": [],
-            "Purchase": ["page_type", "sku_id", "description", "number_of_items", "coupon_used", "currency", "value", "group_type", "game_item_id", "room_type", "location", "checkin_date", "checkout_date", "number_of_rooms", "number_of_nights", "outbound_origination_city", "outbound_destination_city", "return_origination_city", "return_destination_city", "class", "number_of_passenger", "service_type", "service_id"],
-            "Rate": ["page_type", "sku_id", "content", "rating_value", "max_rating_value", "rate"],
-            "Registration": ["registration_method"],
-            "Search": ["search_string", "checkin_date", "checkout_date", "number_of_rooms", "number_of_nights", "origination_city", "destination_city", "departure_date", "return_date", "class", "number_of_passenger"],
-            "SpendCredits": ["game_item_type", "game_item_id", "level_number"],
-            "StartTrial": ["order_id", "currency"],
-            "Subscribe": ["order_id", "currency"],
-            "Share": ["content_type", "content_id", "share_destination"],
-            "Contact": [],
-            "UnlockAchievement": ["description", "achievement_type"]
+            "Rate": [],
+            "Registration": [],
+            "Search": [],
+            "SpendCredits": [],
+            "StartTrial": [],
+            "Subscribe": [],
+            "UnlockAchievement": []
     ]
     
     var titleForForm = "LaunchAPP"
     var payload = "{\n\n}"
     var eventTitle = ""
     var tiktok: Any?
+    var eventToPost = TikTokBaseEvent()
     
-    let productId = "btd.TikTokBusinessSDKTestApp.ConsumableExampleThree"
+    let productId = "com.TikTok.TikTokBusinessSDKTestApp.ConsumablePurchaseOne"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,132 +80,202 @@ class EventViewController: UIViewController, SKPaymentTransactionObserver {
         title = "Event"
         eventPickerView.dataSource = self
         eventPickerView.delegate = self
+        eventTextField.frame = CGRect(x: 50, y: 100, width: 300, height: 40)
+        eventTextField.borderStyle = .roundedRect
+        view.addSubview(eventTextField)
         eventTextField.inputView = eventPickerView
         eventTextField.textAlignment = .center
         eventTextField.placeholder = "Select an event"
-        finalPayloadTextField.text = payload
         
-        if((numberOfEventsField.text?.count)! > 0){
-            randomEvents.setTitle("Generate " + "Random events", for: .normal)
-        }
+        selectEventButton.setTitle("Select Event", for: .normal)
+        selectEventButton.frame = CGRect(x: 50, y: 150, width: 300, height: 40)
+        selectEventButton.backgroundColor = UIColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 1.0)
+        selectEventButton.layer.cornerRadius = 10
+        selectEventButton.setTitleColor(.white, for: .normal)
+        selectEventButton.addTarget(self, action: #selector(didSelectEvent), for: .touchUpInside)
+        view.addSubview(selectEventButton)
         
-//        randomEvents.setTitle("Generate random events", for: .normal)
+        finalPayloadTextView.frame = CGRect(x: 50, y: 200, width: 300, height: 200)
+        finalPayloadTextView.layer.borderWidth = 1
+        finalPayloadTextView.layer.borderColor = UIColor.black.cgColor
+        view.addSubview(finalPayloadTextView)
+        
+        numberOfEventsField.frame = CGRect(x: 50, y: 410, width: 300, height: 40)
+        numberOfEventsField.borderStyle = .roundedRect
+        numberOfEventsField.textAlignment = .center
+        numberOfEventsField.addTarget(self, action: #selector(numberOfEventsChanged), for: .editingChanged)
+        numberOfEventsField.placeholder = "Enter number of events"
+        view.addSubview(numberOfEventsField)
+        
+        generateRandomEventsButton.setTitle("Generate Random events", for: .normal)
+        generateRandomEventsButton.frame = CGRect(x: 50, y: 460, width: 300, height: 40)
+        generateRandomEventsButton.backgroundColor = UIColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 1.0)
+        generateRandomEventsButton.setTitleColor(.white, for: .normal)
+        generateRandomEventsButton.layer.cornerRadius = 10
+        generateRandomEventsButton.addTarget(self, action: #selector(generateRandomEvents), for: .touchUpInside)
+        view.addSubview(generateRandomEventsButton)
+        
+        postEventButton.setTitle("Post Event (trackEvent)", for: .normal)
+        postEventButton.frame = CGRect(x: 50, y: 510, width: 300, height: 40)
+        postEventButton.backgroundColor = UIColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 1.0)
+        postEventButton.setTitleColor(.white, for: .normal)
+        postEventButton.layer.cornerRadius = 10
+        postEventButton.addTarget(self, action: #selector(eventPosted), for: .touchUpInside)
+        view.addSubview(postEventButton)
+        
+        postTTEventButton.setTitle("Post Event (trackTTEvent)", for: .normal)
+        postTTEventButton.frame = CGRect(x: 50, y: 560, width: 300, height: 40)
+        postTTEventButton.backgroundColor = UIColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 1.0)
+        postTTEventButton.setTitleColor(.white, for: .normal)
+        postTTEventButton.layer.cornerRadius = 10
+        postTTEventButton.addTarget(self, action: #selector(ttEventPosted), for: .touchUpInside)
+        view.addSubview(postTTEventButton)
+        
+        flushButton.setTitle("flush", for: .normal)
+        flushButton.frame = CGRect(x: 50, y: 610, width: 300, height: 40)
+        flushButton.backgroundColor = UIColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 1.0)
+        flushButton.setTitleColor(.white, for: .normal)
+        flushButton.layer.cornerRadius = 10
+        flushButton.addTarget(self, action: #selector(eventFlush), for: .touchUpInside)
+        view.addSubview(flushButton)
+        
+        crashButton.setTitle("Crash App", for: .normal)
+        crashButton.frame = CGRect(x: 50, y: 660, width: 300, height: 40)
+        crashButton.backgroundColor = .red
+        crashButton.setTitleColor(.white, for: .normal)
+        crashButton.layer.cornerRadius = 10
+        crashButton.addTarget(self, action: #selector(crashApp), for: .touchUpInside)
+        view.addSubview(crashButton)
+        
         if(eventTitle.count > 0){
             eventTextField.text = eventTitle
         }
-        
-        SKPaymentQueue.default().add(self)
-        // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if eventToPost.eventName.count != 0 {
+            payload = "{\n"
+            payload += "\t\"event\": \""
+            payload += eventToPost.eventName
+            payload += "\",\n"
+            if !eventToPost.eventId.isEmpty {
+                payload += "\t\"event_id"
+                payload += "\": \""
+                payload += eventToPost.eventId
+                payload += "\",\n"
+            }
+            payload += "\t\"properties\": "
+            do {
+                let jsonData = try JSONSerialization.data(withJSONObject: eventToPost.properties, options: [])
+                if let jsonString = String(data: jsonData, encoding: .utf8) {
+                    let propertyString = jsonString.replacingOccurrences(of: ",", with: ",\n\t\t")
+                        .replacingOccurrences(of: "{", with: "{\n\t\t")
+                        .replacingOccurrences(of: "}", with: "\n\t\t}")
+                    payload += propertyString
+                    payload += "\n"
+                }
+            } catch {
+                print("JSON convert error: \(error.localizedDescription)")
+            }
+            payload += "}"
+        }
+        finalPayloadTextView.text = payload
     }
 
-    @IBAction func didSelectEvent(_ sender: Any) {
+    @objc func didSelectEvent(_ sender: Any) {
         
         self.titleForForm = eventTextField.text!
         if(eventTextField.text!.count > 0){
-            performSegue(withIdentifier: "segueToForm", sender: self)
+            let formVC = FormViewController()
+            formVC.titleName = self.titleForForm
+            formVC.parentVC = self
+            navigationController?.pushViewController(formVC, animated: true)
         } else {
             print("Please select an event to continue")
         }
         
         
     }
+    
+    @objc func eventPosted(_ sender: Any) {
+        let finalPayloadJSONString = finalPayloadTextView.text
+            .replacingOccurrences(of: "“", with: "\"")
+            .replacingOccurrences(of: "”", with: "\"")
+        let finalPayloadJSON = finalPayloadJSONString.data(using: .utf8)!
+        
+        let finalPayloadDictionary = try? JSONSerialization.jsonObject(with: finalPayloadJSON, options: JSONSerialization.ReadingOptions.mutableContainers) as? [AnyHashable : Any]
+        
+        if let eventName = finalPayloadDictionary?["event"] as? String, let properties = finalPayloadDictionary?["properties"] {
+            print("Event " + eventName + " posted")
+            finalPayloadTextView.text = "{\n\t\"response\": \"SUCCESS\"\n}"
+            if(eventTitle != "MonitorEvent"){
+                TikTokBusiness.trackEvent(eventName, withProperties: properties as! [AnyHashable : Any])
+            } else {
+                TikTokBusiness.trackEvent(eventTitle, withType: "monitor")
+            }
+        }
 
-    @IBAction func numberOfEventsChanged(_ sender: Any) {
-        if((numberOfEventsField.text?.count)! > 0){
-            randomEvents.setTitle("Generate \(numberOfEventsField.text ?? "") Random events", for: .normal)
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if(segue.identifier == "segueToForm") {
-            let vc = segue.destination as! FormViewController
-            vc.titleName = self.titleForForm
-        } else if (segue.identifier == "segueToMetrics") {
-            _ = segue.destination as! MetricsViewController
-//            vc.titleName = "Metrics Dashboard"
-        } else if(segue.identifier == "segueToPurchase") {
-            _ = segue.destination as! PurchaseViewController
-        }
-    }
-    
-    @IBAction func metricsButtonClicked(_ sender: Any) {
-        performSegue(withIdentifier: "segueToMetrics", sender: self)
-    }
-    
-    @IBAction func eventPosted(_ sender: Any) {
-        // Ideally, user should not even have exposure to TikTokAppEvent class
-        let finalPayloadJSON = finalPayloadTextField.text.data(using: .utf8)!
-        let finalPayloadDictionary = try? JSONSerialization.jsonObject(with: finalPayloadJSON, options: [])
-        print("Event " + eventTitle + " posted")
-        finalPayloadTextField.text = "{\n\t\"response\": \"SUCCESS\"\n}"
-        /* UNCOMMENT THIS LINE */
-        if(eventTitle != "MonitorEvent"){
-            TikTokBusiness.trackEvent(eventTitle, withProperties: finalPayloadDictionary as! [AnyHashable : Any])
-        } else {
-            TikTokBusiness.trackEvent(eventTitle, withType: "monitor")
-        }
 //        TikTokBusiness.logSKANConfig();
-        /* Print statements used for debugging */
-//        print("Hello");
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").appId)
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").appName)
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").appNamespace)
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").appVersion)
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").appBuild)
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").devicePlatform);
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").deviceIdForAdvertisers);
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").deviceVendorId);
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").localeInfo);
-//        print(TikTokDeviceInfo.init(sdkPrefix: "1.1").userAgent);
-//        print(TikTokDeviceInfo.init(sdkPrefix: "").ipInfo);
         
     }
     
-    @IBAction func purchaseItem(_ sender: Any) {
-        print("Purchased item!")
+    @objc func ttEventPosted(_ sender: Any) {
+        let finalPayloadJSONString = finalPayloadTextView.text
+            .replacingOccurrences(of: "“", with: "\"")
+            .replacingOccurrences(of: "”", with: "\"")
+        let finalPayloadJSON = finalPayloadJSONString.data(using: .utf8)!
         
-        if SKPaymentQueue.canMakePayments() {
-            let paymentRequest = SKMutablePayment()
-            paymentRequest.productIdentifier = productId
-            SKPaymentQueue.default().add(paymentRequest)
-        } else {
-            print("User unable to make payments!")
-        }
+        let finalPayloadDictionary = try? JSONSerialization.jsonObject(with: finalPayloadJSON, options: JSONSerialization.ReadingOptions.mutableContainers) as? [AnyHashable : Any]
         
-    }
-    
-    
-    @IBAction func generateRandomEvents(_ sender: Any) {
-        let count = Int(numberOfEventsField.text ?? "") ?? 0
-        if(numberOfEventsField.text!.count <= 0) {return}
-        for var num in 0...count - 1 {
-            self.payload = ""
-            let randomEvent = self.events.randomElement();
-            if(randomEvent == "LaunchAPP" || randomEvent == "InstallApp") {
-                num -= 1
+        if let eventName = finalPayloadDictionary?["event"] as? String, let properties = finalPayloadDictionary?["properties"] {
+            print("Event " + eventName + " posted")
+            finalPayloadTextView.text = "{\n\t\"response\": \"SUCCESS\"\n}"
+            for (key, value) in properties as! [AnyHashable : Any] {
+                eventToPost.addProperty(withKey: key as! String, value: value)
             }
-            self.payload = "{\n"
-            self.payload += "\t\"event_name\": \""
-            self.payload += randomEvent!
-            self.payload += "\",\n"
-            let fields = eventToField[randomEvent!]
-            for fieldIndex in 0 ..< fields!.count {
-                self.payload += "\t\""
-                self.payload += fields![fieldIndex]
-                self.payload += "\": \""
-                self.payload += randomText(from: 5, to: 20)
+            TikTokBusiness.trackTTEvent(eventToPost)
+        }
+    }
+    
+    @objc func numberOfEventsChanged(_ sender: Any) {
+        if((numberOfEventsField.text?.count)! > 0){
+            generateRandomEventsButton.setTitle("Generate \(numberOfEventsField.text ?? "") Random events", for: .normal)
+        }
+    }
+
+    
+    @objc func generateRandomEvents(_ sender: Any) {
+            let count = Int(numberOfEventsField.text ?? "") ?? 0
+            if(numberOfEventsField.text!.count <= 0) {return}
+            for var num in 0...count - 1 {
+                self.payload = ""
+                let randomEvent = self.events.randomElement();
+                if(randomEvent == "LaunchAPP" || randomEvent == "InstallApp") {
+                    num -= 1
+                }
+                self.payload = "{\n"
+                self.payload += "\t\"event_name\": \""
+                self.payload += randomEvent!
                 self.payload += "\",\n"
+                let fields = eventToField[randomEvent!]
+                for fieldIndex in 0 ..< fields!.count {
+                    self.payload += "\t\""
+                    self.payload += fields![fieldIndex]
+                    self.payload += "\": \""
+                    self.payload += randomText(from: 5, to: 20)
+                    self.payload += "\",\n"
+                }
+                self.payload = self.payload + "}"
+                let payloadJSON = self.payload.data(using: .utf8)!
+                let payloadDictionary = try? JSONSerialization.jsonObject(with: payloadJSON, options: [])
+                
+                /* UNCOMMENT THIS LINE */
+                TikTokBusiness.trackEvent(randomEvent!, withProperties: payloadDictionary as! [AnyHashable : Any])
             }
-            self.payload = self.payload + "}"
-            let payloadJSON = self.payload.data(using: .utf8)!
-            let payloadDictionary = try? JSONSerialization.jsonObject(with: payloadJSON, options: [])
-            
-            /* UNCOMMENT THIS LINE */
-            TikTokBusiness.trackEvent(randomEvent!, withProperties: payloadDictionary as! [AnyHashable : Any])
+            finalPayloadTextView.text = "{\n\t\"repsonse\": \"SUCCESS\"\n}"
+    //        finalPayloadTextField.text = "{\n\t\"repsonse\": \"SUCCESSFULLY TRACKED \(numberOfEventsField.text) EVENTS TO TRACK!\"\n}"
         }
-        finalPayloadTextField.text = "{\n\t\"repsonse\": \"SUCCESS\"\n}"
-//        finalPayloadTextField.text = "{\n\t\"repsonse\": \"SUCCESSFULLY TRACKED \(numberOfEventsField.text) EVENTS TO TRACK!\"\n}"
-    }
+
     
     func randomText(from: Int, to: Int, justLowerCase: Bool = false) -> String {
         var text = ""
@@ -232,14 +307,14 @@ class EventViewController: UIViewController, SKPaymentTransactionObserver {
         return text
     }
     
-    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
-        for transaction in transactions {
-            if transaction.transactionState == .purchased {
-                queue.finishTransaction(transaction);
-            } else if transaction.transactionState == .failed {
-                queue.finishTransaction(transaction);
-            }
-        }
+    @objc func crashApp(_ sender: UIButton) {
+        print("crash app was called!");
+        TikTokBusiness.produceFatalError()
+    }
+    
+    @objc func eventFlush(_ sender: UIButton) {
+        print("flush was called!");
+        TikTokBusiness.explicitlyFlush()
     }
 
 }
