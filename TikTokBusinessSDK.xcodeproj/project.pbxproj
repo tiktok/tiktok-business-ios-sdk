@@ -992,7 +992,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.bytedance.TikTokBusinessSDKTestApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiktok.TikTokBusinessSDKTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = AppSDK;
@@ -1020,7 +1020,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.bytedance.TikTokBusinessSDKTestApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiktok.TikTokBusinessSDKTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = AppSDK;
