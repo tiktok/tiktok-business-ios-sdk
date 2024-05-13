@@ -10,9 +10,7 @@
 #import "TikTokAppEventQueue.h"
 #import "TikTokBusiness.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface TikTokBusiness()
+@interface TikTokBusiness(Private)
 
 @property (nonatomic, strong, nullable) TikTokAppEventQueue *queue;
 
@@ -25,5 +23,3 @@ NS_ASSUME_NONNULL_BEGIN
 + (TikTokAppEventQueue *)getQueue;
 
 @end
-
-NS_ASSUME_NONNULL_END
