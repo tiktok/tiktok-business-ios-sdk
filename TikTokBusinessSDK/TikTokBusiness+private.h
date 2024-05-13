@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "TikTokAppEventQueue.h"
+#import "TikTokBusiness.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
