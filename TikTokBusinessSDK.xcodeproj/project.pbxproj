@@ -48,7 +48,7 @@
 		2B6C2D9A2BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2B6C2D992BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy */; };
 		2B870C022BF1F619009CB42C /* TikTokBaseEventTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B870C012BF1F619009CB42C /* TikTokBaseEventTests.m */; };
 		2B870C042BF1FB21009CB42C /* TikTokContentsEventTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B870C032BF1FB21009CB42C /* TikTokContentsEventTests.m */; };
-		2B8C08842B96DE2B008765ED /* TikTokBusiness+private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B8C08822B96DE2B008765ED /* TikTokBusiness+private.h */; };
+		2B870C2C2BF2367B009CB42C /* TikTokBusiness+private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B870C2B2BF2367B009CB42C /* TikTokBusiness+private.h */; };
 		2B97DE6129710AAB00D3C974 /* TikTokBusinessSDKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B97DE5F29710AAB00D3C974 /* TikTokBusinessSDKMacros.h */; };
 		2B97DE6229710AAB00D3C974 /* TikTokBusinessSDKMacros.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B97DE6029710AAB00D3C974 /* TikTokBusinessSDKMacros.m */; };
 		2B9F328A2AB32531009A692D /* StoreKitConfig.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 2B9F32892AB32531009A692D /* StoreKitConfig.storekit */; };
@@ -167,7 +167,7 @@
 		2B6C2D992BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2B870C012BF1F619009CB42C /* TikTokBaseEventTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokBaseEventTests.m; sourceTree = "<group>"; };
 		2B870C032BF1FB21009CB42C /* TikTokContentsEventTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokContentsEventTests.m; sourceTree = "<group>"; };
-		2B8C08822B96DE2B008765ED /* TikTokBusiness+private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TikTokBusiness+private.h"; sourceTree = "<group>"; };
+		2B870C2B2BF2367B009CB42C /* TikTokBusiness+private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TikTokBusiness+private.h"; sourceTree = "<group>"; };
 		2B97DE5F29710AAB00D3C974 /* TikTokBusinessSDKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TikTokBusinessSDKMacros.h; sourceTree = "<group>"; };
 		2B97DE6029710AAB00D3C974 /* TikTokBusinessSDKMacros.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TikTokBusinessSDKMacros.m; sourceTree = "<group>"; };
 		2B9F32892AB32531009A692D /* StoreKitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = StoreKitConfig.storekit; sourceTree = "<group>"; };
@@ -345,7 +345,7 @@
 				0A1A064D250953E2001463B8 /* AppEvents */,
 				8B23DF8D2502BA73008351FA /* TikTokBusinessSDK.h */,
 				8B23DFBD25080872008351FA /* TikTokBusiness.h */,
-				2B8C08822B96DE2B008765ED /* TikTokBusiness+private.h */,
+				2B870C2B2BF2367B009CB42C /* TikTokBusiness+private.h */,
 				8B23DFBE25080872008351FA /* TikTokBusiness.m */,
 				8B23DFB925080821008351FA /* TikTokConfig.h */,
 				2BC7650C2B1F0B2D00E7C698 /* TikTokBaseEvent.h */,
@@ -451,8 +451,8 @@
 				2BC7650E2B1F0B2D00E7C698 /* TikTokBaseEvent.h in Headers */,
 				0ADCF5412538D16900D7B57C /* TikTokRequestHandler.h in Headers */,
 				0A1A065025095429001463B8 /* TikTokAppEvent.h in Headers */,
+				2B870C2C2BF2367B009CB42C /* TikTokBusiness+private.h in Headers */,
 				2BE60BA02B1F2A2100AB386C /* TikTokConstants.h in Headers */,
-				2B8C08842B96DE2B008765ED /* TikTokBusiness+private.h in Headers */,
 				8B64FDEC2548BA82004AFC49 /* TikTokUserAgentCollector.h in Headers */,
 				0A41C64425BF52B900245575 /* TikTokIdentifyUtility.h in Headers */,
 				2B97DE6129710AAB00D3C974 /* TikTokBusinessSDKMacros.h in Headers */,
