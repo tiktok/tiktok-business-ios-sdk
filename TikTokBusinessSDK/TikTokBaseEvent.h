@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *eventName;
 @property (nonatomic, strong) NSString *eventId;
 
-- (instancetype)initWithEventname:(NSString *)eventName;
-- (instancetype)initWithEventname:(NSString *)eventName eventId:(NSString *_Nullable)eventId;
+- (instancetype)initWithEventName:(NSString *)eventName;
+- (instancetype)initWithEventName:(NSString *)eventName eventId:(NSString *_Nullable)eventId;
 - (instancetype)initWithEventName:(NSString *)eventName properties:(NSDictionary *)properties eventId:(NSString *_Nullable)eventId;
 + (instancetype)eventWithName:(NSString *)eventName;
 - (instancetype)addPropertyWithKey:(NSString *)key value:(nullable id)value;

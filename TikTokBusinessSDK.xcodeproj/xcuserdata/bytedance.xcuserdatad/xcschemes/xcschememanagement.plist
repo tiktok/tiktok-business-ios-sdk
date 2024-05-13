@@ -7,7 +7,7 @@
 		<key>TikTokBusinessSDK.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>1</integer>
 		</dict>
 		<key>TikTokBusinessSDKBuild.xcscheme_^#shared#^_</key>
 		<dict>
@@ -17,7 +17,15 @@
 		<key>TikTokBusinessSDKTestApp.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>8BB88F1A250A96CA00EC9D74</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

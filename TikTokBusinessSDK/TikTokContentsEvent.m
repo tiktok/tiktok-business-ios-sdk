@@ -87,11 +87,11 @@ NSString * const TTContentsEventNameViewContent   = @"ViewContent";
 
 - (instancetype)init
 {
-    return [self initWithEventname:TTContentsEventNameAddToCart];
+    return [self initWithEventName:TTContentsEventNameAddToCart];
 }
 
 - (instancetype)initWithEventId:(nonnull NSString *)eventId {
-    return [self initWithEventname:TTContentsEventNameAddToCart eventId:eventId];
+    return [self initWithEventName:TTContentsEventNameAddToCart eventId:eventId];
 }
 
 @end
@@ -100,11 +100,11 @@ NSString * const TTContentsEventNameViewContent   = @"ViewContent";
 
 - (instancetype)init
 {
-    return [self initWithEventname:TTContentsEventNameAddToWishlist];
+    return [self initWithEventName:TTContentsEventNameAddToWishlist];
 }
 
 - (instancetype)initWithEventId:(nonnull NSString *)eventId {
-    return [self initWithEventname:TTContentsEventNameAddToWishlist eventId:eventId];
+    return [self initWithEventName:TTContentsEventNameAddToWishlist eventId:eventId];
 }
 
 @end
@@ -114,11 +114,11 @@ NSString * const TTContentsEventNameViewContent   = @"ViewContent";
 
 - (instancetype)init
 {
-    return [self initWithEventname:TTContentsEventNameCheckout];
+    return [self initWithEventName:TTContentsEventNameCheckout];
 }
 
 - (instancetype)initWithEventId:(nonnull NSString *)eventId {
-    return [self initWithEventname:TTContentsEventNameCheckout eventId:eventId];
+    return [self initWithEventName:TTContentsEventNameCheckout eventId:eventId];
 }
 
 @end
@@ -128,11 +128,11 @@ NSString * const TTContentsEventNameViewContent   = @"ViewContent";
 
 - (instancetype)init
 {
-    return [self initWithEventname:TTContentsEventNamePurchase];
+    return [self initWithEventName:TTContentsEventNamePurchase];
 }
 
 - (instancetype)initWithEventId:(nonnull NSString *)eventId {
-    return [self initWithEventname:TTContentsEventNamePurchase eventId:eventId];
+    return [self initWithEventName:TTContentsEventNamePurchase eventId:eventId];
 }
 
 @end
@@ -142,11 +142,11 @@ NSString * const TTContentsEventNameViewContent   = @"ViewContent";
 
 - (instancetype)init
 {
-    return [self initWithEventname:TTContentsEventNameViewContent];
+    return [self initWithEventName:TTContentsEventNameViewContent];
 }
 
 - (instancetype)initWithEventId:(nonnull NSString *)eventId {
-    return [self initWithEventname:TTContentsEventNameViewContent eventId:eventId];
+    return [self initWithEventName:TTContentsEventNameViewContent eventId:eventId];
 }
 
 @end

@@ -211,12 +211,12 @@
             };
             
             NSMutableDictionary *eventDict = @{
-                @"type" : event.type,
-                @"event": event.eventName,
-                @"timestamp":event.timestamp,
+                @"type" : TTSafeString(event.type),
+                @"event": TTSafeString(event.eventName),
+                @"timestamp":TTSafeString(event.timestamp),
                 @"context": context,
                 @"properties": event.properties,
-                @"event_id" : event.eventID
+                @"event_id" : TTSafeString(event.eventID)
             }.mutableCopy;
             
             if ([TikTokBusiness isLDUMode]) {

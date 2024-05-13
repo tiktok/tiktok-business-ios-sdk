@@ -18,6 +18,7 @@
 - (void)setUp {
     [super setUp];
     [TikTokAppEventStore clearPersistedAppEvents];
+    [TikTokAppEventStore clearPersistedMonitorEvents];
 }
 
 - (void)tearDown {
@@ -53,7 +54,7 @@
     
     [TikTokAppEventStore persistAppEvents:events];
     
-    NSMutableArray *retrievedEvents = [NSMutableArray arrayWithArray:[[self class] retrievePersistedAppEvents]];
+    NSMutableArray *retrievedEvents = [NSMutableArray arrayWithArray:[TikTokAppEventStore retrievePersistedAppEvents]];
     
     XCTAssertTrue(retrievedEvents.count == 2, @"Number of events retrieved should be 2");
     
@@ -64,9 +65,34 @@
     
     [TikTokAppEventStore persistAppEvents:additionalEvents];
     
-    NSMutableArray *retrievedEventsAfterSecondPersist = [NSMutableArray arrayWithArray:[[self class] retrievePersistedAppEvents]];
+    NSMutableArray *retrievedEventsAfterSecondPersist = [NSMutableArray arrayWithArray:[TikTokAppEventStore retrievePersistedAppEvents]];
     
-    XCTAssertTrue(retrievedEventsAfterSecondPersist.count == 5, @"Number of events retrieved should be 4");
+    XCTAssertTrue(retrievedEventsAfterSecondPersist.count == 5, @"Number of events retrieved should be 5");
+}
+
+- (void)testPersistMonitorEventsFunction {
+    TikTokAppEvent *event = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent"];
+    
+    NSArray *events = [NSArray array];
+    events = [events arrayByAddingObject:event];
+    events = [events arrayByAddingObject:event];
+    
+    [TikTokAppEventStore persistMonitorEvents:events];
+    
+    NSMutableArray *retrievedEvents = [NSMutableArray arrayWithArray:[TikTokAppEventStore retrievePersistedMonitorEvents]];
+    
+    XCTAssertTrue(retrievedEvents.count == 2, @"Number of events retrieved should be 2");
+    
+    NSArray *additionalEvents = [NSArray array];
+    additionalEvents = [additionalEvents arrayByAddingObject:event];
+    additionalEvents = [additionalEvents arrayByAddingObject:event];
+    additionalEvents = [additionalEvents arrayByAddingObject:event];
+    
+    [TikTokAppEventStore persistMonitorEvents:additionalEvents];
+    
+    NSMutableArray *retrievedEventsAfterSecondPersist = [NSMutableArray arrayWithArray:[TikTokAppEventStore retrievePersistedMonitorEvents]];
+    
+    XCTAssertTrue(retrievedEventsAfterSecondPersist.count == 5, @"Number of events retrieved should be 5");
 }
 
 - (void)testRetrieveAppEventsFunction {

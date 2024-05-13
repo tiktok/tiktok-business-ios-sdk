@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define SDK_VERSION @"1.3.1"
+#define SDK_VERSION @"1.3.2"
 
 #ifndef TT_isEmptyString
 FOUNDATION_EXPORT BOOL TT_isEmptyString(id param);
