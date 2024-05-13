@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TikTokBusiness()
+@interface TikTokBusiness(Private)
 
 @property (nonatomic, strong, nullable) TikTokAppEventQueue *queue;
 
