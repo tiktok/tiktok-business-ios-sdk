@@ -1,2 +1,20 @@
 # SPM build artifacts
 .build
+
+xcuserdata
+xcshareddata
+*.xcuserstate
+.DS_Store
+#cocoa-pods
+.idea/
+
+#lock file
+Gemfile.lock
+Podfile.lock
+
+
+#cocoapods
+Pods
+build
+*.lock
+Products/

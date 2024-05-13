@@ -9,6 +9,7 @@
 #import "TikTokBusiness.h"
 #import "TikTokLogger.h"
 #import "TikTokFactory.h"
+#import "TikTokTypeUtility.h"
 #import <StoreKit/StoreKit.h>
 #import <StoreKit/SKPaymentQueue.h>
 #import <StoreKit/SKPaymentTransaction.h>
@@ -261,15 +262,19 @@ static NSMutableArray *g_pendingRequestors;
     NSString *eventName = nil;
     switch (transaction.transactionState) {
         case SKPaymentTransactionStatePurchasing:
+            eventName = @"Purchasing";
             break;
         case SKPaymentTransactionStatePurchased:
             eventName = @"Purchase";
             break;
         case SKPaymentTransactionStateFailed:
+            eventName = @"PurchaseFailed";
             break;
         case SKPaymentTransactionStateRestored:
+            eventName = @"PurchaseRestored";
             break;
         case SKPaymentTransactionStateDeferred:
+            eventName = @"PurchaseDeferred";
             break;
     }
     
@@ -278,8 +283,9 @@ static NSMutableArray *g_pendingRequestors;
         totalAmount = transaction.payment.quantity * product.price.doubleValue;
     }
     
-    // TODO: Track Event here but not sure what the event parameters will be just as above
-    [self logImplicitTransactionEvent:eventName valueToSum:totalAmount parameters:[self getEventParametersOfProduct:product withTransaction:transaction]];
+    if (TTCheckValidString(eventName)) {
+        [self logImplicitTransactionEvent:eventName valueToSum:totalAmount parameters:[self getEventParametersOfProduct:product withTransaction:transaction]];
+    }
 }
 
 - (void)logImplicitTransactionEvent: (NSString *)eventName valueToSum:(double)valueToSum parameters: (NSDictionary<NSString *, id>*)parameters

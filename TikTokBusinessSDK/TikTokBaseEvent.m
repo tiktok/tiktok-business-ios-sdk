@@ -11,11 +11,11 @@
 
 @implementation TikTokBaseEvent
 
-- (instancetype)initWithEventname:(NSString *)eventName {
-    return [self initWithEventname:eventName eventId:nil];
+- (instancetype)initWithEventName:(NSString *)eventName {
+    return [self initWithEventName:eventName eventId:nil];
 }
 
-- (instancetype)initWithEventname:(NSString *)eventName eventId:(NSString *_Nullable)eventId {
+- (instancetype)initWithEventName:(NSString *)eventName eventId:(NSString *_Nullable)eventId {
     return [self initWithEventName:eventName properties:@{} eventId:eventId];
 }
 

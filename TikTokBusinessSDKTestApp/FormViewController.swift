@@ -85,7 +85,7 @@ class FormViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             hasContent = true
         } else {
-            event = TikTokBaseEvent(eventname: titleName)
+            event = TikTokBaseEvent(eventName: titleName)
             hasContent = false
         }
         let fieldsNames = eventToField[titleName]
