@@ -7,7 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#define SDK_VERSION @"1.3.2"
+#define SDK_VERSION @"1.3.3"
+
+#define TT_CONFIG_PATH @"/api/v1/app_sdk/config"
+#define TT_BATCH_EVENT_PATH @"/api/v1/app_sdk/batch"
+#define TT_MONITOR_EVENT_PATH @"/api/v1/app_sdk/monitor"
 
 #ifndef TT_isEmptyString
 FOUNDATION_EXPORT BOOL TT_isEmptyString(id param);
@@ -20,6 +24,9 @@ FOUNDATION_EXPORT BOOL TT_isEmptyArray(id param);
 #ifndef TT_isEmptyDictionary
 FOUNDATION_EXPORT BOOL TT_isEmptyDictionary(id param);
 #endif
+
+// - MARK: UserDefaults
+FOUNDATION_EXPORT NSString * const TTUserDefaultsKey_firstLaunchTime;
 
 #define TTSafeString(__string)                        ((__string && [__string isKindOfClass:[NSString class]]) ? __string :@"")
 

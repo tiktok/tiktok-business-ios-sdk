@@ -19,6 +19,7 @@
 #import "TikTokSKAdNetworkConversionConfiguration.h"
 #import "TikTokBusinessSDKMacros.h"
 #import "TikTokBusiness+private.h"
+#import "TikTokCurrencyUtility.h"
 
 @interface TikTokRequestHandler()
 
@@ -38,19 +39,19 @@
     // Default API version
     self.apiVersion = @"v1.2";
     // Default API domain
-    self.apiDomain = @"business-api.tiktok.com";
+    self.apiDomain = @"analytics.us.tiktok.com";
     return self;
 }
 
 
 
 - (void)getRemoteSwitch:(TikTokConfig *)config
-  withCompletionHandler:(void (^)(BOOL isRemoteSwitchOn, BOOL isGlobalConfigFetched))completionHandler
+  withCompletionHandler:(void (^)(BOOL isRemoteSwitchOn, NSDictionary *globalConfig))completionHandler
 {
     NSNumber *configMonitorStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     NSArray *ttAppIds = [self splitTTAppIDs:config.tiktokAppId];
-    NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@%@", @"https://business-api.tiktok.com/open_api/business_sdk_config/get/?app_id=", config.appId, @"&sdk_version=", SDK_VERSION, @"&tiktok_app_id=", TTSafeString(ttAppIds.firstObject)];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@%@%@%@", @"https://analytics.us.tiktok.com",TT_CONFIG_PATH,@"?client=ios&app_id=", config.appId, @"&sdk_version=", SDK_VERSION, @"&tiktok_app_id=", TTSafeString(ttAppIds.firstObject)];
     [request setURL:[NSURL URLWithString:url]];
     [request setValue:[[TikTokBusiness getInstance] accessToken] forHTTPHeaderField:@"Access-Token"];
     [request setHTTPMethod:@"GET"];
@@ -61,18 +62,19 @@
     if(self.session == nil) {
         self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     }
+    __block NSNumber *networkStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     [[self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         BOOL isSwitchOn = nil;
-        BOOL isGlobalConfigFetched = NO;
         // handle basic connectivity issues
         if(error) {
             [self.logger error:@"[TikTokRequestHandler] error in connection: %@", error];
             // leave switch to on if error on request
             isSwitchOn = YES;
-            completionHandler(isSwitchOn, isGlobalConfigFetched);
+            completionHandler(isSwitchOn, nil);
             return;
         }
-        
+        NSNumber *networkEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+        id dataDictionary = [TikTokTypeUtility JSONObjectWithData:data options:0 error:nil origin:NSStringFromClass([self class])];
         // handle HTTP errors
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
             NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
@@ -81,12 +83,12 @@
                 [self.logger error:@"[TikTokRequestHandler] HTTP error status code: %lu", statusCode];
                 // leave switch to on if error on request
                 isSwitchOn = YES;
+                completionHandler(isSwitchOn, nil);
                 NSNumber *configMonitorEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
                 NSDictionary *configMonitorEndMeta = @{
                     @"ts": configMonitorStartTime,
                     @"latency": [NSNumber numberWithInt:[configMonitorEndTime intValue] - [configMonitorStartTime intValue]],
-                    @"success": [NSNumber numberWithBool:false],
-                    @"log_id": @"LOL",
+                    @"success": [NSNumber numberWithBool:false]
                 };
                 NSDictionary *monitorUserAgentStartProperties = @{
                     @"monitor_type": @"metric",
@@ -97,13 +99,23 @@
                 @synchronized(self) {
                     [[TikTokBusiness getQueue] addEvent:configMonitorEndEvent];
                 }
-                completionHandler(isSwitchOn, isGlobalConfigFetched);
+                NSString *log_id = @"";
+                if([dataDictionary isKindOfClass:[NSDictionary class]]) {
+                    log_id = [dataDictionary objectForKey:@"request_id"];
+                }
+                NSDictionary *apiErrorMeta = @{
+                    @"ts": networkEndTime,
+                    @"latency": [NSNumber numberWithInt:[networkEndTime intValue] - [networkStartTime intValue]],
+                    @"api_type": [self urlType:url],
+                    @"status_code": @(statusCode),
+                    @"log_id":log_id
+                };
+                [self reportApiErrWithMeta:apiErrorMeta];
                 return;
             }
             
         }
         
-        id dataDictionary = [TikTokTypeUtility JSONObjectWithData:data options:0 error:nil origin:NSStringFromClass([self class])];
         if([dataDictionary isKindOfClass:[NSDictionary class]]) {
             NSNumber *code = [dataDictionary objectForKey:@"code"];
             // code != 0 indicates error from API call
@@ -112,12 +124,12 @@
                 [self.logger error:@"[TikTokRequestHandler] code error: %@, message: %@", code, message];
                 // leave switch to on if error on request
                 isSwitchOn = YES;
+                completionHandler(isSwitchOn, nil);
                 NSNumber *configMonitorEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
                 NSDictionary *configMonitorEndMeta = @{
                     @"ts": configMonitorStartTime,
                     @"latency": [NSNumber numberWithInt:[configMonitorEndTime intValue] - [configMonitorStartTime intValue]],
-                    @"success": [NSNumber numberWithBool:false],
-                    @"log_id": @"LOL",
+                    @"success": [NSNumber numberWithBool:false]
                 };
                 NSDictionary *monitorUserAgentStartProperties = @{
                     @"monitor_type": @"metric",
@@ -128,7 +140,19 @@
                 @synchronized(self) {
                     [[TikTokBusiness getQueue] addEvent:configMonitorEndEvent];
                 }
-                completionHandler(isSwitchOn, isGlobalConfigFetched);
+                NSString *log_id = @"";
+                if([dataDictionary isKindOfClass:[NSDictionary class]]) {
+                    log_id = [dataDictionary objectForKey:@"request_id"];
+                }
+                NSDictionary *apiErrorMeta = @{
+                    @"ts": networkEndTime,
+                    @"latency": [NSNumber numberWithInt:[networkEndTime intValue] - [networkStartTime intValue]],
+                    @"api_type": [self urlType:url],
+                    @"status_code": @([code intValue]),
+                    @"log_id":log_id,
+                    @"message":TTSafeString(message)
+                };
+                [self reportApiErrWithMeta:apiErrorMeta];
                 return;
             }
             NSDictionary *dataValue = [dataDictionary objectForKey:@"data"];
@@ -142,9 +166,15 @@
             if(apiDomain != nil){
                 self.apiDomain = apiDomain;
             }
-            isGlobalConfigFetched = YES;
-
-            [[TikTokSKAdNetworkConversionConfiguration sharedInstance] initWithDict:dataValue];
+            if (config.SKAdNetworkSupportEnabled) {
+                NSDictionary *skanConfig = [dataValue objectForKey:@"skan4_event_config"];
+                [[TikTokSKAdNetworkConversionConfiguration sharedInstance] configWithDict:skanConfig];
+            }
+            NSDictionary *currencyMap = [dataValue objectForKey:@"currency_exchange_info"];
+            [[TikTokCurrencyUtility sharedInstance] configWithDict:currencyMap];
+            
+            completionHandler(isSwitchOn, businessSDKConfig);
+            
             NSString *requestResponse = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
             NSNumber *configMonitorEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
             NSDictionary *configMonitorEndMeta = @{
@@ -163,9 +193,10 @@
                 [[TikTokBusiness getQueue] addEvent:configMonitorEndEvent];
             }
             [self.logger verbose:@"[TikTokRequestHandler] Request global config response: %@", requestResponse];
+            return;
         }
 
-        completionHandler(isSwitchOn, isGlobalConfigFetched);
+        completionHandler(isSwitchOn, nil);
     }] resume];
    
 }
@@ -198,7 +229,7 @@
             [user setObject:event.anonymousID forKey:@"anonymous_id"];
             
             NSMutableDictionary *tempAppDict = [app mutableCopy];
-            [tempAppDict setValue:ttAppIds forKey:@"tiktok_app_ids"];
+            [tempAppDict setValue:config.tiktokAppId forKey:@"tiktok_app_id"];
             
             NSDictionary *context = @{
                 @"app": tempAppDict.copy,
@@ -264,7 +295,7 @@
         
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
         
-        NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@", @"https://", self.apiDomain == nil ? @"business-api.tiktok.com" : self.apiDomain, @"/open_api/", self.apiVersion == nil ? @"v1.2" : self.apiVersion, @"/app/batch/"];
+        NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", self.apiDomain == nil ? @"analytics.us.tiktok.com" : self.apiDomain, TT_BATCH_EVENT_PATH];
         [request setURL:[NSURL URLWithString:url]];
         [request setHTTPMethod:@"POST"];
         [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -290,15 +321,13 @@
                 }
                 return;
             }
-            
+            NSNumber *networkEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+            id dataDictionary = [TikTokTypeUtility JSONObjectWithData:data options:0 error:nil origin:NSStringFromClass([self class])];
             // handle HTTP errors
             if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                 NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
-                
                 if (statusCode != 200) {
                     [self.logger error:@"[TikTokRequestHandler] HTTP error status code: %lu", statusCode];
-                    NSNumber *networkEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
-                    id dataDictionary = [TikTokTypeUtility JSONObjectWithData:data options:0 error:nil origin:NSStringFromClass([self class])];
                     NSString *log_id = @"";
                     if([dataDictionary isKindOfClass:[NSDictionary class]]) {
                         log_id = [dataDictionary objectForKey:@"request_id"];
@@ -306,17 +335,11 @@
                     NSDictionary *apiErrorMeta = @{
                         @"ts": networkEndTime,
                         @"latency": [NSNumber numberWithInt:[networkEndTime intValue] - [networkStartTime intValue]],
-                        @"api_type": self.apiVersion ?: @"v1.2",
+                        @"api_type": [self urlType:url],
                         @"status_code": @(statusCode),
                         @"log_id":log_id
                     };
-                    NSDictionary *apiErrorProperties = @{
-                        @"monitor_type": @"metric",
-                        @"monitor_name": @"api_err",
-                        @"meta": apiErrorMeta
-                    };
-                    TikTokAppEvent *monitorApiErrorEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:apiErrorProperties withType:@"monitor"];
-                    [[TikTokBusiness getQueue] addEvent:monitorApiErrorEvent];
+                    [self reportApiErrWithMeta:apiErrorMeta];
                     @synchronized(self) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [TikTokAppEventStore persistAppEvents:appEventsToBeFlushed];
@@ -328,12 +351,25 @@
                 
             }
             
-            id dataDictionary = [TikTokTypeUtility JSONObjectWithData:data options:0 error:nil origin:NSStringFromClass([self class])];
-            
             if([dataDictionary isKindOfClass:[NSDictionary class]]) {
                 NSNumber *code = [dataDictionary objectForKey:@"code"];
                 NSString *message = [dataDictionary objectForKey:@"message"];
                 
+                if ([code intValue] != 0) {
+                    NSString *log_id = @"";
+                    if([dataDictionary isKindOfClass:[NSDictionary class]]) {
+                        log_id = [dataDictionary objectForKey:@"request_id"];
+                    }
+                    NSDictionary *apiErrorMeta = @{
+                        @"ts": networkEndTime,
+                        @"latency": [NSNumber numberWithInt:[networkEndTime intValue] - [networkStartTime intValue]],
+                        @"api_type": [self urlType:url],
+                        @"status_code": @([code intValue]),
+                        @"log_id": log_id,
+                        @"message": TTSafeString(message)
+                    };
+                    [self reportApiErrWithMeta:apiErrorMeta];
+                }
                 // code == 40000 indicates error from API call
                 // meaning all events have unhashed values or deprecated field is used
                 // we do not persist events in the scenario
@@ -460,7 +496,7 @@
         
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
         
-        NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@", @"https://", self.apiDomain == nil ? @"business-api.tiktok.com" : self.apiDomain, @"/open_api/", self.apiVersion == nil ? @"v1.2" : self.apiVersion, @"/app/monitor/"];
+        NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", self.apiDomain == nil ? @"analytics.us.tiktok.com" : self.apiDomain, TT_MONITOR_EVENT_PATH];
         [request setURL:[NSURL URLWithString:url]];
         [request setHTTPMethod:@"POST"];
         [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -652,6 +688,25 @@
         }
     }
     return resultArray.copy;
+}
+
+- (void)reportApiErrWithMeta:(NSDictionary *)meta {
+    NSDictionary *apiErrorProperties = @{
+        @"monitor_type": @"metric",
+        @"monitor_name": @"api_err",
+        @"meta": meta
+    };
+    TikTokAppEvent *monitorApiErrorEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:apiErrorProperties withType:@"monitor"];
+    [[TikTokBusiness getQueue] addEvent:monitorApiErrorEvent];
+}
+
+- (NSString *)urlType:(NSString *)url {
+    NSArray<NSString *> *components = [url componentsSeparatedByString:@"/app_sdk/"];
+    NSString *type = url;
+    if (components.count > 1) {
+        type = TTSafeString(components[1]);
+    }
+    return type;
 }
 
 

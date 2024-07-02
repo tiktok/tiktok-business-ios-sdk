@@ -130,7 +130,7 @@ static NSString * CFNetworkVersion(void) {
 }
 
 //eg. iOS/10_1
-static NSString* deviceVersion()
+static NSString* deviceVersion(void)
 {
     NSString *systemName = [UIDevice currentDevice].systemName;
     NSString *systemVersion = [UIDevice currentDevice].systemVersion;
@@ -139,7 +139,7 @@ static NSString* deviceVersion()
 }
 
 //eg. iPhone5,2
-static NSString* deviceName()
+static NSString* deviceName(void)
 {
     struct utsname systemInfo;
     uname(&systemInfo);
@@ -148,14 +148,14 @@ static NSString* deviceName()
 }
 
 //eg. MyApp/1
-static NSString* appNameAndVersion()
+static NSString* appNameAndVersion(void)
 {
     NSString* appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     NSString* appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     return [NSString stringWithFormat:@"%@/%@", appName, appVersion];
 }
 
-static NSString* phoneResolution()
+static NSString* phoneResolution(void)
 {
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
     CGFloat screenWidth = screenBounds.size.width;

@@ -7,12 +7,29 @@
 
 #import "TikTokSKAdNetworkSupport.h"
 #import "TikTokSKAdNetworkConversionConfiguration.h"
+#import "TikTokAppEventUtility.h"
+#import "TikTokBusinessSDKMacros.h"
+#import <StoreKit/SKAdNetwork.h>
+#import "TikTokLogger.h"
+#import "TikTokFactory.h"
+#import "TikTokTypeUtility.h"
+#import "TikTokBusiness.h"
+#import "TikTokBusiness+private.h"
+#import "TikTokAppEvent.h"
+#import "TikTokSKAdNetworkRuleEvent.h"
+#import "TikTokAppEventStore.h"
+#import "TikTokCurrencyUtility.h"
+
+static const long long firstWindowEnds = 172800000;
+static const long long secondWindowEnds = 604800000;
+static const long long thirdWindowEnds = 3024000000;
 
 @interface TikTokSKAdNetworkSupport()
 
 @property (nonatomic, strong, readwrite) Class skAdNetworkClass;
 @property (nonatomic, assign, readwrite) SEL skAdNetworkRegisterAppForAdNetworkAttribution;
 @property (nonatomic, assign, readwrite) SEL skAdNetworkUpdateConversionValue;
+@property (nonatomic, weak) id<TikTokLogger> logger;
 
 @end
 
@@ -37,6 +54,7 @@
         self.skAdNetworkClass = NSClassFromString(@"SKAdNetwork");
         self.skAdNetworkRegisterAppForAdNetworkAttribution = NSSelectorFromString(@"registerAppForAdNetworkAttribution");
         self.skAdNetworkUpdateConversionValue = NSSelectorFromString(@"updateConversionValue:");
+        self.logger = [TikTokFactory getLogger];
     }
     return self;
 }
@@ -49,7 +67,7 @@
     }
 }
 
--(void)updateConversionValue:(NSInteger)conversionValue
+- (void)updateConversionValue:(NSInteger)conversionValue
 {
     // Equivalent call: [SKAdNetwork updateConversionValue:conversionValue]
     if (@available(iOS 14.0, *)) {        
@@ -57,23 +75,202 @@
     }
 }
 
-- (void)matchEventToSKANConfig:(NSString *)eventName withValue:(nullable NSString *)value
+- (void)matchEventToSKANConfig:(NSString *)eventName withValue:(nullable NSString *)value currency:(nullable NSString *)currency
 {
+    NSInteger currentWindow = [self getConversionWindowForTimestamp:[TikTokAppEventUtility getCurrentTimestamp]];
+    if (currentWindow == -1) {
+        return;
+    }
     NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
     formatter.numberStyle = NSNumberFormatterDecimalStyle;
     NSNumber *eventValue = [formatter numberFromString:value];
-    NSMutableArray *rules = [TikTokSKAdNetworkConversionConfiguration sharedInstance].conversionValueRules;
+    // Persist current event
+    [TikTokAppEventStore persistSKANEventWithName:eventName value:eventValue currency:currency];
     
-    for(TikTokSKAdNetworkRule *rule in rules){
-        if([rule.conversionValue intValue] > [_currentConversionValue intValue]){
-            if([eventName isEqual:rule.eventName] && [eventValue intValue] >= [rule.minRevenue intValue] && [eventValue intValue] <= [rule.maxRevenue intValue]){
-                _currentConversionValue = rule.conversionValue;
-                [self updateConversionValue:[_currentConversionValue intValue]];
-                break;
+    if (TTCheckValidString(currency)) {
+        eventValue = [[TikTokCurrencyUtility sharedInstance] exchangeAmount:eventValue fromCurrency:currency toCurrency:[TikTokSKAdNetworkConversionConfiguration sharedInstance].currency shouldReport:YES];
+    }
+    NSArray *windows = [TikTokSKAdNetworkConversionConfiguration sharedInstance].conversionValueWindows;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    for (TikTokSKAdNetworkWindow * window in windows) {
+        if (currentWindow == window.postbackIndex) {
+            NSInteger fineValue = [[defaults objectForKey:@"latestFineValue"] integerValue];
+            NSString *coarseValue = [defaults objectForKey:@"latestCoarseValue"];
+            if (!TTCheckValidString(coarseValue)) {
+                coarseValue = @"low";
+            }
+            BOOL shouldLock = NO;
+            BOOL shouldUpdate = NO;
+            BOOL matchedFine = NO;
+            BOOL matchedCoarse = NO;
+            NSArray *fineRules = window.fineValueRules;
+            for (TikTokSKAdNetworkRule *rule in fineRules) {
+                if (matchedFine) {
+                    break;
+                }
+                for (TikTokSKAdNetworkRuleEvent *ruleEvent in rule.eventFunnel) {
+                    if ([eventName isEqualToString:ruleEvent.eventName]) {
+                        BOOL valueMatched = ([eventValue doubleValue] > [ruleEvent.minRevenue doubleValue]) || ([ruleEvent.minRevenue doubleValue] == 0 && [ruleEvent.maxRevenue doubleValue] == 0);
+                        ruleEvent.isMatched = valueMatched;
+                        matchedFine = valueMatched;
+                        if ([rule isMatched]) {
+                            fineValue = rule.fineConversionValue;
+                            [defaults setObject:@(fineValue) forKey:@"latestFineValue"];
+                            [defaults synchronize];
+                            shouldUpdate = YES;
+                            break;
+                        }
+                    }
+                }
+            }
+            NSArray *coarseRules = window.coarseValueRules;
+            for (TikTokSKAdNetworkRule *rule in coarseRules) {
+                if (matchedCoarse) {
+                    break;
+                }
+                for (TikTokSKAdNetworkRuleEvent *ruleEvent in rule.eventFunnel) {
+                    if ([eventName isEqualToString:ruleEvent.eventName]) {
+                        BOOL valueMatched = ([eventValue doubleValue] > [ruleEvent.minRevenue doubleValue]) || ([ruleEvent.minRevenue doubleValue] == 0 && [ruleEvent.maxRevenue doubleValue] == 0);
+                        ruleEvent.isMatched = valueMatched;
+                        matchedCoarse = valueMatched;
+                        if ([rule isMatched]) {
+                            coarseValue = rule.coarseConversionValue;
+                            [defaults setObject:coarseValue forKey:@"latestCoarseValue"];
+                            [defaults synchronize];
+                            shouldUpdate = YES;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (shouldUpdate) {
+                [self TTUpdateConversionValue:fineValue coarseValue:coarseValue lockWindow:shouldLock completionHandler:^(NSError *error) {
+                    NSMutableDictionary *skanUpdateCVMeta = @{
+                        @"fine": @(fineValue),
+                        @"coarse": coarseValue,
+                        @"lock_window": @(shouldLock),
+                        @"event_name": eventName,
+                        @"value": eventValue ?: @(0),
+                        @"window": @(currentWindow),
+                    }.mutableCopy;
+                    if (error) {
+                        [skanUpdateCVMeta setValue:@(NO) forKey:@"success"];
+                        [skanUpdateCVMeta setValue:@(error.code) forKey:@"code"];
+                        [skanUpdateCVMeta setValue:error.localizedDescription forKey:@"description"];
+                    } else {
+                        [skanUpdateCVMeta setValue:@(YES) forKey:@"success"];
+                    }
+                    NSDictionary *monitorSkanUpdateCVProperties = @{
+                        @"monitor_type": @"metric",
+                        @"monitor_name": @"skan_update_cv",
+                        @"meta": skanUpdateCVMeta.copy
+                    };
+                    TikTokAppEvent *skanUpdateCVEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorSkanUpdateCVProperties withType:@"monitor"];
+                    [[TikTokBusiness getQueue] addEvent:skanUpdateCVEvent];
+                }];
+            }
+            break;
+        }
+    }
+}
+
+- (NSInteger)getConversionWindowForTimestamp:(long long)timeStamp {
+    if (@available(iOS 16.1, *)) {
+        //Supports SKAN 4.0.
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        long long firstLaunchTime = [[defaults objectForKey:TTUserDefaultsKey_firstLaunchTime] longLongValue];
+        long long timePassed = timeStamp - firstLaunchTime;
+        if (timePassed < 0 || timePassed >= thirdWindowEnds) {
+            return -1;
+        } else if (timePassed >= secondWindowEnds) {
+            return 2;
+        } else if (timePassed >= firstWindowEnds) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else if (@available(iOS 14.0, *)) {
+        // Supports only SKAN 3.0. Match by rules in window 1.
+        return 0;
+    } else {
+        // Does not support SKAN.
+        return -1;
+    }
+}
+
+- (void)TTUpdateConversionValue:(NSInteger)conversionValue
+                    coarseValue:(NSString *)coarseValue
+                     lockWindow:(BOOL)lockWindow
+              completionHandler:(void (^)(NSError * _Nullable error))completionHandler {
+    if (@available(iOS 16.1, *)) {
+        //Supports SKAN 4.0.
+        [SKAdNetwork updatePostbackConversionValue:conversionValue coarseValue:coarseValue lockWindow:lockWindow completionHandler:^(NSError * _Nullable error) {
+            if (error) {
+                [self.logger error:@"Call to SKAdNetwork's updatePostbackConversionValue:coarseValue:lockWindow:completionHandler: method with conversion value: %d, coarse value: %@, lock window: %d failed\nDescription: %@", conversionValue, coarseValue, lockWindow, error.localizedDescription];
+            } else {
+                [self.logger debug:@"Called SKAdNetwork's updatePostbackConversionValue:coarseValue:lockWindow:completionHandler: method with conversion value: %d, coarse value: %@, lock window: %d", conversionValue, coarseValue, lockWindow];
+            }
+            if (completionHandler) {
+                completionHandler(error);
+            }
+        }];
+    } else if (@available(iOS 15.4, *)) {
+        // Supports only SKAN 3.0 but has new API available.
+        [SKAdNetwork updatePostbackConversionValue:conversionValue completionHandler:^(NSError * _Nullable error) {
+            if (error) {
+                [self.logger error:@"Call to updatePostbackConversionValue:completionHandler: method with conversion value: %d failed\nDescription: %@", conversionValue, error.localizedDescription];
+            } else {
+                [self.logger debug:@"Called SKAdNetwork's updatePostbackConversionValue:completionHandler: method with conversion value: %d", conversionValue];
+            }
+            if (completionHandler) {
+                completionHandler(error);
+            }
+        }];
+    } else if (@available(iOS 14.0, *)) {
+        // Supports only SKAN 3.0.
+        [self updateConversionValue:conversionValue];
+    } else {
+        [self.logger error:@"SKAdNetwork API not available on this iOS version"];
+    }
+}
+
+- (void)matchPersistedSKANEventsInWindow:(TikTokSKAdNetworkWindow *)window {
+    NSArray *skanEvents = [TikTokAppEventStore retrievePersistedSKANEvents];
+    if (TTCheckValidArray(skanEvents)) {
+        for (NSDictionary *eventDict in skanEvents) {
+            if (TTCheckValidDictionary(eventDict)) {
+                NSString *eventName = [eventDict objectForKey:@"eventName"];
+                NSNumber *value = [eventDict objectForKey:@"value"];
+                NSString *currency = [eventDict objectForKey:@"currency"];
+                if (TTCheckValidString(currency)) {
+                    value = [[TikTokCurrencyUtility sharedInstance] exchangeAmount:value fromCurrency:currency toCurrency:[TikTokSKAdNetworkConversionConfiguration sharedInstance].currency shouldReport:NO];
+                }
+                for (TikTokSKAdNetworkRule *fineRule in window.fineValueRules) {
+                    for (TikTokSKAdNetworkRuleEvent *ruleEvent in fineRule.eventFunnel) {
+                        if (ruleEvent.isMatched) continue;
+                        if ([eventName isEqualToString:ruleEvent.eventName]) {
+                            BOOL valueMatched = ([value doubleValue] > [ruleEvent.minRevenue doubleValue] && [value doubleValue] <= [ruleEvent.maxRevenue doubleValue]) || ([ruleEvent.minRevenue doubleValue] == 0 && [ruleEvent.maxRevenue doubleValue] == 0);
+                            ruleEvent.isMatched = valueMatched;
+                        }
+                    }
+                }
+                for (TikTokSKAdNetworkRule *coarseRule in window.coarseValueRules) {
+                    for (TikTokSKAdNetworkRuleEvent *ruleEvent in coarseRule.eventFunnel) {
+                        if (ruleEvent.isMatched) continue;
+                        if ([eventName isEqualToString:ruleEvent.eventName]) {
+                            BOOL valueMatched = ([value doubleValue] > [ruleEvent.minRevenue doubleValue] && [value doubleValue] <= [ruleEvent.maxRevenue doubleValue]) || ([ruleEvent.minRevenue doubleValue] == 0 && [ruleEvent.maxRevenue doubleValue] == 0);
+                            ruleEvent.isMatched = valueMatched;
+                        }
+                    }
+                }
             }
         }
     }
     
 }
+
+
 
 @end

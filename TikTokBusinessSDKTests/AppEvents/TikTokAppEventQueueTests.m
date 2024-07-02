@@ -22,6 +22,7 @@
 @interface TikTokAppEventQueueTests : XCTestCase
 
 @property (nonatomic, strong) TikTokBusiness *tiktokBusiness;
+@property (nonatomic, strong) TikTokConfig *config;
 @property (nonatomic, strong) TikTokAppEventQueue *queue;
 
 @end
@@ -30,13 +31,15 @@
 
 - (void)setUp {
     [super setUp];
-    TikTokConfig *config = [[TikTokConfig alloc] initWithAppId: @"ABC" tiktokAppId: @"123"];
+    TikTokConfig *config = [[TikTokConfig alloc] initWithAppId: @"123" tiktokAppId: @"456"];
     [TikTokBusiness initializeSdk:config];
     TikTokBusiness *tiktokBusiness = [TikTokBusiness getInstance];
     self.tiktokBusiness = OCMPartialMock(tiktokBusiness);
     OCMStub([self.tiktokBusiness isRemoteSwitchOn]).andReturn(YES);
+    OCMStub([self.tiktokBusiness isGlobalConfigFetched]).andReturn(YES);
     
-    TikTokAppEventQueue *queue = [[TikTokAppEventQueue alloc] init];
+    TikTokAppEventQueue *queue = [[TikTokAppEventQueue alloc] initWithConfig:config];
+    self.config = OCMPartialMock(config);
     self.queue = OCMPartialMock(queue);
     
     TikTokRequestHandler *requestHandler = OCMClassMock([TikTokRequestHandler class]);
@@ -64,6 +67,14 @@
     
     // expect events to flush after 100 events added to queue
     OCMVerify([self.queue flush:TikTokAppEventsFlushReasonEventThreshold]);
+}
+
+- (void)testFlush {
+    TikTokAppEvent *event = [[TikTokAppEvent alloc] initWithEventName:@"LaunchAPP"];
+    [self.queue addEvent:event];
+    XCTAssertTrue(self.queue.eventQueue.count == 1, @"Queue should have length of 1");
+    [self.queue flush:TikTokAppEventsFlushReasonExplicitlyFlush];
+    XCTAssertTrue(self.queue.eventQueue.count == 0, @"Queue should have length of 0");
 }
 
 @end

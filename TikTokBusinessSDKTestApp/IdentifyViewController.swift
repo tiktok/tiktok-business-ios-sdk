@@ -13,6 +13,7 @@ import TikTokBusinessSDK
 class IdentifyViewController: UIViewController {
 
     var externalIDTextField: UITextField!
+    var externalUserNameTextField: UITextField!
     var emailTextField: UITextField!
     var phoneTextField: UITextField!
 
@@ -31,12 +32,17 @@ class IdentifyViewController: UIViewController {
         externalIDTextField.borderStyle = .roundedRect
         view.addSubview(externalIDTextField)
         
-        emailTextField = UITextField(frame: CGRect(x: centerX, y: 100 + verticalSpacing, width: elementWidth, height: elementHeight))
+        externalUserNameTextField = UITextField(frame: CGRect(x: centerX, y: 100 + verticalSpacing, width: elementWidth, height: elementHeight))
+        externalUserNameTextField.placeholder = "External User Name"
+        externalUserNameTextField.borderStyle = .roundedRect
+        view.addSubview(externalUserNameTextField)
+        
+        emailTextField = UITextField(frame: CGRect(x: centerX, y: 100 + 2 * verticalSpacing, width: elementWidth, height: elementHeight))
         emailTextField.placeholder = "Email"
         emailTextField.borderStyle = .roundedRect
         view.addSubview(emailTextField)
         
-        phoneTextField = UITextField(frame: CGRect(x: centerX, y: 100 + 2 * verticalSpacing, width: elementWidth, height: elementHeight))
+        phoneTextField = UITextField(frame: CGRect(x: centerX, y: 100 + 3 * verticalSpacing, width: elementWidth, height: elementHeight))
         phoneTextField.placeholder = "Phone"
         phoneTextField.borderStyle = .roundedRect
         view.addSubview(phoneTextField)
@@ -52,7 +58,7 @@ class IdentifyViewController: UIViewController {
         
         // 创建 Reset 按钮
         let resetButton = UIButton(type: .system)
-        resetButton.frame = CGRect(x: startX, y: 100 + 3 * verticalSpacing, width: buttonWidth, height: buttonHeight)
+        resetButton.frame = CGRect(x: startX, y: 100 + 4 * verticalSpacing, width: buttonWidth, height: buttonHeight)
         resetButton.setTitle("Reset", for: .normal)
         resetButton.setTitleColor(.white, for: .normal)
         resetButton.backgroundColor = bgColor
@@ -61,7 +67,7 @@ class IdentifyViewController: UIViewController {
         view.addSubview(resetButton)
         
         let identifyButton = UIButton(type: .system)
-        identifyButton.frame = CGRect(x: startX + buttonWidth + buttonSpacing, y: 100 + 3 * verticalSpacing, width: buttonWidth, height: buttonHeight)
+        identifyButton.frame = CGRect(x: startX + buttonWidth + buttonSpacing, y: 100 + 4 * verticalSpacing, width: buttonWidth, height: buttonHeight)
         identifyButton.setTitle("Identify", for: .normal)
         identifyButton.setTitleColor(.white, for: .normal)
         identifyButton.backgroundColor = bgColor
@@ -71,7 +77,7 @@ class IdentifyViewController: UIViewController {
         
         // 创建 Logout 按钮
         let logoutButton = UIButton(type: .system)
-        logoutButton.frame = CGRect(x: startX + 2 * (buttonWidth + buttonSpacing), y: 100 + 3 * verticalSpacing, width: buttonWidth, height: buttonHeight)
+        logoutButton.frame = CGRect(x: startX + 2 * (buttonWidth + buttonSpacing), y: 100 + 4 * verticalSpacing, width: buttonWidth, height: buttonHeight)
         logoutButton.setTitle("Logout", for: .normal)
         logoutButton.setTitleColor(.white, for: .normal)
         logoutButton.backgroundColor = bgColor
@@ -83,20 +89,23 @@ class IdentifyViewController: UIViewController {
 
     @objc func resetFields() {
         externalIDTextField.text = ""
+        externalUserNameTextField.text = ""
         emailTextField.text = ""
         phoneTextField.text = ""
     }
 
     @objc func identify() {
         let externalID = externalIDTextField.text ?? ""
+        let externalUserName = externalUserNameTextField.text ?? ""
         let email = emailTextField.text ?? ""
         let phone = phoneTextField.text ?? ""
 
-        TikTokBusiness.identify(withExternalID: externalID, phoneNumber: phone, email: email)
+        TikTokBusiness.identify(withExternalID: externalID, externalUserName: externalUserName, phoneNumber: phone, email: email)
     }
 
     @objc func logout() {
         externalIDTextField.text = ""
+        externalUserNameTextField.text = ""
         emailTextField.text = ""
         phoneTextField.text = ""
 

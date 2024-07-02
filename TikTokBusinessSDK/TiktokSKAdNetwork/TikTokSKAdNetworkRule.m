@@ -8,26 +8,37 @@
 
 #import "TikTokSKAdNetworkRule.h"
 #import "TikTokTypeUtility.h"
+#import "TikTokSKAdNetworkRuleEvent.h"
 
 @implementation TikTokSKAdNetworkRule
 
-- (nullable instancetype)initWithDict:(NSDictionary *)dict
+- (instancetype)initWithDict:(NSDictionary *)dict
 {
     if((self = [super init])){
-        
-        dict = [TikTokTypeUtility dictionaryValue:dict];
-        if(!dict){
-            return nil;
+        NSString *conversionValue = [dict objectForKey:@"conversion_value"];
+        if (TTCheckValidString(conversionValue)) {
+            self.fineConversionValue = [conversionValue integerValue] ?: 0;
+            self.coarseConversionValue = conversionValue;
         }
-        NSNumber *conversionValue = [dict objectForKey:@"conversion_value"];
-        _conversionValue = conversionValue;
-        id eventDictionary = [dict objectForKey:@"event_funnel"][0];
-        NSString *eventName = [eventDictionary objectForKey:@"event_name_report"];
-        _eventName = eventName;
-        _minRevenue = [dict objectForKey:@"revenue_min"];
-        _maxRevenue = [dict objectForKey:@"revenue_max"];
+        NSMutableArray *eventFunnel = [NSMutableArray array];
+        NSArray *funnel = [dict objectForKey:@"event_funnel"];
+        if (TTCheckValidArray(funnel)) {
+            for (NSDictionary *ruleEventDict in funnel) {
+                TikTokSKAdNetworkRuleEvent *event = [[TikTokSKAdNetworkRuleEvent alloc] initWithDict:ruleEventDict];
+                [eventFunnel addObject:event];
+            }
+        }
+        self.eventFunnel = eventFunnel;
     }
     return self;
+}
+
+- (BOOL)isMatched {
+    BOOL isMatched = YES;
+    for (TikTokSKAdNetworkRuleEvent *event in self.eventFunnel) {
+        isMatched = isMatched && event.isMatched;
+    }
+    return isMatched;
 }
 
 @end

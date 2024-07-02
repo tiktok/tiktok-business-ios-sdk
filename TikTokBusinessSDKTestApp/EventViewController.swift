@@ -214,8 +214,6 @@ class EventViewController: UIViewController {
                 TikTokBusiness.trackEvent(eventTitle, withType: "monitor")
             }
         }
-
-//        TikTokBusiness.logSKANConfig();
         
     }
     
@@ -273,7 +271,6 @@ class EventViewController: UIViewController {
                 TikTokBusiness.trackEvent(randomEvent!, withProperties: payloadDictionary as! [AnyHashable : Any])
             }
             finalPayloadTextView.text = "{\n\t\"repsonse\": \"SUCCESS\"\n}"
-    //        finalPayloadTextField.text = "{\n\t\"repsonse\": \"SUCCESSFULLY TRACKED \(numberOfEventsField.text) EVENTS TO TRACK!\"\n}"
         }
 
     

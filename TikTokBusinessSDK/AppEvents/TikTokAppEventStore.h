@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "TikTokBusinessSDKMacros.h"
+#import "TikTokConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearPersistedMonitorEvents;
 
 /**
+ * @brief Method to clear persisted SKAN events
+ */
++ (void)clearPersistedSKANEvents;
+
+/**
  * @brief Method to read app events in disk, append events in queue, and write combined into disk
  */
 + (void)persistAppEvents:(NSArray *)queue;
@@ -35,14 +42,24 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)persistMonitorEvents:(NSArray *)queue;
 
 /**
- * @brief Method to return the array of saved app event states and deletes them.
+ * @brief Method to read SKAN events in disk, append event in queue, and write combined into disk
+ */
++ (void)persistSKANEventWithName:(NSString *)eventName value:(NSNumber *)value currency:(nullable TTCurrency)currency;
+
+/**
+ * @brief Method to return the array of saved app event states.
  */
 + (NSArray *)retrievePersistedAppEvents;
 
 /**
- * @brief Method to return the array of saved monitor event states and deletes them.
+ * @brief Method to return the array of saved monitor event states.
  */
 + (NSArray *)retrievePersistedMonitorEvents;
+
+/**
+ * @brief Method to return the array of saved SKAN event states.
+ */
++ (NSArray *)retrievePersistedSKANEvents;
 
 /**
  * @brief Method to return the number of saved app event.

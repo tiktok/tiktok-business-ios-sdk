@@ -128,7 +128,7 @@ class MetricsViewController: UIViewController {
     
     @IBAction func identify(_ sender: UIButton) {
         // enter identify values here
-        TikTokBusiness.identify(withExternalID: "123", phoneNumber: nil, email: "test@tiktok.com")
+        TikTokBusiness.identify(withExternalID: "123", externalUserName: "userName", phoneNumber: nil, email: "test@tiktok.com")
     }
     
     @IBAction func logout(_ sender: UIButton) {
