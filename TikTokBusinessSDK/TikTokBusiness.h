@@ -117,7 +117,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Use this method once user has logged in or registered
 */
 + (void)identifyWithExternalID:(nullable NSString *)externalID
-               phoneNumber:(nullable NSString *)phoneNumber
+              externalUserName:(nullable NSString *)externalUserName
+                   phoneNumber:(nullable NSString *)phoneNumber
                          email:(nullable NSString *)email;
 
 /**

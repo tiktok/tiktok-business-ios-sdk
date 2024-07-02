@@ -11,6 +11,7 @@
 #import "TikTokErrorHandler.h"
 #import "TikTokBusiness.h"
 #import "TikTokBusiness+private.h"
+#import "TikTokTypeUtility.h"
 
 #define DISK_LIMIT 500
 
@@ -22,6 +23,7 @@ static long numberOfEventsDumped = 0;
 
 NSString * const appEventsFileName = @"com-tiktok-sdk-AppEventsPersistedEvents.json";
 NSString * const monitorEventsFileName = @"com-tiktok-sdk-MonitorEventsPersistedEvents.json";
+NSString * const SKANEventsFileName = @"com-tiktok-sdk-SKANEventsPersistedEvents.json";
 
 @implementation TikTokAppEventStore
 
@@ -33,6 +35,9 @@ NSString * const monitorEventsFileName = @"com-tiktok-sdk-MonitorEventsPersisted
     [self clearPersistedEventsAtFile:[self getMonitorEventsFilePath]];
 }
 
++ (void)clearPersistedSKANEvents {
+    [self clearPersistedEventsAtFile:[self getSKANEventsFilePath]];
+}
 
 + (void)persistAppEvents:(NSArray *)queue {
     [self persistEvents:queue toFile:[self getAppEventsFilePath]];
@@ -40,6 +45,45 @@ NSString * const monitorEventsFileName = @"com-tiktok-sdk-MonitorEventsPersisted
 
 + (void)persistMonitorEvents:(NSArray *)queue {
     [self persistEvents:queue toFile:[self getMonitorEventsFilePath]];
+}
+
++ (void)persistSKANEventWithName:(NSString *)eventName value:(NSNumber *)value currency:(nullable TTCurrency)currency {
+    @try {
+        NSString *path = [self getSKANEventsFilePath];
+        NSMutableArray *existingEvents = [NSMutableArray arrayWithArray:[[self class] retrievePersistedSKANEvents]];
+        NSMutableDictionary *skanEvent = @{
+            @"eventName": TTSafeString(eventName),
+            @"value": value?:@(0)
+        }.mutableCopy;
+        if (TTCheckValidString(currency)) {
+            [skanEvent setObject:currency forKey:@"currency"];
+        }
+        [existingEvents addObject:skanEvent.copy];
+        BOOL result;
+        if (@available(iOS 11, *)) {
+            NSError *errorArchiving = nil;
+            // archivedDataWithRootObject:requiringSecureCoding: available iOS 11.0+
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:existingEvents requiringSecureCoding:NO error:&errorArchiving];
+            if (data && errorArchiving == nil) {
+                NSError *errorWriting = nil;
+                result = [data writeToFile:path options:NSDataWritingAtomic error:&errorWriting];
+                result = result && (errorWriting == nil);
+            } else {
+                result = NO;
+            }
+        } else {
+            // archiveRootObject used for iOS versions below 11.0
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            result = [NSKeyedArchiver archiveRootObject:existingEvents toFile:path];
+    #pragma clang diagnostic pop
+        }
+        if(!result == YES) {
+            [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to persist to disk"];
+        }
+    } @catch (NSException *exception) {
+        [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to persist to disk" exception:exception];
+    }
 }
 
 
@@ -68,6 +112,10 @@ NSString * const monitorEventsFileName = @"com-tiktok-sdk-MonitorEventsPersisted
 
 + (NSArray *)retrievePersistedMonitorEvents {
     return [self retrievePersistedEventsFromFile:[self getMonitorEventsFilePath]];
+}
+
++ (NSArray *)retrievePersistedSKANEvents {
+    return [self retrievePersistedEventsFromFile:[self getSKANEventsFilePath]];
 }
 
 
@@ -162,7 +210,7 @@ NSString * const monitorEventsFileName = @"com-tiktok-sdk-MonitorEventsPersisted
 
 + (NSArray *)retrievePersistedEventsFromFile:(NSString *)path
 {
-    BOOL canSkipDiskCheck = ([path containsString:appEventsFileName] && canSkipAppEventDiskCheck) || ([path containsString:monitorEventsFileName] && canSkipMonitorEventDiskCheck);
+    BOOL canSkipDiskCheck = (([path containsString:appEventsFileName] && canSkipAppEventDiskCheck) || ([path containsString:monitorEventsFileName] && canSkipMonitorEventDiskCheck)) && ![path containsString:SKANEventsFileName];
     NSMutableArray *events = [NSMutableArray array];
     if (!canSkipDiskCheck) {
         @try {
@@ -205,6 +253,11 @@ NSString * const monitorEventsFileName = @"com-tiktok-sdk-MonitorEventsPersisted
 + (NSString *)getMonitorEventsFilePath
 {
     return [[self getFileDirectory]  stringByAppendingPathComponent:monitorEventsFileName];
+}
+
++ (NSString *)getSKANEventsFilePath
+{
+    return [[self getFileDirectory]  stringByAppendingPathComponent:SKANEventsFileName];
 }
 
 + (NSUInteger)persistedAppEventsCount {

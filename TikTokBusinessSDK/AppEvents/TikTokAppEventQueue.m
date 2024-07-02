@@ -170,19 +170,19 @@
     if ([event.type isEqualToString:@"monitor"]) {
         @synchronized (self) {
             [self.monitorQueue addObject:event];
-            if (self.monitorQueue.count >= MONITOR_FLUSH_LIMIT) {
-                [self flushMonitorEvents];
-            }
+        }
+        if (self.monitorQueue.count >= MONITOR_FLUSH_LIMIT) {
+            [self flushMonitorEvents];
         }
         [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryMonitorQueueUpdated" object:nil];
     } else {
         @synchronized (self) {
             [self.eventQueue addObject:event];
-            if(self.eventQueue.count >= APP_FLUSH_LIMIT) {
-                [self flush:TikTokAppEventsFlushReasonEventThreshold];
-            }
-            [self calculateAndSetRemainingEventThreshold];
         }
+        if(self.eventQueue.count >= APP_FLUSH_LIMIT) {
+            [self flush:TikTokAppEventsFlushReasonEventThreshold];
+        }
+        [self calculateAndSetRemainingEventThreshold];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryEventQueueUpdated" object:nil];
     }
     

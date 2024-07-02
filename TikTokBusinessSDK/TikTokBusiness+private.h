@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TikTokBusiness()
 
 @property (nonatomic, strong, nullable) TikTokAppEventQueue *queue;
+@property (nonatomic, assign) double exchangeErrReportRate;
 
 /**
  * @brief This method is used internally to keep track of event queue state

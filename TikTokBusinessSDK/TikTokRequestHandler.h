@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Method to obtain remote switch with completion handler
  */
 - (void)getRemoteSwitch:(TikTokConfig *)config
-        withCompletionHandler:(void (^)(BOOL isRemoteSwitchOn, BOOL isGlobalConfigFetched))completionHandler;
+        withCompletionHandler:(void (^)(BOOL isRemoteSwitchOn, NSDictionary *globalConfig))completionHandler;
 
 /**
  * @brief Method to interact with '/batch' endpoint

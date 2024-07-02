@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TikTokSKAdNetworkWindow.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,7 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (TikTokSKAdNetworkSupport *)sharedInstance;
 - (void)registerAppForAdNetworkAttribution;
 - (void)updateConversionValue:(NSInteger)conversionValue;
-- (void)matchEventToSKANConfig:(NSString *)eventName withValue:(nullable NSString *)value;
+- (void)matchEventToSKANConfig:(NSString *)eventName withValue:(nullable NSString *)value currency:(nullable NSString *)currency;
+- (void)matchPersistedSKANEventsInWindow:(TikTokSKAdNetworkWindow *)window;
+- (NSInteger)getConversionWindowForTimestamp:(long long)timeStamp;
+//- (BOOL)canClearCachedEvents;
 
 @end
 

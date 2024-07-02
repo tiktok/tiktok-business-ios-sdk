@@ -204,7 +204,11 @@ static NSMutableArray *g_pendingRequestors;
             @"currency": [product.priceLocale objectForKey:NSLocaleCurrencyCode] ? : @"",
             @"description": product.localizedTitle ? : @"",
             @"query":@"",
+            @"type": @"auto"
         }];
+        if(transactionId){
+            [eventParameters setObject:transactionId forKey:@"order_id"];
+        }
 
         NSMutableArray *contents = [[NSMutableArray alloc] init];
 
@@ -212,10 +216,10 @@ static NSMutableArray *g_pendingRequestors;
             NSMutableDictionary *productDict = [[NSMutableDictionary alloc] initWithDictionary:@{
                 @"price": [[NSNumber numberWithDouble:product.price.doubleValue] stringValue],
                 @"quantity": @"1",
-                @"content_type": product.productIdentifier,
+                @"content_type": product.productIdentifier
             }];
             if(transactionId){
-                [productDict setObject:transactionId forKey:@"content_id"];
+                [productDict setObject:product.productIdentifier forKey:@"content_id"];
             }
             [contents addObject:productDict];
         }

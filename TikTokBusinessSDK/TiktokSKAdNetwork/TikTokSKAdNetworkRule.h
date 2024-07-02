@@ -12,12 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TikTokSKAdNetworkRule : NSObject
 
-@property (nonatomic) NSNumber *conversionValue;
-@property (nonatomic, copy) NSString *eventName;
-@property (nonatomic) NSNumber *minRevenue;
-@property (nonatomic) NSNumber *maxRevenue;
+@property (nonatomic, assign) NSInteger fineConversionValue;
+@property (nonatomic) NSString *coarseConversionValue;
+@property (nonatomic, copy) NSArray *eventFunnel;
+//@property (nonatomic, assign) BOOL lockWindow;
 
-- (nullable instancetype)initWithDict:(NSDictionary *)dict;
+- (instancetype)initWithDict:(NSDictionary *)dict;
+
+- (BOOL)isMatched;
 
 @end
 

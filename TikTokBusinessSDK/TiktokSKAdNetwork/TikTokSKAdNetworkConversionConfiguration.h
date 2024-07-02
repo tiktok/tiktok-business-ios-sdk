@@ -8,16 +8,18 @@
 
 #import <Foundation/Foundation.h>
 #import "TikTokSKAdNetworkRule.h"
+#import "TikTokSKAdNetworkWindow.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TikTokSKAdNetworkConversionConfiguration : NSObject
 
-@property (nonatomic, readonly, copy) NSMutableArray<TikTokSKAdNetworkRule *> *conversionValueRules;
-@property (nonatomic, readonly, copy) NSDictionary *conversionValueConfig;
+@property (nonatomic, readonly, copy) NSArray<TikTokSKAdNetworkWindow *> *conversionValueWindows;
+@property (nonatomic, readonly, copy) NSDictionary *configDict;
+@property (nonatomic, strong) NSString *currency;
 
 + (TikTokSKAdNetworkConversionConfiguration *)sharedInstance;
-- (nullable instancetype)initWithDict:(nullable NSDictionary *)dict;
+- (void)configWithDict:(NSDictionary *)dict;
 - (void)logAllRules;
 
 @end

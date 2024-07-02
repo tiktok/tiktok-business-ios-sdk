@@ -8,6 +8,7 @@
 
 #import "TikTokSKAdNetworkConversionConfiguration.h"
 #import "TikTokTypeUtility.h"
+#import "TikTokSKAdNetworkRuleEvent.h"
 
 @implementation TikTokSKAdNetworkConversionConfiguration
 
@@ -22,32 +23,46 @@
 }
 
 
-- (nullable instancetype)initWithDict:(NSDictionary *)dict
+- (void)configWithDict:(NSDictionary *)dict
 {
-    if ((self = [super init])) {
-                
-        @try {
-            _conversionValueConfig = [dict objectForKey:@"skan_event_config"];
-            _conversionValueRules = [[NSMutableArray alloc] init];
-            for(id conversionRule in _conversionValueConfig){
-                TikTokSKAdNetworkRule *convRule = [[TikTokSKAdNetworkRule alloc] initWithDict:conversionRule];
-                [_conversionValueRules addObject:convRule];
+    @try {
+        if (TTCheckValidDictionary(dict)) {
+            _configDict = dict;
+            NSString *currency = [dict objectForKey:@"currency"];
+            _currency = TTCheckValidString(currency)?currency:@"USD";
+            NSArray *postbacks = [dict objectForKey:@"postbacks"];
+            if (TTCheckValidArray(postbacks)) {
+                NSMutableArray *windows = [NSMutableArray array];
+                for (NSDictionary *windowDict in postbacks) {
+                    if (TTCheckValidDictionary(windowDict)) {
+                        TikTokSKAdNetworkWindow *window = [[TikTokSKAdNetworkWindow alloc] initWithDict:windowDict];
+                        [windows addObject:window];
+                    }
+                }
+                _conversionValueWindows = windows.copy;
             }
-            // Reversing the array
-            _conversionValueRules = [[[_conversionValueRules reverseObjectEnumerator] allObjects] mutableCopy];
-        } @catch(NSException *exception) {
-            return nil;
         }
-    
+    } @catch(NSException *exception) {
+        NSLog(@"failed to config SKAN rules");
     }
-    
-    return self;
+    [self logAllRules];
 }
 
 - (void)logAllRules
 {
-    for(TikTokSKAdNetworkRule *rule in _conversionValueRules){
-        NSLog(@"Rule: %@ -> %@, %@, %@", rule.eventName, rule.conversionValue, rule.maxRevenue, rule.minRevenue);
+    for(TikTokSKAdNetworkWindow *window in self.conversionValueWindows) {
+        for (TikTokSKAdNetworkRule *rule in window.fineValueRules) {
+            NSLog(@"Rule: fineValue -> %ld", rule.fineConversionValue);
+            for(TikTokSKAdNetworkRuleEvent *event in rule.eventFunnel) {
+                NSLog(@"EventName: %@, max:%@, min:%@", event.eventName, event.maxRevenue, event.minRevenue);
+            }
+        }
+        for (TikTokSKAdNetworkRule *rule in window.coarseValueRules) {
+            NSLog(@"Rule: coarseValue -> %@", rule.coarseConversionValue);
+            for(TikTokSKAdNetworkRuleEvent *event in rule.eventFunnel) {
+                NSLog(@"EventName: %@, max:%@, min:%@", event.eventName, event.maxRevenue, event.minRevenue);
+            }
+        }
     }
 }
 

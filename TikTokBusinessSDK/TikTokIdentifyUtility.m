@@ -27,6 +27,7 @@
         _email = nil;
         _externalID = nil;
         _isIdentified = NO;
+        _externalUserName = nil;
     }
     return self;
 }
@@ -55,15 +56,18 @@
 }
 
 - (void)setUserInfoWithExternalID:(nullable NSString *)externalID
+                 externalUserName:(nullable NSString *)externalUserName
                       phoneNumber:(nullable NSString *)phoneNumber
                             email:(nullable NSString *)email
                            origin:(nullable NSString *)origin
 {
     NSString* hashedExternalID = [TikTokTypeUtility toSha256:externalID origin:origin];
+    NSString* hashedExternalUserName = [TikTokTypeUtility toSha256:externalUserName origin:origin];
     NSString* hashedPhoneNumber = [TikTokTypeUtility toSha256:phoneNumber origin:origin];
     NSString* hashedEmail = [TikTokTypeUtility toSha256:email origin:origin];
     
     self.externalID = hashedExternalID;
+    self.externalUserName = hashedExternalUserName;
     self.email = hashedEmail;
     self.phoneNumber = hashedPhoneNumber;
     self.isIdentified = YES;
@@ -82,6 +86,9 @@
     if (TTCheckValidString(self.email)) {
         [userInfo setObject:self.email forKey:@"email"];
     }
+    if (TTCheckValidString(self.externalUserName)) {
+        [userInfo setObject:self.externalUserName forKey:@"external_username"];
+    }
     
     return userInfo;
 }
@@ -97,6 +104,7 @@
     _externalID = nil;
     _phoneNumber = nil;
     _isIdentified = NO;
+    _externalUserName = nil;
 }
 
 

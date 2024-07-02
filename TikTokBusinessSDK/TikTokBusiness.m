@@ -94,6 +94,7 @@ static dispatch_once_t onceToken = 0;
     self.paymentTrackingEnabled = YES;
     self.appTrackingDialogSuppressed = NO;
     self.SKAdNetworkSupportEnabled = YES;
+    self.exchangeErrReportRate = 0.01;
     
     [self checkAttStatus];
 
@@ -172,11 +173,12 @@ withType:(NSString *)type
 }
 
 + (void)identifyWithExternalID:(nullable NSString *)externalID
-             phoneNumber:(nullable NSString *)phoneNumber
-                       email:(nullable NSString *)email
+              externalUserName:(nullable NSString *)externalUserName
+                   phoneNumber:(nullable NSString *)phoneNumber
+                         email:(nullable NSString *)email
 {
     @synchronized (self) {
-        [[TikTokBusiness getInstance] identifyWithExternalID:externalID phoneNumber:phoneNumber email:email];
+        [[TikTokBusiness getInstance] identifyWithExternalID:externalID externalUserName:externalUserName phoneNumber:phoneNumber email:email];
         
     }
 }
@@ -325,6 +327,7 @@ withType:(NSString *)type
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:@"true" forKey:@"AreTimersOn"];
     [defaults setObject:initStartTimestamp forKey:@"monitorInitStartTime"];
+    [defaults synchronize];
     
     [self getGlobalConfig:tiktokConfig isFirstInitialization:YES];
     
@@ -400,7 +403,7 @@ withType:(NSString *)type
         NSTimeInterval secondsBetween = [currentLaunch timeIntervalSinceDate:installDate];
         int numberOfDays = secondsBetween / 86400;
         if ([[NSCalendar currentCalendar] isDate:oneDayAgo inSameDayAsDate:installDate] && !logged2DRetention) {
-            [self trackEvent:@"2Dretention"];
+            [self trackEvent:@"2Dretention" withProperties:@{@"type":@"auto"}];
             [defaults setBool:YES forKey:@"tiktokLogged2DRetention"];
             [defaults synchronize];
         }
@@ -416,7 +419,7 @@ withType:(NSString *)type
 {
     TikTokAppEvent *appEvent = [[TikTokAppEvent alloc] initWithEventName:eventName];
     if(self.SKAdNetworkSupportEnabled) {
-        [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:@"0"];
+        [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:@"0" currency:@""];
     }
     [self.queue addEvent:appEvent];
     if([eventName isEqualToString:@"Purchase"]) {
@@ -431,7 +434,8 @@ withType:(NSString *)type
      
     if(self.SKAdNetworkSupportEnabled) {
         NSString *value = [properties objectForKey:@"value"];
-        [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:value];
+        NSString *currency = [properties objectForKey:@"currency"];
+        [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:value currency:TTSafeString(currency)];
     }
     [self.queue addEvent:appEvent];
     if([eventName isEqualToString:@"Purchase"]) {
@@ -520,6 +524,7 @@ withType:(NSString *)type
     if(self.queue.config.initialFlushDelay && ![[defaults objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
         // if first flush has not occurred, resume timer without flushing
         [defaults setObject:@"true" forKey:@"AreTimersOn"];
+        [defaults synchronize];
     } else {
         // else flush when entering foreground
         [self.queue flush:TikTokAppEventsFlushReasonAppBecameActive];
@@ -548,11 +553,14 @@ withType:(NSString *)type
         };
         TikTokAppEvent *monitorForegroundEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorForegroundProperties withType:@"monitor"];
         TikTokAppEvent *monitorBackgroundEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorBackgroundProperties withType:@"monitor"];
-        [self.queue addEvent:monitorForegroundEvent];
-        [self.queue addEvent:monitorBackgroundEvent];
+        @synchronized (self) {
+            [self.queue addEvent:monitorForegroundEvent];
+            [self.queue addEvent:monitorBackgroundEvent];
+        }
     }
     [defaults setObject:foregroundMonitorTime forKey:@"foregroundMonitorTime"];
     [defaults removeObjectForKey:@"backgroundMonitorTime"];
+    [defaults synchronize];
 }
 
 - (nullable NSString *)idfa
@@ -611,8 +619,9 @@ withType:(NSString *)type
 }
 
 - (void)identifyWithExternalID:(nullable NSString *)externalID
-             phoneNumber:(nullable NSString *)phoneNumber
-                       email:(nullable NSString *)email
+              externalUserName:(nullable NSString *)externalUserName
+                   phoneNumber:(nullable NSString *)phoneNumber
+                         email:(nullable NSString *)email
 {
     NSNumber *identifyMonitorStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     
@@ -621,7 +630,7 @@ withType:(NSString *)type
         return;
     }
     
-    [[TikTokIdentifyUtility sharedInstance] setUserInfoWithExternalID:externalID phoneNumber:phoneNumber email:email origin:NSStringFromClass([self class])];
+    [[TikTokIdentifyUtility sharedInstance] setUserInfoWithExternalID:externalID externalUserName:externalUserName phoneNumber:phoneNumber email:email origin:NSStringFromClass([self class])];
     [self trackEventAndEagerlyFlush:@"Identify" withType: @"identify"];
     NSNumber *identifyMonitorEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     NSDictionary *meta = @{
@@ -630,6 +639,7 @@ withType:(NSString *)type
         @"email": email == nil ? [NSNumber numberWithBool:false] : [NSNumber numberWithBool:true],
         @"phone": phoneNumber == nil ? [NSNumber numberWithBool:false] : [NSNumber numberWithBool:true],
         @"extid": externalID == nil ? [NSNumber numberWithBool:false] : [NSNumber numberWithBool:true],
+        @"username": externalUserName == nil ? [NSNumber numberWithBool:false] : [NSNumber numberWithBool:true],
     };
     NSDictionary *monitorIdentifyProperties = @{
         @"monitor_type": @"metric",
@@ -637,7 +647,9 @@ withType:(NSString *)type
         @"meta": meta
     };
     TikTokAppEvent *monitorIdentifyEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorIdentifyProperties withType:@"monitor"];
-    [self.queue addEvent:monitorIdentifyEvent];
+    @synchronized(self) {
+        [self.queue addEvent:monitorIdentifyEvent];
+    }
 }
 
 - (void)logout
@@ -662,8 +674,9 @@ withType:(NSString *)type
         @"meta": meta
     };
     TikTokAppEvent *monitorIdentifyEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorIdentifyProperties withType:@"monitor"];
-    [self.queue addEvent:monitorIdentifyEvent];
-    
+    @synchronized (self) {
+        [self.queue addEvent:monitorIdentifyEvent];
+    }
 }
 
 - (void)explicitlyFlush
@@ -684,15 +697,16 @@ withType:(NSString *)type
 - (void)getGlobalConfig:(TikTokConfig *)tiktokConfig
   isFirstInitialization: (BOOL)isFirstInitialization
 {
-    [self.requestHandler getRemoteSwitch:tiktokConfig withCompletionHandler:^(BOOL isRemoteSwitchOn, BOOL isGlobalConfigFetched) {
+    [self.requestHandler getRemoteSwitch:tiktokConfig withCompletionHandler:^(BOOL isRemoteSwitchOn, NSDictionary *globalConfig) {
         self.isRemoteSwitchOn = isRemoteSwitchOn;
-        self.isGlobalConfigFetched = isGlobalConfigFetched;
+        self.isGlobalConfigFetched = TTCheckValidDictionary(globalConfig);
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
         if(!self.isRemoteSwitchOn) {
             [self.logger info:@"Remote switch is off"];
             [defaults setObject:@"false" forKey:@"AreTimersOn"];
+            [defaults synchronize];
             self.queue.timeInSecondsUntilFlush = 0;
             return;
         }
@@ -702,33 +716,64 @@ withType:(NSString *)type
         // restart timers if they are off
         if ([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"false"]) {
             [defaults setObject:@"true" forKey:@"AreTimersOn"];
+            [defaults synchronize];
         }
+        if (self.isGlobalConfigFetched) {
+            NSNumber *exchangeErrReportRate = [globalConfig objectForKey:@"skan4_exchange_err_report_rate"];
+            if (TTCheckValidNumber(exchangeErrReportRate)) {
+                self.exchangeErrReportRate = [exchangeErrReportRate doubleValue];
+            }
+            self.exchangeErrReportRate = 1;
+            if (self.SKAdNetworkSupportEnabled) {
+                NSInteger currentWindow = [[TikTokSKAdNetworkSupport sharedInstance] getConversionWindowForTimestamp:[TikTokAppEventUtility getCurrentTimestamp]];
+                if ([[defaults objectForKey:@"SKANTimeWindow"] integerValue] != currentWindow) {
+                    [defaults setObject:@(currentWindow) forKey:@"SKANTimeWindow"];
+                    [defaults removeObjectForKey:@"latestFineValue"];
+                    [defaults removeObjectForKey:@"latestCoarseValue"];
+                    [defaults synchronize];
+                    [TikTokAppEventStore clearPersistedSKANEvents];
+                }
+                // match historical events and flag "matched"
+                for (TikTokSKAdNetworkWindow *window in [TikTokSKAdNetworkConversionConfiguration sharedInstance].conversionValueWindows) {
+                    if (window.postbackIndex == currentWindow) {
+                        [[TikTokSKAdNetworkSupport sharedInstance] matchPersistedSKANEventsInWindow:window];
+                        break;
+                    }
+                }
+                
+            }
+         }
         
         // if SDK has not been initialized, we initialize it
         if(isFirstInitialization || ![[defaults objectForKey:@"HasBeenInitialized"]  isEqual: @"true"]) {
 
             [self.logger info:@"TikTok SDK Initialized Successfully!"];
             [defaults setObject:@"true" forKey:@"HasBeenInitialized"];
+            [defaults setObject:@([TikTokAppEventUtility getCurrentTimestamp]) forKey:TTUserDefaultsKey_firstLaunchTime];
+            [defaults synchronize];
             BOOL launchedBefore = [defaults boolForKey:@"tiktokLaunchedBefore"];
             NSDate *installDate = (NSDate *)[defaults objectForKey:@"tiktokInstallDate"];
 
             // Enabled: Tracking, Auto Tracking, Install Tracking
             // Launched Before: False
             if(self.automaticTrackingEnabled && !launchedBefore && self.installTrackingEnabled){
-                [self trackEvent:@"InstallApp"];
                 // SKAdNetwork Support for Install Tracking (works on iOS 14.0+)
                 if(self.SKAdNetworkSupportEnabled) {
                     [[TikTokSKAdNetworkSupport sharedInstance] registerAppForAdNetworkAttribution];
                 }
+                [self trackEvent:@"InstallApp" withProperties:@{@"type":@"auto"}];
                 NSDate *currentLaunch = [NSDate date];
                 [defaults setBool:YES forKey:@"tiktokLaunchedBefore"];
                 [defaults setObject:currentLaunch forKey:@"tiktokInstallDate"];
+                if (self.isGlobalConfigFetched) {
+                    [defaults setBool:YES forKey:@"tiktokMatchedInstall"];
+                }
                 [defaults synchronize];
             }
 
             // Enabled: Tracking, Auto Tracking, Launch Logging
             if(self.automaticTrackingEnabled && self.launchTrackingEnabled){
-                [self trackEvent:@"LaunchAPP"];
+                [self trackEvent:@"LaunchAPP" withProperties:@{@"type":@"auto"}];
             }
 
             // Enabled: Auto Tracking, 2DRetention Tracking
@@ -754,6 +799,14 @@ withType:(NSString *)type
             NSNumber *initStartTimestamp = [defaults objectForKey:@"monitorInitStartTime"];
             NSNumber *initEndTimestamp = [TikTokAppEventUtility getCurrentTimestampAsNumber];
             [self monitorInitialization:initStartTimestamp andEndTime:initEndTimestamp];
+        }
+        if (self.isGlobalConfigFetched && self.automaticTrackingEnabled && self.installTrackingEnabled) {
+            BOOL matchedInstall = [defaults boolForKey:@"tiktokMatchedInstall"];
+            if (!matchedInstall) {
+                [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:@"InstallApp" withValue:0 currency:@""];
+                [defaults setBool:YES forKey:@"tiktokMatchedInstall"];
+                [defaults synchronize];
+            }
         }
         [self sendCrashReportWithConfig: tiktokConfig];
     }];
