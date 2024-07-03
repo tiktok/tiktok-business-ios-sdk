@@ -598,11 +598,6 @@ withType:(NSString *)type
 - (void)setTrackingEnabled:(BOOL)trackingEnabled
 {
     _trackingEnabled = trackingEnabled;
-    if(trackingEnabled) {
-        [TikTokPaymentObserver startObservingTransactions];
-    } else {
-        [TikTokPaymentObserver stopObservingTransactions];
-    }
 }
 
 - (void)setCustomUserAgent:(NSString *)customUserAgent
