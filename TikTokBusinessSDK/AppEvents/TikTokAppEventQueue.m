@@ -69,96 +69,46 @@
     return self;
 }
 
-// function used for pre iOS 10, since selector takes timer as an argument
-- (void)handleFlushTimerUpdate:(NSTimer*)timer
-{
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-
-    __weak TikTokAppEventQueue *weakSelf = self;
-    if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
-        [weakSelf flush:TikTokAppEventsFlushReasonTimer];
-    }
-}
-
-// function used for pre iOS 10, since selector takes timer as an argument
-- (void)handleFlushTimerUpdateOnFirstFlush:(NSTimer*)timer
-{
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    __weak TikTokAppEventQueue *weakSelf = self;
-    if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
-        [weakSelf flush:TikTokAppEventsFlushReasonTimer];
-    }
-    // return to normal 15 second timer after first flush
-    self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS target:self selector:@selector(handleFlushTimerUpdate:) userInfo:nil repeats:YES];
-}
-
-// function used for pre iOS 10, since selector takes timer as an argument
-- (void)handleLogTimerUpdate:(NSTimer*)timer
-{
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
-
-        NSDate *fireDate = [self.flushTimer fireDate];
-        NSDate *nowDate = [NSDate date];
-        self.timeInSecondsUntilFlush = [fireDate timeIntervalSinceDate:nowDate];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"timeLeft" object:nil];
-    }
-}
-
 - (void)initializeFlushTimerWithSeconds:(long)seconds
 {
     __weak TikTokAppEventQueue *weakSelf = self;
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-
-    if(@available(iOS 10, *)){
-        self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:seconds
-            repeats:NO block:^(NSTimer *timer) {
-            if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
-                [weakSelf flush:TikTokAppEventsFlushReasonTimer];
-            }
-            self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
-                repeats:YES block:^(NSTimer *timer) {
-                [weakSelf flush:TikTokAppEventsFlushReasonTimer];
-            }];
+    self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:seconds
+        repeats:NO block:^(NSTimer *timer) {
+        if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
+            [weakSelf flush:TikTokAppEventsFlushReasonTimer];
+        }
+        self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
+            repeats:YES block:^(NSTimer *timer) {
+            [weakSelf flush:TikTokAppEventsFlushReasonTimer];
         }];
-    } else {
-        self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:seconds target:self selector:@selector(handleFlushTimerUpdateOnFirstFlush:) userInfo:nil repeats:YES];
-    }
+    }];
 }
 
 - (void)initializeFlushTimer
 {
     __weak TikTokAppEventQueue *weakSelf = self;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if(@available(iOS 10, *)){
-        self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
-            repeats:YES block:^(NSTimer *timer) {
-            if ([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
-                [weakSelf flush:TikTokAppEventsFlushReasonTimer];
-            }
-        }];
-    } else {
-        self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS target:self selector:@selector(handleFlushTimerUpdate:) userInfo:nil repeats:YES];
-    }
+    self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
+        repeats:YES block:^(NSTimer *timer) {
+        if ([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
+            [weakSelf flush:TikTokAppEventsFlushReasonTimer];
+        }
+    }];
 }
 
 - (void)initializeLogTimer
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if(@available(iOS 10, *)){
-        self.logTimer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer *time) {
-            if([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]){
-                NSDate *fireDate = [self.flushTimer fireDate];
-                NSDate *nowDate = [NSDate date];
-                self.timeInSecondsUntilFlush = [fireDate timeIntervalSinceDate:nowDate];
-                
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"timeLeft" object:nil];
-            }
-        }];
-    } else {
-        self.logTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(handleLogTimerUpdate:) userInfo:nil repeats:YES];
-    }
+    self.logTimer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer *time) {
+        if([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]){
+            NSDate *fireDate = [self.flushTimer fireDate];
+            NSDate *nowDate = [NSDate date];
+            self.timeInSecondsUntilFlush = [fireDate timeIntervalSinceDate:nowDate];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"timeLeft" object:nil];
+        }
+    }];
 }
 
 - (void)addEvent:(TikTokAppEvent *)event
@@ -259,11 +209,6 @@
 
 
 - (void)flushMonitorEvents {
-    if([[TikTokBusiness getInstance] isRemoteSwitchOn] == NO) {
-        [self.logger info:@"[TikTokAppEventQueue] Remote switch is off, no flush logic invoked"];
-        return;
-    }
-    
     @try {
         @synchronized (self) {
             NSArray *eventsFromDisk = [TikTokAppEventStore retrievePersistedMonitorEvents];
@@ -327,6 +272,11 @@
     } @catch (NSException *exception) {
         [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flushing main queue" exception:exception];
     }
+}
+
+- (void)clear {
+    [self.eventQueue removeAllObjects];
+    [self.monitorQueue removeAllObjects];
 }
 
 - (void)calculateAndSetRemainingEventThreshold

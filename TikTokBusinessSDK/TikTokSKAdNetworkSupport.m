@@ -90,35 +90,43 @@ static const long long thirdWindowEnds = 3024000000;
     if (TTCheckValidString(currency)) {
         eventValue = [[TikTokCurrencyUtility sharedInstance] exchangeAmount:eventValue fromCurrency:currency toCurrency:[TikTokSKAdNetworkConversionConfiguration sharedInstance].currency shouldReport:YES];
     }
-    NSArray *windows = [TikTokSKAdNetworkConversionConfiguration sharedInstance].conversionValueWindows;
+    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    id dicObj = [defaults objectForKey:TTAccumulatedSKANValuesKey];
+    NSMutableDictionary *accumulatedValues = [NSMutableDictionary dictionary];
+    NSNumber *accumulatedValue = nil;
+    if ([dicObj isKindOfClass:[NSDictionary class]]) {
+        accumulatedValues = [(NSDictionary *)dicObj mutableCopy];
+        accumulatedValue = [accumulatedValues objectForKey:eventName];
+    }
+    eventValue = [NSNumber numberWithDouble:[accumulatedValue doubleValue] + [eventValue doubleValue]];
+    [accumulatedValues setObject:eventValue forKey:eventName];
+    [defaults setObject:accumulatedValues.copy forKey:TTAccumulatedSKANValuesKey];
+    [defaults synchronize];
+    
+    NSArray *windows = [TikTokSKAdNetworkConversionConfiguration sharedInstance].conversionValueWindows;
     
     for (TikTokSKAdNetworkWindow * window in windows) {
         if (currentWindow == window.postbackIndex) {
-            NSInteger fineValue = [[defaults objectForKey:@"latestFineValue"] integerValue];
-            NSString *coarseValue = [defaults objectForKey:@"latestCoarseValue"];
+            NSInteger fineValue = [[defaults objectForKey:TTLatestFineValueKey] integerValue];
+            NSString *coarseValue = [defaults objectForKey:TTLatestCoarseValueKey];
             if (!TTCheckValidString(coarseValue)) {
                 coarseValue = @"low";
             }
             BOOL shouldLock = NO;
-            BOOL shouldUpdate = NO;
-            BOOL matchedFine = NO;
-            BOOL matchedCoarse = NO;
+            BOOL shouldUpdateFine = NO;
+            BOOL shouldUpdateCoarse = NO;
             NSArray *fineRules = window.fineValueRules;
             for (TikTokSKAdNetworkRule *rule in fineRules) {
-                if (matchedFine) {
-                    break;
-                }
                 for (TikTokSKAdNetworkRuleEvent *ruleEvent in rule.eventFunnel) {
                     if ([eventName isEqualToString:ruleEvent.eventName]) {
                         BOOL valueMatched = ([eventValue doubleValue] > [ruleEvent.minRevenue doubleValue]) || ([ruleEvent.minRevenue doubleValue] == 0 && [ruleEvent.maxRevenue doubleValue] == 0);
                         ruleEvent.isMatched = valueMatched;
-                        matchedFine = valueMatched;
-                        if ([rule isMatched]) {
+                        if ([rule isMatched] && !shouldUpdateFine) {
                             fineValue = rule.fineConversionValue;
-                            [defaults setObject:@(fineValue) forKey:@"latestFineValue"];
+                            [defaults setObject:@(fineValue) forKey:TTLatestFineValueKey];
                             [defaults synchronize];
-                            shouldUpdate = YES;
+                            shouldUpdateFine = YES;
                             break;
                         }
                     }
@@ -126,26 +134,22 @@ static const long long thirdWindowEnds = 3024000000;
             }
             NSArray *coarseRules = window.coarseValueRules;
             for (TikTokSKAdNetworkRule *rule in coarseRules) {
-                if (matchedCoarse) {
-                    break;
-                }
                 for (TikTokSKAdNetworkRuleEvent *ruleEvent in rule.eventFunnel) {
                     if ([eventName isEqualToString:ruleEvent.eventName]) {
                         BOOL valueMatched = ([eventValue doubleValue] > [ruleEvent.minRevenue doubleValue]) || ([ruleEvent.minRevenue doubleValue] == 0 && [ruleEvent.maxRevenue doubleValue] == 0);
                         ruleEvent.isMatched = valueMatched;
-                        matchedCoarse = valueMatched;
-                        if ([rule isMatched]) {
+                        if ([rule isMatched] && !shouldUpdateCoarse) {
                             coarseValue = rule.coarseConversionValue;
-                            [defaults setObject:coarseValue forKey:@"latestCoarseValue"];
+                            [defaults setObject:coarseValue forKey:TTLatestCoarseValueKey];
                             [defaults synchronize];
-                            shouldUpdate = YES;
+                            shouldUpdateCoarse = YES;
                             break;
                         }
                     }
                 }
             }
             
-            if (shouldUpdate) {
+            if (shouldUpdateFine || shouldUpdateCoarse) {
                 [self TTUpdateConversionValue:fineValue coarseValue:coarseValue lockWindow:shouldLock completionHandler:^(NSError *error) {
                     NSMutableDictionary *skanUpdateCVMeta = @{
                         @"fine": @(fineValue),

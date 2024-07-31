@@ -60,23 +60,15 @@ NSString * const SKANEventsFileName = @"com-tiktok-sdk-SKANEventsPersistedEvents
         }
         [existingEvents addObject:skanEvent.copy];
         BOOL result;
-        if (@available(iOS 11, *)) {
-            NSError *errorArchiving = nil;
-            // archivedDataWithRootObject:requiringSecureCoding: available iOS 11.0+
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:existingEvents requiringSecureCoding:NO error:&errorArchiving];
-            if (data && errorArchiving == nil) {
-                NSError *errorWriting = nil;
-                result = [data writeToFile:path options:NSDataWritingAtomic error:&errorWriting];
-                result = result && (errorWriting == nil);
-            } else {
-                result = NO;
-            }
+        NSError *errorArchiving = nil;
+        // archivedDataWithRootObject:requiringSecureCoding: available iOS 11.0+
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:existingEvents requiringSecureCoding:NO error:&errorArchiving];
+        if (data && errorArchiving == nil) {
+            NSError *errorWriting = nil;
+            result = [data writeToFile:path options:NSDataWritingAtomic error:&errorWriting];
+            result = result && (errorWriting == nil);
         } else {
-            // archiveRootObject used for iOS versions below 11.0
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            result = [NSKeyedArchiver archiveRootObject:existingEvents toFile:path];
-    #pragma clang diagnostic pop
+            result = NO;
         }
         if(!result == YES) {
             [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to persist to disk"];
@@ -161,23 +153,15 @@ NSString * const SKANEventsFileName = @"com-tiktok-sdk-SKANEventsPersistedEvents
             existingEvents = [existingEventsSliced mutableCopy];
         }
         
-        if (@available(iOS 11, *)) {
-            NSError *errorArchiving = nil;
-            // archivedDataWithRootObject:requiringSecureCoding: available iOS 11.0+
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:existingEvents requiringSecureCoding:NO error:&errorArchiving];
-            if (data && errorArchiving == nil) {
-                NSError *errorWriting = nil;
-                result = [data writeToFile:path options:NSDataWritingAtomic error:&errorWriting];
-                result = result && (errorWriting == nil);
-            } else {
-                result = NO;
-            }
+        NSError *errorArchiving = nil;
+        // archivedDataWithRootObject:requiringSecureCoding: available iOS 11.0+
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:existingEvents requiringSecureCoding:NO error:&errorArchiving];
+        if (data && errorArchiving == nil) {
+            NSError *errorWriting = nil;
+            result = [data writeToFile:path options:NSDataWritingAtomic error:&errorWriting];
+            result = result && (errorWriting == nil);
         } else {
-            // archiveRootObject used for iOS versions below 11.0
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            result = [NSKeyedArchiver archiveRootObject:existingEvents toFile:path];
-#pragma clang diagnostic pop
+            result = NO;
         }
         
         if(result == YES) {
@@ -214,20 +198,12 @@ NSString * const SKANEventsFileName = @"com-tiktok-sdk-SKANEventsPersistedEvents
     NSMutableArray *events = [NSMutableArray array];
     if (!canSkipDiskCheck) {
         @try {
-            if (@available(iOS 11, *)) {
-                NSData *data = [NSData dataWithContentsOfFile:path];
-                NSError *errorUnarchiving = nil;
-                // initForReadingFromData:error: available iOS 11.0+
-                NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&errorUnarchiving];
-                [unarchiver setRequiresSecureCoding:NO];
-                [events addObjectsFromArray:[unarchiver decodeObjectOfClass:[NSArray class] forKey:NSKeyedArchiveRootObjectKey]];
-            } else {
-                // unarchiveObjectWithFile used for iOS versions below 11.0
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                [events addObjectsFromArray:[NSKeyedUnarchiver unarchiveObjectWithFile:path]];
-#pragma clang diagnostic pop
-            }
+            NSData *data = [NSData dataWithContentsOfFile:path];
+            NSError *errorUnarchiving = nil;
+            // initForReadingFromData:error: available iOS 11.0+
+            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&errorUnarchiving];
+            [unarchiver setRequiresSecureCoding:NO];
+            [events addObjectsFromArray:[unarchiver decodeObjectOfClass:[NSArray class] forKey:NSKeyedArchiveRootObjectKey]];
         } @catch (NSException *exception) {
             [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to read from disk" exception:exception];
             // if exception is caused and failed to read from disk, delete the file
@@ -263,20 +239,12 @@ NSString * const SKANEventsFileName = @"com-tiktok-sdk-SKANEventsPersistedEvents
 + (NSUInteger)persistedAppEventsCount {
     @try {
         NSMutableArray *events = [NSMutableArray array];
-        if (@available(iOS 11, *)) {
-            NSData *data = [NSData dataWithContentsOfFile:[self getAppEventsFilePath]];
-            NSError *errorUnarchiving = nil;
-            // initForReadingFromData:error: available iOS 11.0+
-            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&errorUnarchiving];
-            [unarchiver setRequiresSecureCoding:NO];
-            [events addObjectsFromArray:[unarchiver decodeObjectOfClass:[NSArray class] forKey:NSKeyedArchiveRootObjectKey]];
-        } else {
-            // unarchiveObjectWithFile used for iOS versions below 11.0
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            [events addObjectsFromArray:[NSKeyedUnarchiver unarchiveObjectWithFile:[self getAppEventsFilePath]]];
-#pragma clang diagnostic pop
-        }
+        NSData *data = [NSData dataWithContentsOfFile:[self getAppEventsFilePath]];
+        NSError *errorUnarchiving = nil;
+        // initForReadingFromData:error: available iOS 11.0+
+        NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&errorUnarchiving];
+        [unarchiver setRequiresSecureCoding:NO];
+        [events addObjectsFromArray:[unarchiver decodeObjectOfClass:[NSArray class] forKey:NSKeyedArchiveRootObjectKey]];
         return events.count;
     } @catch (NSException *exception) {
         [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to read from disk" exception:exception];

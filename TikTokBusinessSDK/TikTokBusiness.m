@@ -34,6 +34,7 @@
 @interface TikTokBusiness()
 
 @property (nonatomic, weak) id<TikTokLogger> logger;
+@property (nonatomic) BOOL initialized;
 @property (nonatomic) BOOL enabled;
 @property (nonatomic) BOOL trackingEnabled;
 @property (nonatomic) BOOL automaticTrackingEnabled;
@@ -95,6 +96,7 @@ static dispatch_once_t onceToken = 0;
     self.appTrackingDialogSuppressed = NO;
     self.SKAdNetworkSupportEnabled = YES;
     self.exchangeErrReportRate = 0.01;
+    self.isRemoteSwitchOn = YES;
     
     [self checkAttStatus];
 
@@ -106,8 +108,12 @@ static dispatch_once_t onceToken = 0;
 + (void)initializeSdk:(TikTokConfig *)tiktokConfig
 {
     @synchronized (self) {
-        [[TikTokBusiness getInstance] initializeSdk: tiktokConfig];
+        [[TikTokBusiness getInstance] initializeSdk: tiktokConfig completionHandler:nil];
     }
+}
+
++ (void)initializeSdk: (nullable TikTokConfig *)tiktokConfig completionHandler:(void (^)(BOOL success, NSError * _Nullable error))completionHandler {
+    [[TikTokBusiness getInstance] initializeSdk: tiktokConfig completionHandler:completionHandler];
 }
 
 + (void)trackEvent:(NSString *)eventName
@@ -232,6 +238,12 @@ withType:(NSString *)type
     }
 }
 
++ (BOOL)isInitialized {
+    @synchronized (self) {
+        return [[TikTokBusiness getInstance] isInitialized];
+    }
+}
+
 + (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion
 {
     @synchronized (self) {
@@ -297,7 +309,7 @@ withType:(NSString *)type
 
 // MARK: - private
 
-- (void)initializeSdk:(TikTokConfig *)tiktokConfig
+- (void)initializeSdk:(TikTokConfig *)tiktokConfig completionHandler:(void (^)(BOOL, NSError * _Nullable))completionHandler
 {
     if (self.queue != nil) {
         [self.logger warn:@"TikTok SDK has been initialized already!"];
@@ -323,6 +335,7 @@ withType:(NSString *)type
 
     self.requestHandler = [TikTokFactory getRequestHandler];
     self.queue = [[TikTokAppEventQueue alloc] initWithConfig:tiktokConfig];
+    self.initialized = NO;
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:@"true" forKey:@"AreTimersOn"];
@@ -334,6 +347,27 @@ withType:(NSString *)type
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [defaultCenter addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    
+    if (completionHandler) {
+        if (!TTCheckValidString(tiktokConfig.appId) || !TTCheckValidString(tiktokConfig.tiktokAppId)) {
+            NSError *error = [NSError errorWithDomain:@"com.TikTokBusinessSDK.error"
+                                                 code:-2
+                                             userInfo:@{
+                NSLocalizedDescriptionKey : @"Invalid appId or tiktokAppId, SDK not initialized",
+            }];
+            completionHandler(NO, error);
+        } else if (!tiktokConfig.trackingEnabled) {
+            NSError *error = [NSError errorWithDomain:@"com.TikTokBusinessSDK.error"
+                                                 code:-1
+                                             userInfo:@{
+                NSLocalizedDescriptionKey : @"tracking not enabled, SDK not initialized",
+            }];
+            completionHandler(NO, error);
+        } else {
+            self.initialized = YES;
+            completionHandler(YES, nil);
+        }
+    }
     
 }
 
@@ -689,6 +723,10 @@ withType:(NSString *)type
     return self.userTrackingEnabled;
 }
 
+- (BOOL)isInitialized {
+    return self.initialized;
+}
+
 - (void)getGlobalConfig:(TikTokConfig *)tiktokConfig
   isFirstInitialization: (BOOL)isFirstInitialization
 {
@@ -703,6 +741,7 @@ withType:(NSString *)type
             [defaults setObject:@"false" forKey:@"AreTimersOn"];
             [defaults synchronize];
             self.queue.timeInSecondsUntilFlush = 0;
+            [self.queue clear];
             return;
         }
         [self loadUserAgent];
@@ -721,10 +760,11 @@ withType:(NSString *)type
             self.exchangeErrReportRate = 1;
             if (self.SKAdNetworkSupportEnabled) {
                 NSInteger currentWindow = [[TikTokSKAdNetworkSupport sharedInstance] getConversionWindowForTimestamp:[TikTokAppEventUtility getCurrentTimestamp]];
-                if ([[defaults objectForKey:@"SKANTimeWindow"] integerValue] != currentWindow) {
-                    [defaults setObject:@(currentWindow) forKey:@"SKANTimeWindow"];
-                    [defaults removeObjectForKey:@"latestFineValue"];
-                    [defaults removeObjectForKey:@"latestCoarseValue"];
+                if ([[defaults objectForKey:TTSKANTimeWindowKey] integerValue] != currentWindow) {
+                    [defaults setObject:@(currentWindow) forKey:TTSKANTimeWindowKey];
+                    [defaults removeObjectForKey:TTLatestFineValueKey];
+                    [defaults removeObjectForKey:TTLatestCoarseValueKey];
+                    [defaults removeObjectForKey:TTAccumulatedSKANValuesKey];
                     [defaults synchronize];
                     [TikTokAppEventStore clearPersistedSKANEvents];
                 }

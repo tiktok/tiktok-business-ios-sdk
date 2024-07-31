@@ -56,16 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)initWithConfig: (TikTokConfig * _Nullable)config;
 
 /**
- * @brief Function called for flush timer updates (to account for before iOS 10)
- */
-- (void)handleFlushTimerUpdate:(NSTimer*)timer;
-
-/**
- * @brief Function called for log timer updates (to account for before iOS 10)
- */
-- (void)handleLogTimerUpdate:(NSTimer*)timer;
-
-/**
  * @brief Add event to queue
  */
 - (void)addEvent:(TikTokAppEvent *)event;
@@ -90,6 +80,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)initializeLogTimer;
 
+/**
+ * @brief Clear cached events.
+ */
+- (void)clear;
 @end
 
 NS_ASSUME_NONNULL_END

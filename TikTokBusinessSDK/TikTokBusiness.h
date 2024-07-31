@@ -40,6 +40,20 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)initializeSdk: (nullable TikTokConfig *)tiktokConfig;
 
 /**
+ * @brief This method should be called in the didFinishLaunching method of your AppDelegate
+ *        This is required to initialize the TikTokBusinessSDK
+ *
+ * @note See TikTokConfig.h for more configuration options
+ *
+ * @param tiktokConfig The configuration object must be initialized before this function is called.
+ *                     This object contains the accessToken, appId and tiktokAppId which can be acquired from
+ *                     TikTok's Marketing API dashboard.
+ *
+ * @param completionHandler Callback for starting the SDK.
+*/
++ (void)initializeSdk: (nullable TikTokConfig *)tiktokConfig completionHandler:(void (^)(BOOL success, NSError * _Nullable error))completionHandler;
+
+/**
  * @brief This method should be called whenever an event needs to be tracked
  *
  * @note See TikTokBaseEvent.h for more event options.
@@ -212,6 +226,11 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief This method returns true if SDK is in LDU mode
  */
 + (BOOL)isLDUMode;
+
+/**
+ * @brief Use this method to check if the SDK is initialized.
+*/
++ (BOOL)isInitialized;
 
 /**
  *  @brief Obtain singleton TikTokBusiness class
