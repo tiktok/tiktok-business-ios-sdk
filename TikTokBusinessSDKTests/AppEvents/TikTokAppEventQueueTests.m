@@ -53,6 +53,14 @@
     [TikTokBusiness resetInstance];
 }
 
+- (void)testIdentify {
+    [TikTokBusiness identifyWithExternalID:@"aaa" externalUserName:@"bbb" phoneNumber:@"ccc" email:@"ddd"];
+}
+
+- (void)testLogout {
+    [TikTokBusiness logout];
+}
+
 - (void)testAddEvent {
     TikTokAppEvent *event = [[TikTokAppEvent alloc] initWithEventName:@"LaunchAPP"];
     

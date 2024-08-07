@@ -10,6 +10,7 @@
 #import "TikTokSKAdNetworkSupport.h"
 #import "TikTokSKAdNetworkConversionConfiguration.h"
 #import "TikTokCurrencyUtility.h"
+#import "TikTokCurrencyUtility.h"
 
 @interface TikTokSKAdNetworkSupportTests : XCTestCase
 
@@ -24,7 +25,7 @@
     NSError *err;
     NSDictionary *configDic = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:&err];
     [[TikTokSKAdNetworkConversionConfiguration sharedInstance] configWithDict:configDic];
-    [[TikTokCurrencyUtility sharedInstance] configWithDict:@{@"USD": @(1.0)}];
+    [[TikTokCurrencyUtility sharedInstance] configWithDict:@{@"USD": @(1.0), @"CNY": @(7.1)}];
 }
 
 - (void)tearDown {
@@ -33,6 +34,10 @@
 
 - (void)testMatch {
     [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:@"Purchase" withValue:@"30" currency:@"USD"];
+}
+
+- (void)testExchange {
+    XCTAssertTrue([[[TikTokCurrencyUtility sharedInstance] exchangeAmount:@(1) fromCurrency:@"USD" toCurrency:@"CNY" shouldReport:YES] doubleValue] == 7.1);
 }
 
 @end

@@ -28,12 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Timer for flush
  */
-@property (nonatomic, strong) NSTimer *flushTimer;
-
-/**
- * @brief Timer for logging
- */
-@property (nonatomic, strong) NSTimer *logTimer;
+@property (nonatomic, strong, nullable) NSTimer *flushTimer;
 
 /**
  * @brief Time in seconds until flush
@@ -74,11 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Initialize flush timer with normal flush period
  */
 - (void)initializeFlushTimer;
-
-/**
- * @brief Initialize log timer
- */
-- (void)initializeLogTimer;
 
 /**
  * @brief Clear cached events.

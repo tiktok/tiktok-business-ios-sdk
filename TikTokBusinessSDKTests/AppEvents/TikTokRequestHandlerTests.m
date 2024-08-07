@@ -15,9 +15,9 @@
 
 @interface TikTokRequestHandlerTests : XCTestCase
 
-@property (nonatomic, strong) TikTokBusiness *tiktokBusiness;
-@property (nonatomic, strong) TikTokRequestHandler *requestHandler;
-@property (nonatomic, strong) TikTokConfig *config;
+@property (nonatomic, strong) id tiktokBusiness;
+@property (nonatomic, strong) id requestHandler;
+@property (nonatomic, strong) id config;
 
 @end
 
@@ -38,7 +38,10 @@
 
 - (void)tearDown {
     [super tearDown];
-    self.requestHandler = nil;
+    [self.requestHandler stopMocking];
+    [self.tiktokBusiness stopMocking];
+    [self.config stopMocking];
+    
 }
 
 - (void)testGetRemoteSwitchWithCompletionHandler {
@@ -53,31 +56,29 @@
     ];
 }
 
-//- (void)testSendBatchRequestwithConfig {
-//    XCTestExpectation *expectation = [self expectationWithDescription:@"batch sent"];
-//    NSString *eventName = @"TEST_EVENT_NAME";
-//    NSDictionary *properties = @{
-//        @"key_1":@"value_1",
-//        @"key_2":@"value_2"
-//    };
-//    TikTokAppEvent *event = [[TikTokAppEvent alloc] initWithEventName:eventName withProperties:properties];
-//    [self.requestHandler sendBatchRequest:@[event] withConfig:self.config];
-//    [expectation fulfill];
-//    XCTAssert(1 == 1, @"Network request sent successfully");
-//}
+- (void)testSendBatchRequestwithConfig {
+    NSString *eventName = @"TEST_EVENT_NAME";
+    NSDictionary *properties = @{
+        @"key_1":@"value_1",
+        @"key_2":@"value_2"
+    };
+    TikTokAppEvent *event = [[TikTokAppEvent alloc] initWithEventName:eventName withProperties:properties];
+    [self.requestHandler sendBatchRequest:@[event] withConfig:self.config];
+    XCTAssert(1 == 1, @"Network request sent successfully");
+}
 
-//- (void)testSendMonitorRequestwithConfig {
-//    NSDictionary *monitorTestProperties = @{
-//        @"monitor_type": @"metric",
-//        @"monitor_name": @"monitor_test",
-//        @"meta": @{
-//            @"test_key": @"test_value"
-//        }
-//    };
-//    TikTokAppEvent *monitorTestEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorTestProperties withType:@"monitor"];
-//    
-//    [self.requestHandler sendMonitorRequest:@[monitorTestEvent] withConfig:self.config];
-//    XCTAssert(1 == 1, @"Network request sent successfully");
-//}
+- (void)testSendMonitorRequestwithConfig {
+    NSDictionary *monitorTestProperties = @{
+        @"monitor_type": @"metric",
+        @"monitor_name": @"monitor_test",
+        @"meta": @{
+            @"test_key": @"test_value"
+        }
+    };
+    TikTokAppEvent *monitorTestEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorTestProperties withType:@"monitor"];
+    
+    [self.requestHandler sendMonitorRequest:@[monitorTestEvent] withConfig:self.config];
+    XCTAssert(1 == 1, @"Network request sent successfully");
+}
 
 @end

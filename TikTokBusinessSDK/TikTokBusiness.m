@@ -75,6 +75,11 @@ static dispatch_once_t onceToken = 0;
   }
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (id)init
 {
     self = [super init];
