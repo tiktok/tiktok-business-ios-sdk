@@ -97,7 +97,10 @@ class EventViewController: UIViewController {
         
         finalPayloadTextView.frame = CGRect(x: 50, y: 200, width: 300, height: 200)
         finalPayloadTextView.layer.borderWidth = 1
-        finalPayloadTextView.layer.borderColor = UIColor.black.cgColor
+        finalPayloadTextView.layer.cornerRadius = 8
+        finalPayloadTextView.layer.borderColor = UIColor.lightGray.cgColor
+        finalPayloadTextView.isScrollEnabled = true
+        finalPayloadTextView.textColor = .black
         view.addSubview(finalPayloadTextView)
         
         numberOfEventsField.frame = CGRect(x: 50, y: 410, width: 300, height: 40)

@@ -50,6 +50,7 @@
 		2B3368CC2BFCBF1E00E8D51C /* TikTokCurrencyUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3368CA2BFCBF1E00E8D51C /* TikTokCurrencyUtility.m */; };
 		2B3368F92BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3368F82BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.m */; };
 		2B3368FA2BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3368F72BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.h */; };
+		2B4E17732C62A121003644EA /* DeeplinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E17722C62A121003644EA /* DeeplinkViewController.swift */; };
 		2B6C2D9A2BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2B6C2D992BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy */; };
 		2B870C022BF1F619009CB42C /* TikTokBaseEventTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B870C012BF1F619009CB42C /* TikTokBaseEventTests.m */; };
 		2B870C042BF1FB21009CB42C /* TikTokContentsEventTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B870C032BF1FB21009CB42C /* TikTokContentsEventTests.m */; };
@@ -180,6 +181,7 @@
 		2B3368CA2BFCBF1E00E8D51C /* TikTokCurrencyUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokCurrencyUtility.m; sourceTree = "<group>"; };
 		2B3368F72BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TikTokSKAdNetworkRuleEvent.h; sourceTree = "<group>"; };
 		2B3368F82BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokSKAdNetworkRuleEvent.m; sourceTree = "<group>"; };
+		2B4E17722C62A121003644EA /* DeeplinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkViewController.swift; sourceTree = "<group>"; };
 		2B6C2D992BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2B870C012BF1F619009CB42C /* TikTokBaseEventTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokBaseEventTests.m; sourceTree = "<group>"; };
 		2B870C032BF1FB21009CB42C /* TikTokContentsEventTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokContentsEventTests.m; sourceTree = "<group>"; };
@@ -446,6 +448,7 @@
 			children = (
 				8BB88F1D250A96CA00EC9D74 /* AppDelegate.swift */,
 				8BB88F21250A96CA00EC9D74 /* MainTableViewController.swift */,
+				2B4E17722C62A121003644EA /* DeeplinkViewController.swift */,
 				8BB88F36250A9A4100EC9D74 /* EventViewController.swift */,
 				2B1138532B9EEDC200215812 /* InitViewController.swift */,
 				2B1138552B9EF2A900215812 /* IdentifyViewController.swift */,
@@ -708,6 +711,7 @@
 				2B1138542B9EEDC200215812 /* InitViewController.swift in Sources */,
 				2B1138562B9EF2A900215812 /* IdentifyViewController.swift in Sources */,
 				8BB88F37250A9A4100EC9D74 /* EventViewController.swift in Sources */,
+				2B4E17732C62A121003644EA /* DeeplinkViewController.swift in Sources */,
 				8BB88F22250A96CA00EC9D74 /* MainTableViewController.swift in Sources */,
 				8BEA4661252E96F800E12E0E /* PurchaseViewController.swift in Sources */,
 				8BB88F1E250A96CA00EC9D74 /* AppDelegate.swift in Sources */,

@@ -8,7 +8,7 @@
 import UIKit
 
 class MainTableViewController: UITableViewController {
-    let options = ["Init", "Events", "Identify", "EventLogs", "Purchase"]
+    let options = ["Init", "Events", "Identify", "DeepLink", "Purchase"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,8 +43,8 @@ class MainTableViewController: UITableViewController {
             navigationController?.pushViewController(identifyVC, animated: true)
             break
         case 3:
-//            let eventLogsVC = PurchaseViewController()
-//            navigationController?.pushViewController(eventLogsVC, animated: true)
+            let deeplinkVC = DeepLinkViewController()
+            navigationController?.pushViewController(deeplinkVC, animated: true)
             break
         case 4:
             let purchaseVC = PurchaseViewController()

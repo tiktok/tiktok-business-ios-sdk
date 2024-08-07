@@ -24,6 +24,7 @@ class InitViewController: UIViewController {
     var appTrackingDialogSuppressedSwitch: UISwitch!
     var SKAdNetworkSupportEnabledSwitch: UISwitch!
     var LDUModeEnabledSwitch: UISwitch!
+    var statusLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -149,6 +150,12 @@ class InitViewController: UIViewController {
         initButton.setTitle("Initialize SDK", for: .normal)
         initButton.addTarget(self, action: #selector(initSDK), for: .touchUpInside)
         view.addSubview(initButton)
+        
+        statusLabel = UILabel(frame: CGRect(x: 20, y: 610, width: 300, height: 100))
+        statusLabel.numberOfLines = 0
+        statusLabel.lineBreakMode = .byWordWrapping
+        statusLabel.text = TikTokBusiness.isInitialized() ? "SDK initialized" : "SDK not initialized"
+        view.addSubview(statusLabel)
     }
 
     @objc func initSDK() {
@@ -196,7 +203,14 @@ class InitViewController: UIViewController {
 
             */
             /* ADD LINE HERE */
-            TikTokBusiness.initializeSdk(config)
+            TikTokBusiness.initializeSdk(config) { success, error in
+                if (!success) {
+                    print(error!.localizedDescription)
+                } else {
+                    self.statusLabel.text = "SDK initialized"
+                    TikTokBusiness.trackEvent("testEventinit")
+                }
+            }
             
             /* UNCOMMENT TO CUSTOMIZE AFTER INITIALIZING SDK
      

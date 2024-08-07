@@ -37,6 +37,14 @@
     return [self initWithConfig:nil];
 }
 
+- (void)dealloc
+{
+    if (self.flushTimer) {
+        [self.flushTimer invalidate];
+        self.flushTimer = nil;
+    }
+}
+
 - (id)initWithConfig:(TikTokConfig *)config
 {
     self = [super init];
@@ -55,8 +63,6 @@
     } else {
         [self initializeFlushTimer];
     }
-    
-    [self initializeLogTimer];
     
     self.config = config;
     
@@ -93,20 +99,6 @@
         repeats:YES block:^(NSTimer *timer) {
         if ([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
             [weakSelf flush:TikTokAppEventsFlushReasonTimer];
-        }
-    }];
-}
-
-- (void)initializeLogTimer
-{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    self.logTimer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer *time) {
-        if([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]){
-            NSDate *fireDate = [self.flushTimer fireDate];
-            NSDate *nowDate = [NSDate date];
-            self.timeInSecondsUntilFlush = [fireDate timeIntervalSinceDate:nowDate];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"timeLeft" object:nil];
         }
     }];
 }
