@@ -6,11 +6,15 @@
 //
 
 #import "TikTokUserAgentCollector.h"
-#import <WebKit/WKWebView.h>
+#import "TikTokBusinessSDKMacros.h"
+#import "TikTokTypeUtility.h"
+
+static NSString *TT_UserAgent = @"TT_UserAgent";
 
 @interface TikTokUserAgentCollector()
 
 @property (nonatomic, strong, readwrite) WKWebView *webView;
+@property (nonatomic, assign) BOOL updatedUa;
 
 @end
 
@@ -29,57 +33,66 @@
 - (instancetype)init
 {
     self = [super init];
-    if(self == nil){
-        return nil;
+    if(self) {
+        self.userAgent = [[NSUserDefaults standardUserDefaults] objectForKey:TT_UserAgent];
+        self.updatedUa = NO;
     }
     return self;
 }
 
 - (void)loadUserAgentWithCompletion:(void (^)(NSString * _Nullable))completion
 {
-    [self collectUserAgentWithCompletion: ^(NSString * _Nullable userAgent) {
-        if(self.userAgent == nil){
-            self.userAgent = userAgent;
+    if (!self.updatedUa && !TTCheckValidString(self.userAgent)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!self.webView) {
+                @try {
+                    self.webView = [[WKWebView alloc] initWithFrame:CGRectZero];
+                } @catch (NSException *exception) {
+                } @finally {
+                }
+            }
+            [self _update];
+        });
+    }
+    if (completion) {
+        completion(self.userAgent);
+    }
+}
+
+- (void)_update {
+    if (!self.webView) {
+        return;
+    }
+    tt_weakify(self)
+    [self.webView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+        tt_strongify(self)
+        if (!TTCheckValidString(result)) {
+            // Don't replace the existing value if fetched nil.
+            return;
         }
-        if(completion){
-            completion(userAgent);
+        self.userAgent = result;
+        self.updatedUa = YES;
+        if (TTCheckValidString(result)) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+                [userDefaults setObject:result forKey:TT_UserAgent];
+                [userDefaults synchronize];
+            });
         }
     }];
 }
 
-- (void)collectUserAgentWithCompletion:(void (^)(NSString *userAgent))completion
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (!self.webView) {
-            self.webView = [[WKWebView alloc] initWithFrame:CGRectZero];
-        }
-        
-        [self.webView evaluateJavaScript:@"navigator.userAgent;" completionHandler:^(id _Nullable response, NSError * _Nullable error) {
-            if (completion) {
-                if (response) {
-                    // release the webview
-                    self.webView = nil;
-                    
-                    completion(response);
-                } else {
-                    // retry if we failed to obtain user agent.  This occasionally occurs on simulator.
-                    [self collectUserAgentWithCompletion:completion];
-                }
-            }
-        }];
-    });
-}
-
-+ (void)setUserAgent:(NSString *)userAgent
-{
-    @synchronized (self) {
-        [[TikTokUserAgentCollector singleton] setUserAgent:userAgent];
-    }
-}
-
-- (void)setUserAgent:(NSString *)userAgent
+- (void)setCustomUserAgent:(NSString *)userAgent
 {
     _userAgent = userAgent;
+    self.updatedUa = YES;
+    if (TTCheckValidString(userAgent)) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+            [userDefaults setObject:userAgent forKey:TT_UserAgent];
+            [userDefaults synchronize];
+        });
+    }
 }
 
 @end

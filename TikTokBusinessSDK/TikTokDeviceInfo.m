@@ -17,8 +17,6 @@
 
 @interface TikTokDeviceInfo()
 
-@property (nonatomic, strong, readwrite) WKWebView *webView;
-
 @end
 
 @implementation TikTokDeviceInfo
@@ -60,25 +58,6 @@
 - (NSString *)getUserAgent
 {
     return [TikTokUserAgentCollector singleton].userAgent;
-}
-
-- (void)collectUserAgentWithCompletion:(void (^)(NSString *userAgent))completion {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (!self.webView) {
-            self.webView = [[WKWebView alloc] initWithFrame:CGRectZero];
-        }
-        
-        [self.webView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable response, NSError * _Nullable error) {
-            if(completion){
-                if(response) {
-                    self.webView = nil;
-                    completion(response);
-                } else {
-                    [self collectUserAgentWithCompletion:completion];
-                }
-            }
-        }];
-    });
 }
 
 

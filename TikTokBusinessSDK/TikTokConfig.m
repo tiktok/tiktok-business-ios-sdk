@@ -93,7 +93,7 @@
 
 - (void)setCustomUserAgent: (NSString *)customUserAgent
 {
-    [[TikTokUserAgentCollector singleton] setUserAgent:customUserAgent];
+    [[TikTokUserAgentCollector singleton] setCustomUserAgent:customUserAgent];
     [self.logger info:@"[TikTokConfig] User Agent set to: %@", customUserAgent];
 }
 
