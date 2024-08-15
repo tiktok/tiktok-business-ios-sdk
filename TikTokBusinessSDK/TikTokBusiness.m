@@ -379,10 +379,10 @@ withType:(NSString *)type
 - (void)monitorInitialization:(NSNumber *)initStartTime andEndTime:(NSNumber *)initEndTime
 {
     NSDictionary *startMeta = @{
-        @"ts": initStartTime,
+        @"ts": [NSNumber numberWithDouble:[initStartTime doubleValue]],
     };
     NSDictionary *endMeta = @{
-        @"ts": initEndTime,
+        @"ts": [NSNumber numberWithDouble:[initEndTime doubleValue]],
         @"latency": [NSNumber numberWithDouble:[initEndTime floatValue] - [initStartTime floatValue]],
     };
     NSDictionary *monitorInitStartProperties = @{
@@ -641,7 +641,7 @@ withType:(NSString *)type
 
 - (void)setCustomUserAgent:(NSString *)customUserAgent
 {
-    [[TikTokUserAgentCollector singleton] setUserAgent:customUserAgent];
+    [[TikTokUserAgentCollector singleton] setCustomUserAgent:customUserAgent];
 }
 
 - (void)updateAccessToken:(nonnull NSString *)accessToken

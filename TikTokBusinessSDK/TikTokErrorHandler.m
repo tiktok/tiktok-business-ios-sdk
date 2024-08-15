@@ -137,7 +137,16 @@ static void handleUncaughtException(NSException *exception)
 
 + (nullable NSData *)_loadCrashLog:(NSString *)crashLog
 {
-  return [NSData dataWithContentsOfFile:[directoryPath stringByAppendingPathComponent:crashLog] options:NSDataReadingMappedIfSafe error:nil];
+    NSData *resultData = nil;
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *path = [directoryPath stringByAppendingPathComponent:crashLog];
+    BOOL exists = [fm fileExistsAtPath:path];
+    if (exists) {
+        resultData = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:nil];
+    } else {
+        resultData = nil;
+    }
+  return resultData;
 }
 
 + (NSArray<NSString *> *)_getCrashLogFileNames:(NSArray<NSString *> *)files

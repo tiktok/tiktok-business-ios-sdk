@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define SDK_VERSION @"1.3.5"
+#define SDK_VERSION @"1.3.6"
 
 #define TT_CONFIG_PATH @"/api/v1/app_sdk/config"
 #define TT_BATCH_EVENT_PATH @"/api/v1/app_sdk/batch"
@@ -31,3 +31,18 @@ FOUNDATION_EXPORT NSString * const TTUserDefaultsKey_firstLaunchTime;
 #define TTSafeString(__string)                        ((__string && [__string isKindOfClass:[NSString class]]) ? __string :@"")
 
 #define TTSafeDictionary(__aDictionary)               ((__aDictionary && [__aDictionary isKindOfClass:[NSDictionary class]]) ? __aDictionary :@{})
+
+#ifndef tt_weakify
+#if __has_feature(objc_arc)
+#define tt_weakify(object) __weak __typeof__(object) weak##object = object;
+#else
+#define tt_weakify(object) __block __typeof__(object) block##object = object;
+#endif
+#endif
+#ifndef tt_strongify
+#if __has_feature(objc_arc)
+#define tt_strongify(object) __typeof__(object) object = weak##object;
+#else
+#define tt_strongify(object) __typeof__(object) object = block##object;
+#endif
+#endif

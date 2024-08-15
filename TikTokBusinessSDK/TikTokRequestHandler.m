@@ -62,8 +62,11 @@
     if(self.session == nil) {
         self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     }
+
     __block NSNumber *networkStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+    tt_weakify(self)
     [[self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        tt_strongify(self)
         BOOL isSwitchOn = nil;
         // handle basic connectivity issues
         if(error) {
@@ -181,7 +184,7 @@
                 @"ts": configMonitorStartTime,
                 @"latency": [NSNumber numberWithInt:[configMonitorEndTime intValue] - [configMonitorStartTime intValue]],
                 @"success": [NSNumber numberWithBool:true],
-                @"log_id": [dataDictionary objectForKey:@"request_id"],
+                @"log_id": TTSafeString([dataDictionary objectForKey:@"request_id"]),
             };
             NSDictionary *monitorUserAgentStartProperties = @{
                 @"monitor_type": @"metric",
@@ -308,8 +311,9 @@
         }
         
         __block NSNumber *networkStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+        tt_weakify(self)
         [[self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            
+            tt_strongify(self)
             // handle basic connectivity issues
             if(error) {
                 [self.logger error:@"[TikTokRequestHandler] error in connection: %@", error];
@@ -505,8 +509,9 @@
         if(self.session == nil) {
             self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
         }
+        tt_weakify(self)
         [[self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            
+            tt_strongify(self)
             // handle basic connectivity issues
             if(error) {
                 [self.logger error:@"[TikTokRequestHandler] error in connection: %@", error];
