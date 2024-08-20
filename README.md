@@ -1,41 +1,33 @@
-# TikTok Business Mobile SDK for Reporting App Events
+> [!IMPORTANT]
+> Use of the TikTok App Events SDK is governed by the [TikTok For Business Commercial Terms of Service](https://ads.tiktok.com/i18n/official/policy/commercial-terms-of-service). By using the TikTok App Events SDK, you also agree to the [TikTok Business Products (Data) Terms](https://ads.tiktok.com/i18n/official/policy/business-products-terms) and that you will not share sensitive data with TikTok.
 
-** For details including integration instructions, see the [TikTok Business Mobile SDK Documentation](https://ads.tiktok.com/marketing_api/docs?rid=rscv11ob9m9&id=1683661413969921). **
+# About TikTok App Events SDK
+The TikTok App Events SDK enables you to transmit app events, such as Installs, Add to Cart, or Purchases, directly from your mobile app to TikTok. After events are shared, you can view event data in TikTok Events Manager, create audiences for targeting, and optimize your campaigns based on the app events.
 
+For developer details including integration instructions, see [TikTok App Events SDK documentation](https://business-api.tiktok.com/portal/docs?id=1739584951798785). Marketing users should refer to the [TikTok for Business Help Center](https://ads.tiktok.com/help/article/how-to-integrate-tiktok-app-events-sdk).
 
-## Objective
-The TikTok Business SDK is the easiest way to log events (e.g. app install, purchase) in your mobile application and send these events to TikTok for targeting, measurement, conversion optimization, etc. We provide an Android SDK and an iOS SDK that you can integrate into your app easily.
-<br/>
+## Why use the TikTok App Events SDK
+1. Achieve cost savings through direct data sharing integration with TikTok
+2. Easily get started with minimal setup required for key standard events
+3. Gain access to future advanced solutions enabled by seamless SDK integration
 
-`Note`
-In essence, the SDK reports app events through the App events marketing API. See the ["Report App Events"](https://ads.tiktok.com/marketing\_api/docs?rid=8ggud9r3gfu&amp;id=1679472066464769) documentation as a source of truth of the app events/properties TikTok marketing API accepts.**
+## Supported programming languages
+- For Android OS, TikTok App Events SDK currently supports Java & Kotlin environments. 
+- For iOS, TikTok App Events SDK supports Objective-C & Swift.
 
-## How it Works
+## Supported formats
+- **Placement:** TikTok 
+- **OS:** Android and iOS (in Beta)
+- **Campaign objectives:** App Promotion (App Install & App Retargeting), Product Sales (Catalog - App)
+- **Optimization goals:** Install (Mobile App Install), In-App Event (App Event Optimization), Value (Value-Based Optimization)
 
-There are two types of app events:
+## Supported advertising features
+- **Standard and Custom Event Reporting:** TikTok App Events SDK supports reporting for both standard and custom events setup by advertisers in TikTok Ads manager. For more detail, refer to [Supported In-App Events](https://ads.tiktok.com/help/article/all-supported-in-app-events).
+- **Optimizations:** Advertisers can optimize their campaigns in TikTok Ads Manager using these optimization types - Mobile App Install (MAI), App Event Optimization (AEO) and Value Based Optimization (VBO). Advertisers can choose to drive up mobile app installs or choose to optimize for a select user action with AEO or drive their ROAS using VBO.
+- **SKAN4:** With SKAN4, advertisers can use coarse conversion values to improve their campaign optimizations and reporting. TikTok App events SDK will update conversion values based on user's behavior and TikTok Ads manager will report user events and values based on Apple's post back's by end of each conversion window. For more details on SKAN 4, refer to [Explore SKAN4 with TikTok](https://www.tiktok.com/business/en-US/blog/skan-4-ios-tiktok-ads).
+- **Customizable Attribution Windows:** App Events SDK also supports customizable attribution windows for campaign attribution and reporting. Advertisers can adjust the campaign's attribution window in attribution settings in TikTok Ads Manager. 
+- **App Retargeting campaigns:** Advertisers can easily create [App Activity Custom Audiences](https://ads.tiktok.com/help/article/app-activity) based on SDK events and use them in App Retargeting campaigns to re-engage with your existing users. Deeplink is also supported to improve the user experience. (Note: Deferred Deeplink is not supported yet)
 
-* Automatically logged app events: The TikTok business SDK automatically logs InstallApp, LaunchApp, 2DRetention, and (iOS only) Purchase app events.
-
-* Manually logged app events: You can use the function provided by the TikTok business SDK to track events specific to your app. For a complete list of app events (and properties) supported by the TikTok marketing API, see the &quot;[Report App Events](https://ads.tiktok.com/marketing_api/docs?id=1679472066464769)&quot; marketing API documentation.
-<br/>
-
-The TikTok business SDK takes the automatically/manually logged events, and reports these events to TikTok app events marketing API for downstream processing. The reported events will
-
-- [Coming soon] Show up in reporting if attributed to TikTok.
-
-- Be used for audience and DPA.
-
-- Be used in optimization models based on app events.
-
-## Benefits
-
-* Easiest way to log events (e.g. App install, purchase) in your mobile application and send these events to TikTok
-   * Automatically logs InstallApp, LaunchApp, 2DRetention, and (iOS only) Purchase.
-   * Provides simple functions to manually log events.
-   * Handles logic to save app events and flush app events to TikTok marketing API.
-
-* Currently, advertisers are only able to send app event data through their measurement partners. Some advertisers prefer to directly send app event data to TikTok.
-   * We may use this app event data for subsequent retargeting and dynamic product ads like we do with app event data forwarded from measurement partners.
-   * In the near future, we will introduce our own attribution solutions and input into our optimization models based on these app events.
-
-** For details including integration instructions, see the [TikTok Business Mobile SDK Documentation](https://ads.tiktok.com/marketing_api/docs?rid=rscv11ob9m9&id=1683661413969921). **
+## Documentation
+- Developer documentation is available in the [TikTok for Business Developers](https://business-api.tiktok.com/portal/docs?id=1739584951798785) portal.
+- Marketing user documentation is available in the [TikTok for Business Help Center](https://ads.tiktok.com/help/article/how-to-integrate-tiktok-app-events-sdk). 
