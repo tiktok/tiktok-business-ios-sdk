@@ -1,3 +1,4 @@
+
 #
 # Be sure to run `pod lib lint TikTokBusinessSDK.podspec' to ensure this is a
 # valid spec before submitting.
@@ -21,12 +22,17 @@ The TikTok Business SDK is the easiest way to log events (e.g. app install, purc
   s.source           = { :git => 'https://github.com/tiktok/tiktok-business-ios-sdk.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '12.0'
+  
+  s.frameworks = 'CoreGraphics','AdSupport','AppTrackingTransparency','StoreKit','UIKit','WebKit'
 
   s.source_files = 'TikTokBusinessSDK/**/*'
   s.exclude_files = [
       "TikTokBusinessSDK/*.plist",
       "TikTokBusinessSDK/Public/TikTokBusinessSDK/*.h"
   ]
+  s.resource_bundles = {
+    "#{s.module_name}_Privacy" => 'PrivacyInfo.xcprivacy'
+  }
   s.swift_version = '5.0'
 
 end
