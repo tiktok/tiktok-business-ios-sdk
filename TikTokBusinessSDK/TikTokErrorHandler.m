@@ -7,13 +7,19 @@
 
 #import "TikTokErrorHandler.h"
 #import "TikTokBusiness.h"
+#import "TikTokBusiness+private.h"
 #import "TikTokFactory.h"
 #import "TikTokTypeUtility.h"
 #import "TikTokRequestHandler.h"
 #import "TikTokBusinessSDKMacros.h"
+#import "TikTokAppEventStore.h"
+#import "TikTokBusinessSDKAddress.h"
 
 #define TTSDK_CRASH_PATH_NAME @"monitoring"
 #define TTSDK_KEYWORDS  [NSArray arrayWithObjects: @"TikTokBusinessSDK",nil]
+
+extern void * TikTokBusinessSDKFuncBeginAddress(void);
+extern void * TikTokBusinessSDKFuncEndAddress(void);
 
 static NSString *directoryPath;
 
@@ -29,6 +35,7 @@ NSString *const kTTSDKVersion = @"TikTok SDK Version";
 
 static void handleUncaughtException(NSException *exception)
 {
+    [TikTokAppEventStore persistAppEvents:[TikTokBusiness getQueue].eventQueue];
     [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([TikTokErrorHandler class]) message:@"Uncaught Exception" exception:exception];
 
     NSArray<NSString *> *callStack = [exception callStackSymbols];
@@ -201,6 +208,110 @@ static void handleUncaughtException(NSException *exception)
     return ([object isKindOfClass:expectedClass] ? object : nil);
 }
 
-NSUncaughtExceptionHandler *handleUncaughtExceptionPointer = &handleUncaughtException;
++ (BOOL)isSDKCrashReport:(NSString *)report {
+    int64_t beginAddress = -1;
+    int64_t endAddress = -1;
+    int crashThreadidx = -1;
+    if (![TikTokErrorHandler getBeginAddress:&beginAddress EndAddress:&endAddress fromReport:report] ||
+        ![TikTokErrorHandler getCrashThreadIndex:&crashThreadidx fromReport:report]) {
+        return NO;
+    }
+    NSString *crashStackString = [TikTokErrorHandler getCrashStackStringOfIndex:crashThreadidx fromReport:report];
+    if (!TTCheckValidString(crashStackString)) {
+        return NO;
+    }
+    NSArray *lines = [crashStackString componentsSeparatedByString:@"\n"];
+    
+    for (NSString *line in lines) {
+        if (![line containsString:@"0x"]) {
+            continue;
+        }
+        int64_t address = [TikTokErrorHandler addressInLine:TTSafeString(line)];
+        if (address > beginAddress && address < endAddress) {
+            [[TikTokFactory getLogger] verbose:@"Found stack related to SDK: %@", line];
+            return YES;
+        }
+    }
+    return NO;
+}
 
+// MARK: - String Utils
+
++ (BOOL)getBeginAddress:(int64_t *)beginAddress EndAddress:(int64_t *)endAddress fromReport:(NSString*)report {
+    NSString *rangeString = [TikTokErrorHandler getLineBeginWith:@"Address Range" fromReport:report];
+    if (!TTCheckValidString(rangeString)) {
+        return NO;
+    }
+    NSArray *addresses = [rangeString componentsSeparatedByString:@"**"];
+    if (addresses.count > 2) {
+        *beginAddress = [addresses[1] longLongValue];
+        *endAddress = [addresses[2] longLongValue];
+        return YES;
+    }
+    return NO;
+}
+
++ (long long)getCrashTimetampFromReport:(NSString*)report {
+    NSString *dateTimeString = [TikTokErrorHandler getLineBeginWith:@"Date/Time:" fromReport:report];
+    long long timeInterval = -1;
+    if (TTCheckValidString(dateTimeString)) {
+        NSInteger startPos = @"Date/Time:           ".length;
+        NSString *dateString = [dateTimeString substringFromIndex:startPos];
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS ZZZ"];
+        NSDate *date = [dateFormatter dateFromString:dateString];
+        timeInterval = (long long)([date timeIntervalSince1970] * 1000);
+    }
+    return timeInterval;
+}
+
++ (BOOL)getCrashThreadIndex:(int *)thread fromReport:(NSString*)report {
+    NSString *triggerString = [TikTokErrorHandler getLineBeginWith:@"Triggered by Thread" fromReport:report];
+    if (TTCheckValidString(triggerString)) {
+        NSInteger startPos = @"Triggered by Thread: ".length;
+        NSString *indexString = [triggerString substringFromIndex:startPos];
+        int threadValue = [indexString intValue];
+        *thread = threadValue;
+        return YES;
+    }
+    return NO;
+}
+
++ (NSString *)getCrashStackStringOfIndex:(int)crashThreadidx fromReport:(NSString*)report {
+    NSString *startString = [NSString stringWithFormat:@"Thread %d", crashThreadidx];
+    NSString *endString = @"\n\n";
+    NSRange startRange = [report rangeOfString:startString];
+    if (startRange.length == 0) {
+        return @"";
+    }
+    NSString *stripHead = [report substringFromIndex:startRange.location];
+    NSRange endRange = [stripHead rangeOfString:endString];
+    if (endRange.length == 0) {
+        return @"";
+    }
+    NSString *crashStack = [stripHead substringToIndex:endRange.location];
+    return crashStack;
+}
+
++ (NSString *)getLineBeginWith:(NSString *)begin fromReport:(NSString *)report {
+    NSArray *lines = [report componentsSeparatedByString:@"\n"];
+    for (NSString *line in lines) {
+        if ([line hasPrefix:begin]) {
+            return line;
+        }
+    }
+    return @"";
+}
+
++ (int64_t)addressInLine:(NSString *)line {
+    NSArray *words = [line componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    for (NSString *word in words) {
+        if ([word hasPrefix:@"0x"]) {
+            NSString *hexString = [word substringFromIndex:2];
+            unsigned long long addressValue = strtoull([hexString UTF8String], NULL, 16);
+            return (int64_t)addressValue;
+        }
+    }
+    return 0;
+}
 @end

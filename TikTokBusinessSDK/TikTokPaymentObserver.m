@@ -206,9 +206,7 @@ static NSMutableArray *g_pendingRequestors;
             @"query":@"",
             @"type": @"auto"
         }];
-        if(transactionId){
-            [eventParameters setObject:transactionId forKey:@"order_id"];
-        }
+        [TikTokTypeUtility dictionary:eventParameters setObject:transactionId forKey:@"order_id"];
 
         NSMutableArray *contents = [[NSMutableArray alloc] init];
 
@@ -218,13 +216,10 @@ static NSMutableArray *g_pendingRequestors;
                 @"quantity": @"1",
                 @"content_type": product.productIdentifier
             }];
-            if(transactionId){
-                [productDict setObject:product.productIdentifier forKey:@"content_id"];
-            }
+            [TikTokTypeUtility dictionary:productDict setObject:product.productIdentifier forKey:@"content_id"];
             [contents addObject:productDict];
         }
-
-        [eventParameters setObject:contents forKey:@"contents"];
+        [TikTokTypeUtility dictionary:eventParameters setObject:contents forKey:@"contents"];
     }
     return eventParameters;
 }
@@ -295,7 +290,7 @@ static NSMutableArray *g_pendingRequestors;
 - (void)logImplicitTransactionEvent: (NSString *)eventName valueToSum:(double)valueToSum parameters: (NSDictionary<NSString *, id>*)parameters
 {
     NSMutableDictionary *eventParameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
-    [eventParameters setObject:[[NSNumber numberWithDouble:valueToSum] stringValue] forKey:@"value"];
+    [TikTokTypeUtility dictionary:eventParameters setObject:[[NSNumber numberWithDouble:valueToSum] stringValue] forKey:@"value"];
     [TikTokBusiness trackEvent:eventName withProperties:eventParameters];
 }
 

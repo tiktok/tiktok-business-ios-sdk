@@ -9,8 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSUncaughtExceptionHandler *handleUncaughtExceptionPointer;
-
 @interface TikTokErrorHandler : NSObject
 
 /**
@@ -34,6 +32,10 @@ extern NSUncaughtExceptionHandler *handleUncaughtExceptionPointer;
  * @brief Clear crash logs
  */
 + (void)clearCrashReportFiles;
+
++ (BOOL)isSDKCrashReport:(NSString *)report;
+
++ (long long)getCrashTimetampFromReport:(NSString*)report;
 
 @end
 

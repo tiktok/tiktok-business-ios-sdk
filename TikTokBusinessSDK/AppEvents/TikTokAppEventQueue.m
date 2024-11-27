@@ -184,7 +184,7 @@
         NSNumber *flushEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
         NSDictionary *flushMeta = @{
             @"ts": flushEndTime,
-            @"latency": [NSNumber numberWithInt:[flushEndTime intValue] - [flushStartTime intValue]],
+            @"latency": [NSNumber numberWithLongLong:[flushEndTime longLongValue] - [flushStartTime longLongValue]],
             @"type": [self stringForReason:flushReason],
             @"interval": @(self.config.initialFlushDelay ?: FLUSH_PERIOD_IN_SECONDS),
             @"size":@(flushSize)

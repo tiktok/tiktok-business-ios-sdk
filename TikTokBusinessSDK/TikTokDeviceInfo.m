@@ -80,7 +80,7 @@ static NSString * getIDFA(void) {
         };
         NSDictionary *idfaEndMeta = @{
             @"ts": idfaEndTime,
-            @"latency": [NSNumber numberWithInt:[idfaEndTime intValue] - [idfaStartTime intValue]],
+            @"latency": [NSNumber numberWithLongLong:[idfaEndTime longLongValue] - [idfaStartTime longLongValue]],
             @"success": @(success),
         };
         NSDictionary *idfaEndProperties = @{

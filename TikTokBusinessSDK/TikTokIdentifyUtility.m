@@ -76,19 +76,10 @@
 - (NSDictionary *)getUserInfoDictionary
 {
     NSMutableDictionary *userInfo = [NSMutableDictionary new];
-    
-    if (TTCheckValidString(self.externalID)) {
-        [userInfo setObject:self.externalID forKey:@"external_id"];
-    }
-    if (TTCheckValidString(self.phoneNumber)) {
-        [userInfo setObject:self.phoneNumber forKey:@"phone_number"];
-    }
-    if (TTCheckValidString(self.email)) {
-        [userInfo setObject:self.email forKey:@"email"];
-    }
-    if (TTCheckValidString(self.externalUserName)) {
-        [userInfo setObject:self.externalUserName forKey:@"external_username"];
-    }
+    [TikTokTypeUtility dictionary:userInfo setObject:self.externalID forKey:@"external_id"];
+    [TikTokTypeUtility dictionary:userInfo setObject:self.phoneNumber forKey:@"phone_number"];
+    [TikTokTypeUtility dictionary:userInfo setObject:self.email forKey:@"email"];
+    [TikTokTypeUtility dictionary:userInfo setObject:self.externalUserName forKey:@"external_username"];
     
     return userInfo;
 }

@@ -248,12 +248,9 @@ class EventViewController: UIViewController {
     @objc func generateRandomEvents(_ sender: Any) {
             let count = Int(numberOfEventsField.text ?? "") ?? 0
             if(numberOfEventsField.text!.count <= 0) {return}
-            for var num in 0...count - 1 {
+            for _ in 0...count - 1 {
                 self.payload = ""
                 let randomEvent = self.events.randomElement();
-                if(randomEvent == "LaunchAPP" || randomEvent == "InstallApp") {
-                    num -= 1
-                }
                 self.payload = "{\n"
                 self.payload += "\t\"event_name\": \""
                 self.payload += randomEvent!

@@ -50,8 +50,7 @@
 {
     NSNumber *configMonitorStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    NSArray *ttAppIds = [self splitTTAppIDs:config.tiktokAppId];
-    NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@%@%@%@", @"https://analytics.us.tiktok.com",TT_CONFIG_PATH,@"?client=ios&app_id=", config.appId, @"&sdk_version=", SDK_VERSION, @"&tiktok_app_id=", TTSafeString(ttAppIds.firstObject)];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@%@%@%@%@%@%@%@", @"https://analytics.us.tiktok.com",TT_CONFIG_PATH,@"?client=ios&app_id=", config.appId, @"&sdk_version=", SDK_VERSION, @"&tiktok_app_id=", TTSafeString(config.tiktokAppId),@"&debug=",config.debugModeEnabled?@"true":@"false"];
     [request setURL:[NSURL URLWithString:url]];
     [request setValue:[[TikTokBusiness getInstance] accessToken] forHTTPHeaderField:@"Access-Token"];
     [request setHTTPMethod:@"GET"];
@@ -90,7 +89,7 @@
                 NSNumber *configMonitorEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
                 NSDictionary *configMonitorEndMeta = @{
                     @"ts": configMonitorStartTime,
-                    @"latency": [NSNumber numberWithInt:[configMonitorEndTime intValue] - [configMonitorStartTime intValue]],
+                    @"latency": [NSNumber numberWithLongLong:[configMonitorEndTime longLongValue] - [configMonitorStartTime longLongValue]],
                     @"success": [NSNumber numberWithBool:false]
                 };
                 NSDictionary *monitorUserAgentStartProperties = @{
@@ -108,7 +107,7 @@
                 }
                 NSDictionary *apiErrorMeta = @{
                     @"ts": networkEndTime,
-                    @"latency": [NSNumber numberWithInt:[networkEndTime intValue] - [networkStartTime intValue]],
+                    @"latency": [NSNumber numberWithLongLong:[networkEndTime longLongValue] - [networkStartTime longLongValue]],
                     @"api_type": [self urlType:url],
                     @"status_code": @(statusCode),
                     @"log_id":log_id
@@ -131,7 +130,7 @@
                 NSNumber *configMonitorEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
                 NSDictionary *configMonitorEndMeta = @{
                     @"ts": configMonitorStartTime,
-                    @"latency": [NSNumber numberWithInt:[configMonitorEndTime intValue] - [configMonitorStartTime intValue]],
+                    @"latency": [NSNumber numberWithLongLong:[configMonitorEndTime longLongValue] - [configMonitorStartTime longLongValue]],
                     @"success": [NSNumber numberWithBool:false]
                 };
                 NSDictionary *monitorUserAgentStartProperties = @{
@@ -149,7 +148,7 @@
                 }
                 NSDictionary *apiErrorMeta = @{
                     @"ts": networkEndTime,
-                    @"latency": [NSNumber numberWithInt:[networkEndTime intValue] - [networkStartTime intValue]],
+                    @"latency": [NSNumber numberWithLongLong:[networkEndTime longLongValue] - [networkStartTime longLongValue]],
                     @"api_type": [self urlType:url],
                     @"status_code": @([code intValue]),
                     @"log_id":log_id,
@@ -182,7 +181,7 @@
             NSNumber *configMonitorEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
             NSDictionary *configMonitorEndMeta = @{
                 @"ts": configMonitorStartTime,
-                @"latency": [NSNumber numberWithInt:[configMonitorEndTime intValue] - [configMonitorStartTime intValue]],
+                @"latency": [NSNumber numberWithLongLong:[configMonitorEndTime longLongValue] - [configMonitorStartTime longLongValue]],
                 @"success": [NSNumber numberWithBool:true],
                 @"log_id": TTSafeString([dataDictionary objectForKey:@"request_id"]),
             };
@@ -229,10 +228,10 @@
             if(event.userInfo != nil) {
                 [user addEntriesFromDictionary:event.userInfo];
             }
-            [user setObject:event.anonymousID forKey:@"anonymous_id"];
+            [TikTokTypeUtility dictionary:user setObject:event.anonymousID forKey:@"anonymous_id"];
             
             NSMutableDictionary *tempAppDict = [app mutableCopy];
-            [tempAppDict setValue:config.tiktokAppId forKey:@"tiktok_app_id"];
+            [TikTokTypeUtility dictionary:tempAppDict setObject:config.tiktokAppId forKey:@"tiktok_app_id"];
             
             NSDictionary *context = @{
                 @"app": tempAppDict.copy,
@@ -279,14 +278,14 @@
         if(config.tiktokAppId){
             // make sure the tiktokAppId is an integer value
             NSString *ttAppId = TTSafeString(ttAppIds.firstObject);
-            [parametersDict setValue:@([ttAppId longLongValue]) forKey:@"tiktok_app_id"];
+            [TikTokTypeUtility dictionary:parametersDict setObject:@([ttAppId longLongValue]) forKey:@"tiktok_app_id"];
         } else {
-            [parametersDict setValue:config.appId forKey:@"app_id"];
+            [TikTokTypeUtility dictionary:parametersDict setObject:config.appId forKey:@"app_id"];
         }
         
         if ([TikTokBusiness isDebugMode]
             && !TT_isEmptyString([TikTokBusiness getTestEventCode])) {
-            [parametersDict setValue:[TikTokBusiness getTestEventCode] forKey:@"test_event_code"];
+            [TikTokTypeUtility dictionary:parametersDict setObject:[TikTokBusiness getTestEventCode] forKey:@"test_event_code"];
         }
         
         NSData *postData = [TikTokTypeUtility dataWithJSONObject:parametersDict options:NSJSONWritingPrettyPrinted error:nil origin:NSStringFromClass([self class])];
@@ -338,7 +337,7 @@
                     }
                     NSDictionary *apiErrorMeta = @{
                         @"ts": networkEndTime,
-                        @"latency": [NSNumber numberWithInt:[networkEndTime intValue] - [networkStartTime intValue]],
+                        @"latency": [NSNumber numberWithLongLong:[networkEndTime longLongValue] - [networkStartTime longLongValue]],
                         @"api_type": [self urlType:url],
                         @"status_code": @(statusCode),
                         @"log_id":log_id
@@ -366,7 +365,7 @@
                     }
                     NSDictionary *apiErrorMeta = @{
                         @"ts": networkEndTime,
-                        @"latency": [NSNumber numberWithInt:[networkEndTime intValue] - [networkStartTime intValue]],
+                        @"latency": [NSNumber numberWithLongLong:[networkEndTime longLongValue] - [networkStartTime longLongValue]],
                         @"api_type": [self urlType:url],
                         @"status_code": @([code intValue]),
                         @"log_id": log_id,
@@ -440,8 +439,8 @@
             NSMutableDictionary *tempAppDict = [app mutableCopy];
             NSString *appNamespace = [tempAppDict objectForKey:@"namespace"];
             [tempAppDict removeObjectForKey:@"namespace"];
-            [tempAppDict setObject:appNamespace forKey:@"app_namespace"];
-            [tempAppDict setValue:config.tiktokAppId forKey:@"tiktok_app_id"];
+            [TikTokTypeUtility dictionary:tempAppDict setObject:appNamespace forKey:@"app_namespace"];
+            [TikTokTypeUtility dictionary:tempAppDict setObject:config.tiktokAppId forKey:@"tiktok_app_id"];
             
             NSDictionary *tempMonitorDict = @{
                 @"type": [event.properties objectForKey:@"monitor_type"] == nil ? @"metric" : [event.properties objectForKey:@"monitor_type"],
@@ -485,12 +484,12 @@
             // make sure the tiktokAppId is an integer value
             NSArray *ttAppIds = [self splitTTAppIDs:config.tiktokAppId];
             NSString *ttAppId = TTSafeString(ttAppIds.firstObject);
-            [parametersDict setValue:@([ttAppId longLongValue]) forKey:@"tiktok_app_id"];
+            [TikTokTypeUtility dictionary:parametersDict setObject:@([ttAppId longLongValue]) forKey:@"tiktok_app_id"];
         }
         
         if ([TikTokBusiness isDebugMode]
             && !TT_isEmptyString([TikTokBusiness getTestEventCode])) {
-            [parametersDict setValue:[TikTokBusiness getTestEventCode] forKey:@"test_event_code"];
+            [TikTokTypeUtility dictionary:parametersDict setObject:[TikTokBusiness getTestEventCode] forKey:@"test_event_code"];
         }
         
         NSData *postData = [TikTokTypeUtility dataWithJSONObject:parametersDict options:NSJSONWritingPrettyPrinted error:nil origin:NSStringFromClass([self class])];
@@ -552,7 +551,6 @@
                 // we do not persist events in the scenario
                 if([code intValue] == 40000) {
                     [self.logger error:@"[TikTokRequestHandler] data error: %@, message: %@", code, message];
-                    NSLog(@"THis is where the code reaches!!");
                     @synchronized(self) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [TikTokAppEventStore persistMonitorEvents:monitorEventsToBeFlushed];
@@ -609,7 +607,7 @@
     NSMutableDictionary *app = [[NSMutableDictionary alloc] initWithDictionary:tempApp];
 
     if(config.tiktokAppId){
-        [app setValue:config.appId forKey:@"id"];
+        [TikTokTypeUtility dictionary:app setObject:config.appId forKey:@"id"];
     }
 
     return [app copy];
@@ -646,9 +644,9 @@
 
     if(config.tiktokAppId){
         if (isMonitor) {
-            [device setValue:deviceInfo.systemVersion forKey:@"version"];
+            [TikTokTypeUtility dictionary:device setObject:deviceInfo.systemVersion forKey:@"version"];
         } else {
-            [device setValue:deviceInfo.systemVersion forKey:@"os_version"];
+            [TikTokTypeUtility dictionary:device setObject:deviceInfo.systemVersion forKey:@"os_version"];
         }
     }
 
@@ -657,8 +655,12 @@
 
 - (NSDictionary *)getLibrary
 {
+    NSString *libraryName = @"tiktok/tiktok-business-ios-sdk";
+    if (NSClassFromString(@"UnityViewControllerBase") || NSClassFromString(@"UnityView")) {
+        libraryName = @"tiktok/tiktok-business-unity-ios-sdk";
+    }
     NSDictionary *library = @{
-        @"name": @"tiktok/tiktok-business-ios-sdk",
+        @"name": libraryName,
         @"version": SDK_VERSION
     };
 
@@ -668,7 +670,7 @@
 - (NSDictionary *)getUser
 {
     NSMutableDictionary *user = [NSMutableDictionary new];
-    [user setObject:[[TikTokIdentifyUtility sharedInstance] getOrGenerateAnonymousID] forKey:@"anonymous_id"];
+    [TikTokTypeUtility dictionary:user setObject:[[TikTokIdentifyUtility sharedInstance] getOrGenerateAnonymousID] forKey:@"anonymous_id"];
 
     return [user copy];
 }

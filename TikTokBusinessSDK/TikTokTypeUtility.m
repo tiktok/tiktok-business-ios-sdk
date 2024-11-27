@@ -111,4 +111,17 @@
     return @"";
 }
 
++ (NSString *)partialString:(NSString *)string fromStart:(NSString *)startString toEnd:(NSString *)endString {
+    NSRange start = [string rangeOfString:startString];
+    NSRange end = [string rangeOfString:endString];
+    NSString *result = @"";
+    if (start.location!= NSNotFound && end.location!= NSNotFound && start.location < end.location) {
+        NSRange middleRange;
+        middleRange.location = start.location;
+        middleRange.length = end.location - start.location;
+        result = [string substringWithRange:middleRange];
+    }
+    return result;
+}
+
 @end

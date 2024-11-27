@@ -100,7 +100,7 @@ static const long long thirdWindowEnds = 3024000000;
         accumulatedValue = [accumulatedValues objectForKey:eventName];
     }
     eventValue = [NSNumber numberWithDouble:[accumulatedValue doubleValue] + [eventValue doubleValue]];
-    [accumulatedValues setObject:eventValue forKey:eventName];
+    [TikTokTypeUtility dictionary:accumulatedValues setObject:eventValue forKey:eventName];
     [defaults setObject:accumulatedValues.copy forKey:TTAccumulatedSKANValuesKey];
     [defaults synchronize];
     

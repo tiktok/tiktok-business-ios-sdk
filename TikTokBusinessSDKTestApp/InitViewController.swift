@@ -208,7 +208,6 @@ class InitViewController: UIViewController {
                     print(error!.localizedDescription)
                 } else {
                     self.statusLabel.text = "SDK initialized"
-                    TikTokBusiness.trackEvent("testEventinit")
                 }
             }
             

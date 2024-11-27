@@ -50,12 +50,187 @@
 		2B3368CC2BFCBF1E00E8D51C /* TikTokCurrencyUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3368CA2BFCBF1E00E8D51C /* TikTokCurrencyUtility.m */; };
 		2B3368F92BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3368F82BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.m */; };
 		2B3368FA2BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3368F72BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.h */; };
+		2B42A0732CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FE72CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.m */; };
+		2B42A0742CBFAEF7004F7F5A /* TTSDKCrashInstallation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FCB2CBFAEF7004F7F5A /* TTSDKCrashInstallation.m */; };
+		2B42A0752CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05E2CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.m */; };
+		2B42A0762CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FF12CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.m */; };
+		2B42A0792CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FCF2CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.m */; };
+		2B42A07A2CBFAEF7004F7F5A /* TTSDKMachineContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0422CBFAEF7004F7F5A /* TTSDKMachineContext.c */; };
+		2B42A07C2CBFAEF7004F7F5A /* TTSDKCrashReportC.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0072CBFAEF7004F7F5A /* TTSDKCrashReportC.c */; };
+		2B42A07D2CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FC22CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.m */; };
+		2B42A07E2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FED2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.m */; };
+		2B42A07F2CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FE92CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.c */; };
+		2B42A0802CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FFF2CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.m */; };
+		2B42A0812CBFAEF7004F7F5A /* TTSDKDebug.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0392CBFAEF7004F7F5A /* TTSDKDebug.c */; };
+		2B42A0822CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0482CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.c */; };
+		2B42A0832CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05F2CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.m */; };
+		2B42A0842CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FCE2CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.m */; };
+		2B42A0852CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FAC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.m */; };
+		2B42A0872CBFAEF7004F7F5A /* TTSDKDate.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0382CBFAEF7004F7F5A /* TTSDKDate.c */; };
+		2B42A0882CBFAEF7004F7F5A /* TTSDKCrashReportFixer.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0092CBFAEF7004F7F5A /* TTSDKCrashReportFixer.c */; };
+		2B42A0892CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FC02CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.m */; };
+		2B42A08A2CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0672CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.m */; };
+		2B42A08B2CBFAEF7004F7F5A /* TTSDKLogger.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03F2CBFAEF7004F7F5A /* TTSDKLogger.c */; };
+		2B42A08C2CBFAEF7004F7F5A /* TTSDKCrashReportStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A00A2CBFAEF7004F7F5A /* TTSDKCrashReportStore.m */; };
+		2B42A08D2CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05C2CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.m */; };
+		2B42A08F2CBFAEF7004F7F5A /* TTSDKFileUtils.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03B2CBFAEF7004F7F5A /* TTSDKFileUtils.c */; };
+		2B42A0902CBFAEF7004F7F5A /* TTSDKCPU_x86_64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0352CBFAEF7004F7F5A /* TTSDKCPU_x86_64.c */; };
+		2B42A0912CBFAEF7004F7F5A /* TTSDKCPU_arm64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0332CBFAEF7004F7F5A /* TTSDKCPU_arm64.c */; };
+		2B42A0922CBFAEF7004F7F5A /* TTSDKSymbolicator.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04C2CBFAEF7004F7F5A /* TTSDKSymbolicator.c */; };
+		2B42A0932CBFAEF7004F7F5A /* TTSDKCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FFA2CBFAEF7004F7F5A /* TTSDKCrash.m */; };
+		2B42A0942CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FE52CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.cpp */; };
+		2B42A0952CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0682CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.m */; };
+		2B42A0962CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0372CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.c */; };
+		2B42A0972CBFAEF7004F7F5A /* TTSDKMemory.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0432CBFAEF7004F7F5A /* TTSDKMemory.c */; };
+		2B42A0982CBFAEF7004F7F5A /* TTSDKCrashCachedData.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0022CBFAEF7004F7F5A /* TTSDKCrashCachedData.c */; };
+		2B42A0992CBFAEF7004F7F5A /* TTSDKCrashC.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0002CBFAEF7004F7F5A /* TTSDKCrashC.c */; };
+		2B42A09A2CBFAEF7004F7F5A /* TTSDKCrashReport.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0052CBFAEF7004F7F5A /* TTSDKCrashReport.m */; };
+		2B42A09B2CBFAEF7004F7F5A /* TTSDKNSErrorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429F722CBFAEF7004F7F5A /* TTSDKNSErrorHelper.m */; };
+		2B42A09C2CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429F6B2CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.m */; };
+		2B42A09E2CBFAEF7004F7F5A /* TTSDKCString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05A2CBFAEF7004F7F5A /* TTSDKCString.m */; };
+		2B42A09F2CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FCD2CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.m */; };
+		2B42A0A02CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBF2CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.m */; };
+		2B42A0A12CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03E2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.m */; };
+		2B42A0A32CBFAEF7004F7F5A /* TTSDKString.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04B2CBFAEF7004F7F5A /* TTSDKString.c */; };
+		2B42A0A42CBFAEF7004F7F5A /* TTSDKMach.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0402CBFAEF7004F7F5A /* TTSDKMach.c */; };
+		2B42A0A62CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0692CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.m */; };
+		2B42A0A82CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBC2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.m */; };
+		2B42A0A92CBFAEF7004F7F5A /* TTSDKCrashAppMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FFC2CBFAEF7004F7F5A /* TTSDKCrashAppMemory.m */; };
+		2B42A0AA2CBFAEF7004F7F5A /* TTSDKCPU_x86_32.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0342CBFAEF7004F7F5A /* TTSDKCPU_x86_32.c */; };
+		2B42A0AB2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FEB2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.m */; };
+		2B42A0AC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FEF2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.c */; };
+		2B42A0AD2CBFAEF7004F7F5A /* TTSDKJSONCodec.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03D2CBFAEF7004F7F5A /* TTSDKJSONCodec.c */; };
+		2B42A0AE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBB2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.m */; };
+		2B42A0AF2CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05D2CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.m */; };
+		2B42A0B02CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.m */; };
+		2B42A0B22CBFAEF7004F7F5A /* TTSDKGZipHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05B2CBFAEF7004F7F5A /* TTSDKGZipHelper.m */; };
+		2B42A0B32CBFAEF7004F7F5A /* TTSDKThread.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04E2CBFAEF7004F7F5A /* TTSDKThread.c */; };
+		2B42A0B42CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FFE2CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.m */; };
+		2B42A0B52CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A00B2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.c */; };
+		2B42A0B62CBFAEF7004F7F5A /* TTSDKCPU_arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0322CBFAEF7004F7F5A /* TTSDKCPU_arm.c */; };
+		2B42A0B72CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FC12CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.m */; };
+		2B42A0B82CBFAEF7004F7F5A /* TTSDKSignalInfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0462CBFAEF7004F7F5A /* TTSDKSignalInfo.c */; };
+		2B42A0B92CBFAEF7004F7F5A /* TTSDKMach-O.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0412CBFAEF7004F7F5A /* TTSDKMach-O.c */; };
+		2B42A0BB2CBFAEF7004F7F5A /* TTSDKDynamicLinker.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03A2CBFAEF7004F7F5A /* TTSDKDynamicLinker.c */; };
+		2B42A0BC2CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04A2CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.c */; };
+		2B42A0BD2CBFAEF7004F7F5A /* TTSDKCrashDoctor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBA2CBFAEF7004F7F5A /* TTSDKCrashDoctor.m */; };
+		2B42A0BE2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FF52CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.c */; };
+		2B42A0BF2CBFAEF7004F7F5A /* TTSDKCPU.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0312CBFAEF7004F7F5A /* TTSDKCPU.c */; };
+		2B42A0C02CBFAEF7004F7F5A /* TTSDKID.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03C2CBFAEF7004F7F5A /* TTSDKID.c */; };
+		2B42A0C12CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FE32CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.c */; };
+		2B42A0C22CBFAEF7004F7F5A /* TTSDKSysCtl.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04D2CBFAEF7004F7F5A /* TTSDKSysCtl.c */; };
+		2B42A0C32CBFAEF7004F7F5A /* TTSDKStackCursor.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0472CBFAEF7004F7F5A /* TTSDKStackCursor.c */; };
+		2B42A0C52CBFAEF7004F7F5A /* TTSDKObjC.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0442CBFAEF7004F7F5A /* TTSDKObjC.c */; };
+		2B42A0C62CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FF32CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.c */; };
+		2B42A0C82CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBD2CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.m */; };
+		2B42A0C92CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0492CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.c */; };
+		2B42A0CA2CBFAEF7004F7F5A /* TTSDKCrashMonitor.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0362CBFAEF7004F7F5A /* TTSDKCrashMonitor.c */; };
+		2B42A0CB2CBFAEF7004F7F5A /* TTSDKCrashConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0032CBFAEF7004F7F5A /* TTSDKCrashConfiguration.m */; };
+		2B42A0CC2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDF2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.h */; };
+		2B42A0CD2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FAF2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.h */; };
+		2B42A0CF2CBFAEF7004F7F5A /* TTSDKGZipHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0512CBFAEF7004F7F5A /* TTSDKGZipHelper.h */; };
+		2B42A0D02CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD32CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.h */; };
+		2B42A0D12CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB12CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.h */; };
+		2B42A0D22CBFAEF7004F7F5A /* TTSDKCrashReportFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDD2CBFAEF7004F7F5A /* TTSDKCrashReportFilter.h */; };
+		2B42A0D32CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FA82CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.h */; };
+		2B42A0D42CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB42CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.h */; };
+		2B42A0D52CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FAE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.h */; };
+		2B42A0D62CBFAEF7004F7F5A /* TTSDKDate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0162CBFAEF7004F7F5A /* TTSDKDate.h */; };
+		2B42A0D72CBFAEF7004F7F5A /* TTSDKCrashReportFixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0082CBFAEF7004F7F5A /* TTSDKCrashReportFixer.h */; };
+		2B42A0D82CBFAEF7004F7F5A /* TTSDKMachineContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0202CBFAEF7004F7F5A /* TTSDKMachineContext.h */; };
+		2B42A0D92CBFAEF7004F7F5A /* TTSDKMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0222CBFAEF7004F7F5A /* TTSDKMemory.h */; };
+		2B42A0DA2CBFAEF7004F7F5A /* TTSDKSystemCapabilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429F6E2CBFAEF7004F7F5A /* TTSDKSystemCapabilities.h */; };
+		2B42A0DB2CBFAEF7004F7F5A /* TTSDKSysCtl.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A02C2CBFAEF7004F7F5A /* TTSDKSysCtl.h */; };
+		2B42A0DC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429F672CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.h */; };
+		2B42A0DE2CBFAEF7004F7F5A /* TTSDKDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0172CBFAEF7004F7F5A /* TTSDKDebug.h */; };
+		2B42A0E02CBFAEF7004F7F5A /* TTSDKCrashAppMemory+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FFD2CBFAEF7004F7F5A /* TTSDKCrashAppMemory+Private.h */; };
+		2B42A0E12CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FEA2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.h */; };
+		2B42A0E32CBFAEF7004F7F5A /* TTSDKCrashInstallation+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FCC2CBFAEF7004F7F5A /* TTSDKCrashInstallation+Private.h */; };
+		2B42A0E42CBFAEF7004F7F5A /* TTSDKCPU_Apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0102CBFAEF7004F7F5A /* TTSDKCPU_Apple.h */; };
+		2B42A0E52CBFAEF7004F7F5A /* TTSDKCrashReportC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0062CBFAEF7004F7F5A /* TTSDKCrashReportC.h */; };
+		2B42A0E72CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0522CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.h */; };
+		2B42A0E82CBFAEF7004F7F5A /* TTSDKCrashMonitorHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0142CBFAEF7004F7F5A /* TTSDKCrashMonitorHelper.h */; };
+		2B42A0E92CBFAEF7004F7F5A /* TTSDKMach-O.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01F2CBFAEF7004F7F5A /* TTSDKMach-O.h */; };
+		2B42A0EA2CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0292CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.h */; };
+		2B42A0EB2CBFAEF7004F7F5A /* TTSDKCrashReportStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDE2CBFAEF7004F7F5A /* TTSDKCrashReportStore.h */; };
+		2B42A0EC2CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FC72CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.h */; };
+		2B42A0ED2CBFAEF7004F7F5A /* TTSDKCrashCConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD72CBFAEF7004F7F5A /* TTSDKCrashCConfiguration.h */; };
+		2B42A0EF2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FEE2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.h */; };
+		2B42A0F02CBFAEF7004F7F5A /* TTSDKCrashConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD82CBFAEF7004F7F5A /* TTSDKCrashConfiguration.h */; };
+		2B42A0F12CBFAEF7004F7F5A /* TTSDKCrashCachedData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0012CBFAEF7004F7F5A /* TTSDKCrashCachedData.h */; };
+		2B42A0F22CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FC52CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.h */; };
+		2B42A0F32CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FEC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.h */; };
+		2B42A0F52CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0282CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.h */; };
+		2B42A0F62CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0622CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.h */; };
+		2B42A0F72CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0272CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.h */; };
+		2B42A0F92CBFAEF7004F7F5A /* TTSDKCrashC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD62CBFAEF7004F7F5A /* TTSDKCrashC.h */; };
+		2B42A0FA2CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0542CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.h */; };
+		2B42A0FF2CBFAEF7004F7F5A /* TTSDKJSONCodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01B2CBFAEF7004F7F5A /* TTSDKJSONCodec.h */; };
+		2B42A1002CBFAEF7004F7F5A /* TTSDKCrashDoctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB92CBFAEF7004F7F5A /* TTSDKCrashDoctor.h */; };
+		2B42A1012CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0152CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.h */; };
+		2B42A1022CBFAEF7004F7F5A /* TTSDKCrashMonitorFlag.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0132CBFAEF7004F7F5A /* TTSDKCrashMonitorFlag.h */; };
+		2B42A1052CBFAEF7004F7F5A /* TTSDKThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A02D2CBFAEF7004F7F5A /* TTSDKThread.h */; };
+		2B42A1062CBFAEF7004F7F5A /* TTSDKCrashMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0112CBFAEF7004F7F5A /* TTSDKCrashMonitor.h */; };
+		2B42A1072CBFAEF7004F7F5A /* TTSDKID.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01A2CBFAEF7004F7F5A /* TTSDKID.h */; };
+		2B42A1082CBFAEF7004F7F5A /* TTSDKMach.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01E2CBFAEF7004F7F5A /* TTSDKMach.h */; };
+		2B42A1092CBFAEF7004F7F5A /* TTSDKCrashReportFields.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDC2CBFAEF7004F7F5A /* TTSDKCrashReportFields.h */; };
+		2B42A10A2CBFAEF7004F7F5A /* TTSDKObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0232CBFAEF7004F7F5A /* TTSDKObjC.h */; };
+		2B42A10B2CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FC62CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.h */; };
+		2B42A10E2CBFAEF7004F7F5A /* TTSDKCrash.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD12CBFAEF7004F7F5A /* TTSDKCrash.h */; };
+		2B42A10F2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE62CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.h */; };
+		2B42A1112CBFAEF7004F7F5A /* TTSDKCrashInstallation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FC42CBFAEF7004F7F5A /* TTSDKCrashInstallation.h */; };
+		2B42A1122CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE82CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.h */; };
+		2B42A1132CBFAEF7004F7F5A /* TTSDKCrashError.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD92CBFAEF7004F7F5A /* TTSDKCrashError.h */; };
+		2B42A1162CBFAEF7004F7F5A /* TTSDKCrashConfiguration+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0042CBFAEF7004F7F5A /* TTSDKCrashConfiguration+Private.h */; };
+		2B42A1172CBFAEF7004F7F5A /* TTSDKMachineContext_Apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0212CBFAEF7004F7F5A /* TTSDKMachineContext_Apple.h */; };
+		2B42A1192CBFAEF7004F7F5A /* TTSDKCrashMonitorContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0122CBFAEF7004F7F5A /* TTSDKCrashMonitorContext.h */; };
+		2B42A11A2CBFAEF7004F7F5A /* TTSDKCString.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0502CBFAEF7004F7F5A /* TTSDKCString.h */; };
+		2B42A11C2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FF42CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.h */; };
+		2B42A11D2CBFAEF7004F7F5A /* TTSDKCrashAppMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD22CBFAEF7004F7F5A /* TTSDKCrashAppMemory.h */; };
+		2B42A11E2CBFAEF7004F7F5A /* TTSDKCrashReportWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE02CBFAEF7004F7F5A /* TTSDKCrashReportWriter.h */; };
+		2B42A11F2CBFAEF7004F7F5A /* TTSDKSymbolicator.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A02B2CBFAEF7004F7F5A /* TTSDKSymbolicator.h */; };
+		2B42A1202CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0532CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.h */; };
+		2B42A1212CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB02CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.h */; };
+		2B42A1232CBFAEF7004F7F5A /* TTSDKFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0192CBFAEF7004F7F5A /* TTSDKFileUtils.h */; };
+		2B42A1242CBFAEF7004F7F5A /* TTSDKCrashMonitorContextHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FF62CBFAEF7004F7F5A /* TTSDKCrashMonitorContextHelper.h */; };
+		2B42A1252CBFAEF7004F7F5A /* TTSDKNSErrorHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429F6D2CBFAEF7004F7F5A /* TTSDKNSErrorHelper.h */; };
+		2B42A1272CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FF22CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.h */; };
+		2B42A1292CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FF02CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.h */; };
+		2B42A12A2CBFAEF7004F7F5A /* TTSDKSignalInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0252CBFAEF7004F7F5A /* TTSDKSignalInfo.h */; };
+		2B42A12B2CBFAEF7004F7F5A /* TTSDKCrash+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FFB2CBFAEF7004F7F5A /* TTSDKCrash+Private.h */; };
+		2B42A12C2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01C2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.h */; };
+		2B42A12D2CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB52CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.h */; };
+		2B42A12F2CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0632CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.h */; };
+		2B42A1312CBFAEF7004F7F5A /* TTSDKObjCApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0452CBFAEF7004F7F5A /* TTSDKObjCApple.h */; };
+		2B42A1322CBFAEF7004F7F5A /* TTSDKVarArgs.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0562CBFAEF7004F7F5A /* TTSDKVarArgs.h */; };
+		2B42A1332CBFAEF7004F7F5A /* TTSDKCrashReportStoreC+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A00C2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC+Private.h */; };
+		2B42A1342CBFAEF7004F7F5A /* TTSDKStackCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0262CBFAEF7004F7F5A /* TTSDKStackCursor.h */; };
+		2B42A1352CBFAEF7004F7F5A /* TTSDKCPU.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A00F2CBFAEF7004F7F5A /* TTSDKCPU.h */; };
+		2B42A1362CBFAEF7004F7F5A /* TTSDKCrashReport.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDB2CBFAEF7004F7F5A /* TTSDKCrashReport.h */; };
+		2B42A1392CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE42CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.h */; };
+		2B42A13A2CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB32CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.h */; };
+		2B42A13C2CBFAEF7004F7F5A /* TTSDKLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01D2CBFAEF7004F7F5A /* TTSDKLogger.h */; };
+		2B42A13D2CBFAEF7004F7F5A /* TTSDKCrashReportVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A00D2CBFAEF7004F7F5A /* TTSDKCrashReportVersion.h */; };
+		2B42A13E2CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0552CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.h */; };
+		2B42A13F2CBFAEF7004F7F5A /* TTSDKString.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A02A2CBFAEF7004F7F5A /* TTSDKString.h */; };
+		2B42A1402CBFAEF7004F7F5A /* TTSDKCrashAppTransitionState.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD52CBFAEF7004F7F5A /* TTSDKCrashAppTransitionState.h */; };
+		2B42A1412CBFAEF7004F7F5A /* TTSDKPlatformSpecificDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0242CBFAEF7004F7F5A /* TTSDKPlatformSpecificDefines.h */; };
+		2B42A1422CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD42CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.h */; };
+		2B42A1432CBFAEF7004F7F5A /* TTSDKCrashMonitorType.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDA2CBFAEF7004F7F5A /* TTSDKCrashMonitorType.h */; };
+		2B42A1442CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB22CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.h */; };
+		2B42A1452CBFAEF7004F7F5A /* TTSDKDynamicLinker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0182CBFAEF7004F7F5A /* TTSDKDynamicLinker.h */; };
+		2B42A1462CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0612CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.h */; };
+		2B42A1472CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE22CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.h */; };
+		2B42A15D2CBFB814004F7F5A /* TikTokBusinessSDKAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A1592CBFB814004F7F5A /* TikTokBusinessSDKAddress.h */; };
+		2B42A15F2CBFB814004F7F5A /* aaaaTikTokBusinessSDKBegin.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A1582CBFB814004F7F5A /* aaaaTikTokBusinessSDKBegin.m */; };
+		2B42A1602CBFB814004F7F5A /* TikTokBusinessSDKAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A15A2CBFB814004F7F5A /* TikTokBusinessSDKAddress.m */; };
 		2B4E17732C62A121003644EA /* DeeplinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E17722C62A121003644EA /* DeeplinkViewController.swift */; };
 		2B6C2D9A2BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2B6C2D992BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy */; };
 		2B870C022BF1F619009CB42C /* TikTokBaseEventTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B870C012BF1F619009CB42C /* TikTokBaseEventTests.m */; };
 		2B870C042BF1FB21009CB42C /* TikTokContentsEventTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B870C032BF1FB21009CB42C /* TikTokContentsEventTests.m */; };
 		2B870C2C2BF2367B009CB42C /* TikTokBusiness+private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B870C2B2BF2367B009CB42C /* TikTokBusiness+private.h */; };
 		2B870CA22BF365BA009CB42C /* TikTokDeviceInfoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B870CA12BF365BA009CB42C /* TikTokDeviceInfoTests.m */; };
+		2B931AE82CC0F40A008133D0 /* ZZZZTikTokBusinessSDKEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A15B2CBFB814004F7F5A /* ZZZZTikTokBusinessSDKEnd.m */; };
 		2B97DE6129710AAB00D3C974 /* TikTokBusinessSDKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B97DE5F29710AAB00D3C974 /* TikTokBusinessSDKMacros.h */; };
 		2B97DE6229710AAB00D3C974 /* TikTokBusinessSDKMacros.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B97DE6029710AAB00D3C974 /* TikTokBusinessSDKMacros.m */; };
 		2B9F328A2AB32531009A692D /* StoreKitConfig.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 2B9F32892AB32531009A692D /* StoreKitConfig.storekit */; };
@@ -181,6 +356,190 @@
 		2B3368CA2BFCBF1E00E8D51C /* TikTokCurrencyUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokCurrencyUtility.m; sourceTree = "<group>"; };
 		2B3368F72BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TikTokSKAdNetworkRuleEvent.h; sourceTree = "<group>"; };
 		2B3368F82BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokSKAdNetworkRuleEvent.m; sourceTree = "<group>"; };
+		2B429F672CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_BootTime.h; sourceTree = "<group>"; };
+		2B429F692CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2B429F6B2CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashMonitor_BootTime.m; sourceTree = "<group>"; };
+		2B429F6D2CBFAEF7004F7F5A /* TTSDKNSErrorHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKNSErrorHelper.h; sourceTree = "<group>"; };
+		2B429F6E2CBFAEF7004F7F5A /* TTSDKSystemCapabilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKSystemCapabilities.h; sourceTree = "<group>"; };
+		2B429F702CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2B429F722CBFAEF7004F7F5A /* TTSDKNSErrorHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKNSErrorHelper.m; sourceTree = "<group>"; };
+		2B429FA82CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_DiscSpace.h; sourceTree = "<group>"; };
+		2B429FAA2CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2B429FAC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashMonitor_DiscSpace.m; sourceTree = "<group>"; };
+		2B429FAE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFilterAlert.h; sourceTree = "<group>"; };
+		2B429FAF2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFilterAppleFmt.h; sourceTree = "<group>"; };
+		2B429FB02CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFilterBasic.h; sourceTree = "<group>"; };
+		2B429FB12CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFilterDoctor.h; sourceTree = "<group>"; };
+		2B429FB22CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFilterGZip.h; sourceTree = "<group>"; };
+		2B429FB32CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFilterJSON.h; sourceTree = "<group>"; };
+		2B429FB42CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFilterSets.h; sourceTree = "<group>"; };
+		2B429FB52CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFilterStringify.h; sourceTree = "<group>"; };
+		2B429FB72CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2B429FB92CBFAEF7004F7F5A /* TTSDKCrashDoctor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashDoctor.h; sourceTree = "<group>"; };
+		2B429FBA2CBFAEF7004F7F5A /* TTSDKCrashDoctor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashDoctor.m; sourceTree = "<group>"; };
+		2B429FBB2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportFilterAlert.m; sourceTree = "<group>"; };
+		2B429FBC2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportFilterAppleFmt.m; sourceTree = "<group>"; };
+		2B429FBD2CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportFilterBasic.m; sourceTree = "<group>"; };
+		2B429FBE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportFilterDoctor.m; sourceTree = "<group>"; };
+		2B429FBF2CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportFilterGZip.m; sourceTree = "<group>"; };
+		2B429FC02CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportFilterJSON.m; sourceTree = "<group>"; };
+		2B429FC12CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportFilterSets.m; sourceTree = "<group>"; };
+		2B429FC22CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportFilterStringify.m; sourceTree = "<group>"; };
+		2B429FC42CBFAEF7004F7F5A /* TTSDKCrashInstallation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashInstallation.h; sourceTree = "<group>"; };
+		2B429FC52CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashInstallationConsole.h; sourceTree = "<group>"; };
+		2B429FC62CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashInstallationEmail.h; sourceTree = "<group>"; };
+		2B429FC72CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashInstallationStandard.h; sourceTree = "<group>"; };
+		2B429FC92CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2B429FCB2CBFAEF7004F7F5A /* TTSDKCrashInstallation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashInstallation.m; sourceTree = "<group>"; };
+		2B429FCC2CBFAEF7004F7F5A /* TTSDKCrashInstallation+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TTSDKCrashInstallation+Private.h"; sourceTree = "<group>"; };
+		2B429FCD2CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashInstallationConsole.m; sourceTree = "<group>"; };
+		2B429FCE2CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashInstallationEmail.m; sourceTree = "<group>"; };
+		2B429FCF2CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashInstallationStandard.m; sourceTree = "<group>"; };
+		2B429FD12CBFAEF7004F7F5A /* TTSDKCrash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrash.h; sourceTree = "<group>"; };
+		2B429FD22CBFAEF7004F7F5A /* TTSDKCrashAppMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashAppMemory.h; sourceTree = "<group>"; };
+		2B429FD32CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashAppMemoryTracker.h; sourceTree = "<group>"; };
+		2B429FD42CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashAppStateTracker.h; sourceTree = "<group>"; };
+		2B429FD52CBFAEF7004F7F5A /* TTSDKCrashAppTransitionState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashAppTransitionState.h; sourceTree = "<group>"; };
+		2B429FD62CBFAEF7004F7F5A /* TTSDKCrashC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashC.h; sourceTree = "<group>"; };
+		2B429FD72CBFAEF7004F7F5A /* TTSDKCrashCConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashCConfiguration.h; sourceTree = "<group>"; };
+		2B429FD82CBFAEF7004F7F5A /* TTSDKCrashConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashConfiguration.h; sourceTree = "<group>"; };
+		2B429FD92CBFAEF7004F7F5A /* TTSDKCrashError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashError.h; sourceTree = "<group>"; };
+		2B429FDA2CBFAEF7004F7F5A /* TTSDKCrashMonitorType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitorType.h; sourceTree = "<group>"; };
+		2B429FDB2CBFAEF7004F7F5A /* TTSDKCrashReport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReport.h; sourceTree = "<group>"; };
+		2B429FDC2CBFAEF7004F7F5A /* TTSDKCrashReportFields.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFields.h; sourceTree = "<group>"; };
+		2B429FDD2CBFAEF7004F7F5A /* TTSDKCrashReportFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFilter.h; sourceTree = "<group>"; };
+		2B429FDE2CBFAEF7004F7F5A /* TTSDKCrashReportStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportStore.h; sourceTree = "<group>"; };
+		2B429FDF2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportStoreC.h; sourceTree = "<group>"; };
+		2B429FE02CBFAEF7004F7F5A /* TTSDKCrashReportWriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportWriter.h; sourceTree = "<group>"; };
+		2B429FE22CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_AppState.h; sourceTree = "<group>"; };
+		2B429FE32CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashMonitor_AppState.c; sourceTree = "<group>"; };
+		2B429FE42CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_CPPException.h; sourceTree = "<group>"; };
+		2B429FE52CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TTSDKCrashMonitor_CPPException.cpp; sourceTree = "<group>"; };
+		2B429FE62CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_Deadlock.h; sourceTree = "<group>"; };
+		2B429FE72CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashMonitor_Deadlock.m; sourceTree = "<group>"; };
+		2B429FE82CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_MachException.h; sourceTree = "<group>"; };
+		2B429FE92CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashMonitor_MachException.c; sourceTree = "<group>"; };
+		2B429FEA2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_Memory.h; sourceTree = "<group>"; };
+		2B429FEB2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashMonitor_Memory.m; sourceTree = "<group>"; };
+		2B429FEC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_NSException.h; sourceTree = "<group>"; };
+		2B429FED2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashMonitor_NSException.m; sourceTree = "<group>"; };
+		2B429FEE2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_Signal.h; sourceTree = "<group>"; };
+		2B429FEF2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashMonitor_Signal.c; sourceTree = "<group>"; };
+		2B429FF02CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_System.h; sourceTree = "<group>"; };
+		2B429FF12CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashMonitor_System.m; sourceTree = "<group>"; };
+		2B429FF22CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_User.h; sourceTree = "<group>"; };
+		2B429FF32CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashMonitor_User.c; sourceTree = "<group>"; };
+		2B429FF42CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_Zombie.h; sourceTree = "<group>"; };
+		2B429FF52CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashMonitor_Zombie.c; sourceTree = "<group>"; };
+		2B429FF62CBFAEF7004F7F5A /* TTSDKCrashMonitorContextHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitorContextHelper.h; sourceTree = "<group>"; };
+		2B429FF82CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2B429FFA2CBFAEF7004F7F5A /* TTSDKCrash.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrash.m; sourceTree = "<group>"; };
+		2B429FFB2CBFAEF7004F7F5A /* TTSDKCrash+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TTSDKCrash+Private.h"; sourceTree = "<group>"; };
+		2B429FFC2CBFAEF7004F7F5A /* TTSDKCrashAppMemory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashAppMemory.m; sourceTree = "<group>"; };
+		2B429FFD2CBFAEF7004F7F5A /* TTSDKCrashAppMemory+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TTSDKCrashAppMemory+Private.h"; sourceTree = "<group>"; };
+		2B429FFE2CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashAppMemoryTracker.m; sourceTree = "<group>"; };
+		2B429FFF2CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashAppStateTracker.m; sourceTree = "<group>"; };
+		2B42A0002CBFAEF7004F7F5A /* TTSDKCrashC.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashC.c; sourceTree = "<group>"; };
+		2B42A0012CBFAEF7004F7F5A /* TTSDKCrashCachedData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashCachedData.h; sourceTree = "<group>"; };
+		2B42A0022CBFAEF7004F7F5A /* TTSDKCrashCachedData.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashCachedData.c; sourceTree = "<group>"; };
+		2B42A0032CBFAEF7004F7F5A /* TTSDKCrashConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashConfiguration.m; sourceTree = "<group>"; };
+		2B42A0042CBFAEF7004F7F5A /* TTSDKCrashConfiguration+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TTSDKCrashConfiguration+Private.h"; sourceTree = "<group>"; };
+		2B42A0052CBFAEF7004F7F5A /* TTSDKCrashReport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReport.m; sourceTree = "<group>"; };
+		2B42A0062CBFAEF7004F7F5A /* TTSDKCrashReportC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportC.h; sourceTree = "<group>"; };
+		2B42A0072CBFAEF7004F7F5A /* TTSDKCrashReportC.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashReportC.c; sourceTree = "<group>"; };
+		2B42A0082CBFAEF7004F7F5A /* TTSDKCrashReportFixer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportFixer.h; sourceTree = "<group>"; };
+		2B42A0092CBFAEF7004F7F5A /* TTSDKCrashReportFixer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashReportFixer.c; sourceTree = "<group>"; };
+		2B42A00A2CBFAEF7004F7F5A /* TTSDKCrashReportStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportStore.m; sourceTree = "<group>"; };
+		2B42A00B2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashReportStoreC.c; sourceTree = "<group>"; };
+		2B42A00C2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TTSDKCrashReportStoreC+Private.h"; sourceTree = "<group>"; };
+		2B42A00D2CBFAEF7004F7F5A /* TTSDKCrashReportVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportVersion.h; sourceTree = "<group>"; };
+		2B42A00F2CBFAEF7004F7F5A /* TTSDKCPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCPU.h; sourceTree = "<group>"; };
+		2B42A0102CBFAEF7004F7F5A /* TTSDKCPU_Apple.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCPU_Apple.h; sourceTree = "<group>"; };
+		2B42A0112CBFAEF7004F7F5A /* TTSDKCrashMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor.h; sourceTree = "<group>"; };
+		2B42A0122CBFAEF7004F7F5A /* TTSDKCrashMonitorContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitorContext.h; sourceTree = "<group>"; };
+		2B42A0132CBFAEF7004F7F5A /* TTSDKCrashMonitorFlag.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitorFlag.h; sourceTree = "<group>"; };
+		2B42A0142CBFAEF7004F7F5A /* TTSDKCrashMonitorHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitorHelper.h; sourceTree = "<group>"; };
+		2B42A0152CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCxaThrowSwapper.h; sourceTree = "<group>"; };
+		2B42A0162CBFAEF7004F7F5A /* TTSDKDate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKDate.h; sourceTree = "<group>"; };
+		2B42A0172CBFAEF7004F7F5A /* TTSDKDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKDebug.h; sourceTree = "<group>"; };
+		2B42A0182CBFAEF7004F7F5A /* TTSDKDynamicLinker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKDynamicLinker.h; sourceTree = "<group>"; };
+		2B42A0192CBFAEF7004F7F5A /* TTSDKFileUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKFileUtils.h; sourceTree = "<group>"; };
+		2B42A01A2CBFAEF7004F7F5A /* TTSDKID.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKID.h; sourceTree = "<group>"; };
+		2B42A01B2CBFAEF7004F7F5A /* TTSDKJSONCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKJSONCodec.h; sourceTree = "<group>"; };
+		2B42A01C2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKJSONCodecObjC.h; sourceTree = "<group>"; };
+		2B42A01D2CBFAEF7004F7F5A /* TTSDKLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKLogger.h; sourceTree = "<group>"; };
+		2B42A01E2CBFAEF7004F7F5A /* TTSDKMach.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKMach.h; sourceTree = "<group>"; };
+		2B42A01F2CBFAEF7004F7F5A /* TTSDKMach-O.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TTSDKMach-O.h"; sourceTree = "<group>"; };
+		2B42A0202CBFAEF7004F7F5A /* TTSDKMachineContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKMachineContext.h; sourceTree = "<group>"; };
+		2B42A0212CBFAEF7004F7F5A /* TTSDKMachineContext_Apple.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKMachineContext_Apple.h; sourceTree = "<group>"; };
+		2B42A0222CBFAEF7004F7F5A /* TTSDKMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKMemory.h; sourceTree = "<group>"; };
+		2B42A0232CBFAEF7004F7F5A /* TTSDKObjC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKObjC.h; sourceTree = "<group>"; };
+		2B42A0242CBFAEF7004F7F5A /* TTSDKPlatformSpecificDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKPlatformSpecificDefines.h; sourceTree = "<group>"; };
+		2B42A0252CBFAEF7004F7F5A /* TTSDKSignalInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKSignalInfo.h; sourceTree = "<group>"; };
+		2B42A0262CBFAEF7004F7F5A /* TTSDKStackCursor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKStackCursor.h; sourceTree = "<group>"; };
+		2B42A0272CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKStackCursor_Backtrace.h; sourceTree = "<group>"; };
+		2B42A0282CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKStackCursor_MachineContext.h; sourceTree = "<group>"; };
+		2B42A0292CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKStackCursor_SelfThread.h; sourceTree = "<group>"; };
+		2B42A02A2CBFAEF7004F7F5A /* TTSDKString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKString.h; sourceTree = "<group>"; };
+		2B42A02B2CBFAEF7004F7F5A /* TTSDKSymbolicator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKSymbolicator.h; sourceTree = "<group>"; };
+		2B42A02C2CBFAEF7004F7F5A /* TTSDKSysCtl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKSysCtl.h; sourceTree = "<group>"; };
+		2B42A02D2CBFAEF7004F7F5A /* TTSDKThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKThread.h; sourceTree = "<group>"; };
+		2B42A02F2CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2B42A0312CBFAEF7004F7F5A /* TTSDKCPU.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCPU.c; sourceTree = "<group>"; };
+		2B42A0322CBFAEF7004F7F5A /* TTSDKCPU_arm.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCPU_arm.c; sourceTree = "<group>"; };
+		2B42A0332CBFAEF7004F7F5A /* TTSDKCPU_arm64.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCPU_arm64.c; sourceTree = "<group>"; };
+		2B42A0342CBFAEF7004F7F5A /* TTSDKCPU_x86_32.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCPU_x86_32.c; sourceTree = "<group>"; };
+		2B42A0352CBFAEF7004F7F5A /* TTSDKCPU_x86_64.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCPU_x86_64.c; sourceTree = "<group>"; };
+		2B42A0362CBFAEF7004F7F5A /* TTSDKCrashMonitor.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCrashMonitor.c; sourceTree = "<group>"; };
+		2B42A0372CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKCxaThrowSwapper.c; sourceTree = "<group>"; };
+		2B42A0382CBFAEF7004F7F5A /* TTSDKDate.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKDate.c; sourceTree = "<group>"; };
+		2B42A0392CBFAEF7004F7F5A /* TTSDKDebug.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKDebug.c; sourceTree = "<group>"; };
+		2B42A03A2CBFAEF7004F7F5A /* TTSDKDynamicLinker.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKDynamicLinker.c; sourceTree = "<group>"; };
+		2B42A03B2CBFAEF7004F7F5A /* TTSDKFileUtils.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKFileUtils.c; sourceTree = "<group>"; };
+		2B42A03C2CBFAEF7004F7F5A /* TTSDKID.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKID.c; sourceTree = "<group>"; };
+		2B42A03D2CBFAEF7004F7F5A /* TTSDKJSONCodec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKJSONCodec.c; sourceTree = "<group>"; };
+		2B42A03E2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKJSONCodecObjC.m; sourceTree = "<group>"; };
+		2B42A03F2CBFAEF7004F7F5A /* TTSDKLogger.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKLogger.c; sourceTree = "<group>"; };
+		2B42A0402CBFAEF7004F7F5A /* TTSDKMach.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKMach.c; sourceTree = "<group>"; };
+		2B42A0412CBFAEF7004F7F5A /* TTSDKMach-O.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "TTSDKMach-O.c"; sourceTree = "<group>"; };
+		2B42A0422CBFAEF7004F7F5A /* TTSDKMachineContext.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKMachineContext.c; sourceTree = "<group>"; };
+		2B42A0432CBFAEF7004F7F5A /* TTSDKMemory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKMemory.c; sourceTree = "<group>"; };
+		2B42A0442CBFAEF7004F7F5A /* TTSDKObjC.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKObjC.c; sourceTree = "<group>"; };
+		2B42A0452CBFAEF7004F7F5A /* TTSDKObjCApple.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKObjCApple.h; sourceTree = "<group>"; };
+		2B42A0462CBFAEF7004F7F5A /* TTSDKSignalInfo.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKSignalInfo.c; sourceTree = "<group>"; };
+		2B42A0472CBFAEF7004F7F5A /* TTSDKStackCursor.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKStackCursor.c; sourceTree = "<group>"; };
+		2B42A0482CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKStackCursor_Backtrace.c; sourceTree = "<group>"; };
+		2B42A0492CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKStackCursor_MachineContext.c; sourceTree = "<group>"; };
+		2B42A04A2CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKStackCursor_SelfThread.c; sourceTree = "<group>"; };
+		2B42A04B2CBFAEF7004F7F5A /* TTSDKString.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKString.c; sourceTree = "<group>"; };
+		2B42A04C2CBFAEF7004F7F5A /* TTSDKSymbolicator.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKSymbolicator.c; sourceTree = "<group>"; };
+		2B42A04D2CBFAEF7004F7F5A /* TTSDKSysCtl.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKSysCtl.c; sourceTree = "<group>"; };
+		2B42A04E2CBFAEF7004F7F5A /* TTSDKThread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TTSDKThread.c; sourceTree = "<group>"; };
+		2B42A0502CBFAEF7004F7F5A /* TTSDKCString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCString.h; sourceTree = "<group>"; };
+		2B42A0512CBFAEF7004F7F5A /* TTSDKGZipHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKGZipHelper.h; sourceTree = "<group>"; };
+		2B42A0522CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKHTTPMultipartPostBody.h; sourceTree = "<group>"; };
+		2B42A0532CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKHTTPRequestSender.h; sourceTree = "<group>"; };
+		2B42A0542CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKNSDictionaryHelper.h; sourceTree = "<group>"; };
+		2B42A0552CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKReachabilityTTSDKCrash.h; sourceTree = "<group>"; };
+		2B42A0562CBFAEF7004F7F5A /* TTSDKVarArgs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKVarArgs.h; sourceTree = "<group>"; };
+		2B42A0582CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2B42A05A2CBFAEF7004F7F5A /* TTSDKCString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCString.m; sourceTree = "<group>"; };
+		2B42A05B2CBFAEF7004F7F5A /* TTSDKGZipHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKGZipHelper.m; sourceTree = "<group>"; };
+		2B42A05C2CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKHTTPMultipartPostBody.m; sourceTree = "<group>"; };
+		2B42A05D2CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKHTTPRequestSender.m; sourceTree = "<group>"; };
+		2B42A05E2CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKNSDictionaryHelper.m; sourceTree = "<group>"; };
+		2B42A05F2CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKReachabilityTTSDKCrash.m; sourceTree = "<group>"; };
+		2B42A0612CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportSinkConsole.h; sourceTree = "<group>"; };
+		2B42A0622CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportSinkEMail.h; sourceTree = "<group>"; };
+		2B42A0632CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashReportSinkStandard.h; sourceTree = "<group>"; };
+		2B42A0652CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		2B42A0672CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportSinkConsole.m; sourceTree = "<group>"; };
+		2B42A0682CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportSinkEMail.m; sourceTree = "<group>"; };
+		2B42A0692CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashReportSinkStandard.m; sourceTree = "<group>"; };
+		2B42A1582CBFB814004F7F5A /* aaaaTikTokBusinessSDKBegin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = aaaaTikTokBusinessSDKBegin.m; sourceTree = "<group>"; };
+		2B42A1592CBFB814004F7F5A /* TikTokBusinessSDKAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TikTokBusinessSDKAddress.h; sourceTree = "<group>"; };
+		2B42A15A2CBFB814004F7F5A /* TikTokBusinessSDKAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokBusinessSDKAddress.m; sourceTree = "<group>"; };
+		2B42A15B2CBFB814004F7F5A /* ZZZZTikTokBusinessSDKEnd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZZZZTikTokBusinessSDKEnd.m; sourceTree = "<group>"; };
 		2B4E17722C62A121003644EA /* DeeplinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkViewController.swift; sourceTree = "<group>"; };
 		2B6C2D992BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2B870C012BF1F619009CB42C /* TikTokBaseEventTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokBaseEventTests.m; sourceTree = "<group>"; };
@@ -337,6 +696,428 @@
 			path = AppEvents;
 			sourceTree = "<group>";
 		};
+		2B429F662CBFAED8004F7F5A /* TTSDKCrash */ = {
+			isa = PBXGroup;
+			children = (
+				2B429F6C2CBFAEF7004F7F5A /* TTSDKCrashBootTimeMonitor */,
+				2B429F732CBFAEF7004F7F5A /* TTSDKCrashCore */,
+				2B429FAD2CBFAEF7004F7F5A /* TTSDKCrashDiscSpaceMonitor */,
+				2B429FC32CBFAEF7004F7F5A /* TTSDKCrashFilters */,
+				2B429FD02CBFAEF7004F7F5A /* TTSDKCrashInstallations */,
+				2B42A00E2CBFAEF7004F7F5A /* TTSDKCrashRecording */,
+				2B42A04F2CBFAEF7004F7F5A /* TTSDKCrashRecordingCore */,
+				2B42A0602CBFAEF7004F7F5A /* TTSDKCrashReportingCore */,
+				2B42A06A2CBFAEF7004F7F5A /* TTSDKCrashSinks */,
+			);
+			path = TTSDKCrash;
+			sourceTree = "<group>";
+		};
+		2B429F682CBFAEF7004F7F5A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				2B429F672CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2B429F6A2CBFAEF7004F7F5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B429F692CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B429F6C2CBFAEF7004F7F5A /* TTSDKCrashBootTimeMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				2B429F682CBFAEF7004F7F5A /* include */,
+				2B429F6A2CBFAEF7004F7F5A /* Resources */,
+				2B429F6B2CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.m */,
+			);
+			path = TTSDKCrashBootTimeMonitor;
+			sourceTree = "<group>";
+		};
+		2B429F6F2CBFAEF7004F7F5A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				2B429F6D2CBFAEF7004F7F5A /* TTSDKNSErrorHelper.h */,
+				2B429F6E2CBFAEF7004F7F5A /* TTSDKSystemCapabilities.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2B429F712CBFAEF7004F7F5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B429F702CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B429F732CBFAEF7004F7F5A /* TTSDKCrashCore */ = {
+			isa = PBXGroup;
+			children = (
+				2B429F6F2CBFAEF7004F7F5A /* include */,
+				2B429F712CBFAEF7004F7F5A /* Resources */,
+				2B429F722CBFAEF7004F7F5A /* TTSDKNSErrorHelper.m */,
+			);
+			path = TTSDKCrashCore;
+			sourceTree = "<group>";
+		};
+		2B429FA92CBFAEF7004F7F5A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FA82CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2B429FAB2CBFAEF7004F7F5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FAA2CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B429FAD2CBFAEF7004F7F5A /* TTSDKCrashDiscSpaceMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FA92CBFAEF7004F7F5A /* include */,
+				2B429FAB2CBFAEF7004F7F5A /* Resources */,
+				2B429FAC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.m */,
+			);
+			path = TTSDKCrashDiscSpaceMonitor;
+			sourceTree = "<group>";
+		};
+		2B429FB62CBFAEF7004F7F5A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FAE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.h */,
+				2B429FAF2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.h */,
+				2B429FB02CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.h */,
+				2B429FB12CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.h */,
+				2B429FB22CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.h */,
+				2B429FB32CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.h */,
+				2B429FB42CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.h */,
+				2B429FB52CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2B429FB82CBFAEF7004F7F5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FB72CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B429FC32CBFAEF7004F7F5A /* TTSDKCrashFilters */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FB62CBFAEF7004F7F5A /* include */,
+				2B429FB82CBFAEF7004F7F5A /* Resources */,
+				2B429FB92CBFAEF7004F7F5A /* TTSDKCrashDoctor.h */,
+				2B429FBA2CBFAEF7004F7F5A /* TTSDKCrashDoctor.m */,
+				2B429FBB2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.m */,
+				2B429FBC2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.m */,
+				2B429FBD2CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.m */,
+				2B429FBE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.m */,
+				2B429FBF2CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.m */,
+				2B429FC02CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.m */,
+				2B429FC12CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.m */,
+				2B429FC22CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.m */,
+			);
+			path = TTSDKCrashFilters;
+			sourceTree = "<group>";
+		};
+		2B429FC82CBFAEF7004F7F5A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FC42CBFAEF7004F7F5A /* TTSDKCrashInstallation.h */,
+				2B429FC52CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.h */,
+				2B429FC62CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.h */,
+				2B429FC72CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2B429FCA2CBFAEF7004F7F5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FC92CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B429FD02CBFAEF7004F7F5A /* TTSDKCrashInstallations */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FC82CBFAEF7004F7F5A /* include */,
+				2B429FCA2CBFAEF7004F7F5A /* Resources */,
+				2B429FCB2CBFAEF7004F7F5A /* TTSDKCrashInstallation.m */,
+				2B429FCC2CBFAEF7004F7F5A /* TTSDKCrashInstallation+Private.h */,
+				2B429FCD2CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.m */,
+				2B429FCE2CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.m */,
+				2B429FCF2CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.m */,
+			);
+			path = TTSDKCrashInstallations;
+			sourceTree = "<group>";
+		};
+		2B429FE12CBFAEF7004F7F5A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FD12CBFAEF7004F7F5A /* TTSDKCrash.h */,
+				2B429FD22CBFAEF7004F7F5A /* TTSDKCrashAppMemory.h */,
+				2B429FD32CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.h */,
+				2B429FD42CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.h */,
+				2B429FD52CBFAEF7004F7F5A /* TTSDKCrashAppTransitionState.h */,
+				2B429FD62CBFAEF7004F7F5A /* TTSDKCrashC.h */,
+				2B429FD72CBFAEF7004F7F5A /* TTSDKCrashCConfiguration.h */,
+				2B429FD82CBFAEF7004F7F5A /* TTSDKCrashConfiguration.h */,
+				2B429FD92CBFAEF7004F7F5A /* TTSDKCrashError.h */,
+				2B429FDA2CBFAEF7004F7F5A /* TTSDKCrashMonitorType.h */,
+				2B429FDB2CBFAEF7004F7F5A /* TTSDKCrashReport.h */,
+				2B429FDC2CBFAEF7004F7F5A /* TTSDKCrashReportFields.h */,
+				2B429FDD2CBFAEF7004F7F5A /* TTSDKCrashReportFilter.h */,
+				2B429FDE2CBFAEF7004F7F5A /* TTSDKCrashReportStore.h */,
+				2B429FDF2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.h */,
+				2B429FE02CBFAEF7004F7F5A /* TTSDKCrashReportWriter.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2B429FF72CBFAEF7004F7F5A /* Monitors */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FE22CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.h */,
+				2B429FE32CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.c */,
+				2B429FE42CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.h */,
+				2B429FE52CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.cpp */,
+				2B429FE62CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.h */,
+				2B429FE72CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.m */,
+				2B429FE82CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.h */,
+				2B429FE92CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.c */,
+				2B429FEA2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.h */,
+				2B429FEB2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.m */,
+				2B429FEC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.h */,
+				2B429FED2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.m */,
+				2B429FEE2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.h */,
+				2B429FEF2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.c */,
+				2B429FF02CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.h */,
+				2B429FF12CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.m */,
+				2B429FF22CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.h */,
+				2B429FF32CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.c */,
+				2B429FF42CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.h */,
+				2B429FF52CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.c */,
+				2B429FF62CBFAEF7004F7F5A /* TTSDKCrashMonitorContextHelper.h */,
+			);
+			path = Monitors;
+			sourceTree = "<group>";
+		};
+		2B429FF92CBFAEF7004F7F5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FF82CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B42A00E2CBFAEF7004F7F5A /* TTSDKCrashRecording */ = {
+			isa = PBXGroup;
+			children = (
+				2B429FE12CBFAEF7004F7F5A /* include */,
+				2B429FF72CBFAEF7004F7F5A /* Monitors */,
+				2B429FF92CBFAEF7004F7F5A /* Resources */,
+				2B429FFA2CBFAEF7004F7F5A /* TTSDKCrash.m */,
+				2B429FFB2CBFAEF7004F7F5A /* TTSDKCrash+Private.h */,
+				2B429FFC2CBFAEF7004F7F5A /* TTSDKCrashAppMemory.m */,
+				2B429FFD2CBFAEF7004F7F5A /* TTSDKCrashAppMemory+Private.h */,
+				2B429FFE2CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.m */,
+				2B429FFF2CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.m */,
+				2B42A0002CBFAEF7004F7F5A /* TTSDKCrashC.c */,
+				2B42A0012CBFAEF7004F7F5A /* TTSDKCrashCachedData.h */,
+				2B42A0022CBFAEF7004F7F5A /* TTSDKCrashCachedData.c */,
+				2B42A0032CBFAEF7004F7F5A /* TTSDKCrashConfiguration.m */,
+				2B42A0042CBFAEF7004F7F5A /* TTSDKCrashConfiguration+Private.h */,
+				2B42A0052CBFAEF7004F7F5A /* TTSDKCrashReport.m */,
+				2B42A0062CBFAEF7004F7F5A /* TTSDKCrashReportC.h */,
+				2B42A0072CBFAEF7004F7F5A /* TTSDKCrashReportC.c */,
+				2B42A0082CBFAEF7004F7F5A /* TTSDKCrashReportFixer.h */,
+				2B42A0092CBFAEF7004F7F5A /* TTSDKCrashReportFixer.c */,
+				2B42A00A2CBFAEF7004F7F5A /* TTSDKCrashReportStore.m */,
+				2B42A00B2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.c */,
+				2B42A00C2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC+Private.h */,
+				2B42A00D2CBFAEF7004F7F5A /* TTSDKCrashReportVersion.h */,
+			);
+			path = TTSDKCrashRecording;
+			sourceTree = "<group>";
+		};
+		2B42A02E2CBFAEF7004F7F5A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A00F2CBFAEF7004F7F5A /* TTSDKCPU.h */,
+				2B42A0102CBFAEF7004F7F5A /* TTSDKCPU_Apple.h */,
+				2B42A0112CBFAEF7004F7F5A /* TTSDKCrashMonitor.h */,
+				2B42A0122CBFAEF7004F7F5A /* TTSDKCrashMonitorContext.h */,
+				2B42A0132CBFAEF7004F7F5A /* TTSDKCrashMonitorFlag.h */,
+				2B42A0142CBFAEF7004F7F5A /* TTSDKCrashMonitorHelper.h */,
+				2B42A0152CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.h */,
+				2B42A0162CBFAEF7004F7F5A /* TTSDKDate.h */,
+				2B42A0172CBFAEF7004F7F5A /* TTSDKDebug.h */,
+				2B42A0182CBFAEF7004F7F5A /* TTSDKDynamicLinker.h */,
+				2B42A0192CBFAEF7004F7F5A /* TTSDKFileUtils.h */,
+				2B42A01A2CBFAEF7004F7F5A /* TTSDKID.h */,
+				2B42A01B2CBFAEF7004F7F5A /* TTSDKJSONCodec.h */,
+				2B42A01C2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.h */,
+				2B42A01D2CBFAEF7004F7F5A /* TTSDKLogger.h */,
+				2B42A01E2CBFAEF7004F7F5A /* TTSDKMach.h */,
+				2B42A01F2CBFAEF7004F7F5A /* TTSDKMach-O.h */,
+				2B42A0202CBFAEF7004F7F5A /* TTSDKMachineContext.h */,
+				2B42A0212CBFAEF7004F7F5A /* TTSDKMachineContext_Apple.h */,
+				2B42A0222CBFAEF7004F7F5A /* TTSDKMemory.h */,
+				2B42A0232CBFAEF7004F7F5A /* TTSDKObjC.h */,
+				2B42A0242CBFAEF7004F7F5A /* TTSDKPlatformSpecificDefines.h */,
+				2B42A0252CBFAEF7004F7F5A /* TTSDKSignalInfo.h */,
+				2B42A0262CBFAEF7004F7F5A /* TTSDKStackCursor.h */,
+				2B42A0272CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.h */,
+				2B42A0282CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.h */,
+				2B42A0292CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.h */,
+				2B42A02A2CBFAEF7004F7F5A /* TTSDKString.h */,
+				2B42A02B2CBFAEF7004F7F5A /* TTSDKSymbolicator.h */,
+				2B42A02C2CBFAEF7004F7F5A /* TTSDKSysCtl.h */,
+				2B42A02D2CBFAEF7004F7F5A /* TTSDKThread.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2B42A0302CBFAEF7004F7F5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A02F2CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B42A04F2CBFAEF7004F7F5A /* TTSDKCrashRecordingCore */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A02E2CBFAEF7004F7F5A /* include */,
+				2B42A0302CBFAEF7004F7F5A /* Resources */,
+				2B42A0312CBFAEF7004F7F5A /* TTSDKCPU.c */,
+				2B42A0322CBFAEF7004F7F5A /* TTSDKCPU_arm.c */,
+				2B42A0332CBFAEF7004F7F5A /* TTSDKCPU_arm64.c */,
+				2B42A0342CBFAEF7004F7F5A /* TTSDKCPU_x86_32.c */,
+				2B42A0352CBFAEF7004F7F5A /* TTSDKCPU_x86_64.c */,
+				2B42A0362CBFAEF7004F7F5A /* TTSDKCrashMonitor.c */,
+				2B42A0372CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.c */,
+				2B42A0382CBFAEF7004F7F5A /* TTSDKDate.c */,
+				2B42A0392CBFAEF7004F7F5A /* TTSDKDebug.c */,
+				2B42A03A2CBFAEF7004F7F5A /* TTSDKDynamicLinker.c */,
+				2B42A03B2CBFAEF7004F7F5A /* TTSDKFileUtils.c */,
+				2B42A03C2CBFAEF7004F7F5A /* TTSDKID.c */,
+				2B42A03D2CBFAEF7004F7F5A /* TTSDKJSONCodec.c */,
+				2B42A03E2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.m */,
+				2B42A03F2CBFAEF7004F7F5A /* TTSDKLogger.c */,
+				2B42A0402CBFAEF7004F7F5A /* TTSDKMach.c */,
+				2B42A0412CBFAEF7004F7F5A /* TTSDKMach-O.c */,
+				2B42A0422CBFAEF7004F7F5A /* TTSDKMachineContext.c */,
+				2B42A0432CBFAEF7004F7F5A /* TTSDKMemory.c */,
+				2B42A0442CBFAEF7004F7F5A /* TTSDKObjC.c */,
+				2B42A0452CBFAEF7004F7F5A /* TTSDKObjCApple.h */,
+				2B42A0462CBFAEF7004F7F5A /* TTSDKSignalInfo.c */,
+				2B42A0472CBFAEF7004F7F5A /* TTSDKStackCursor.c */,
+				2B42A0482CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.c */,
+				2B42A0492CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.c */,
+				2B42A04A2CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.c */,
+				2B42A04B2CBFAEF7004F7F5A /* TTSDKString.c */,
+				2B42A04C2CBFAEF7004F7F5A /* TTSDKSymbolicator.c */,
+				2B42A04D2CBFAEF7004F7F5A /* TTSDKSysCtl.c */,
+				2B42A04E2CBFAEF7004F7F5A /* TTSDKThread.c */,
+			);
+			path = TTSDKCrashRecordingCore;
+			sourceTree = "<group>";
+		};
+		2B42A0572CBFAEF7004F7F5A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A0502CBFAEF7004F7F5A /* TTSDKCString.h */,
+				2B42A0512CBFAEF7004F7F5A /* TTSDKGZipHelper.h */,
+				2B42A0522CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.h */,
+				2B42A0532CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.h */,
+				2B42A0542CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.h */,
+				2B42A0552CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.h */,
+				2B42A0562CBFAEF7004F7F5A /* TTSDKVarArgs.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2B42A0592CBFAEF7004F7F5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A0582CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B42A0602CBFAEF7004F7F5A /* TTSDKCrashReportingCore */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A0572CBFAEF7004F7F5A /* include */,
+				2B42A0592CBFAEF7004F7F5A /* Resources */,
+				2B42A05A2CBFAEF7004F7F5A /* TTSDKCString.m */,
+				2B42A05B2CBFAEF7004F7F5A /* TTSDKGZipHelper.m */,
+				2B42A05C2CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.m */,
+				2B42A05D2CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.m */,
+				2B42A05E2CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.m */,
+				2B42A05F2CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.m */,
+			);
+			path = TTSDKCrashReportingCore;
+			sourceTree = "<group>";
+		};
+		2B42A0642CBFAEF7004F7F5A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A0612CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.h */,
+				2B42A0622CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.h */,
+				2B42A0632CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		2B42A0662CBFAEF7004F7F5A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A0652CBFAEF7004F7F5A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2B42A06A2CBFAEF7004F7F5A /* TTSDKCrashSinks */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A0642CBFAEF7004F7F5A /* include */,
+				2B42A0662CBFAEF7004F7F5A /* Resources */,
+				2B42A0672CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.m */,
+				2B42A0682CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.m */,
+				2B42A0692CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.m */,
+			);
+			path = TTSDKCrashSinks;
+			sourceTree = "<group>";
+		};
+		2B42A15C2CBFB814004F7F5A /* TTSDKAddress */ = {
+			isa = PBXGroup;
+			children = (
+				2B42A1582CBFB814004F7F5A /* aaaaTikTokBusinessSDKBegin.m */,
+				2B42A1592CBFB814004F7F5A /* TikTokBusinessSDKAddress.h */,
+				2B42A15A2CBFB814004F7F5A /* TikTokBusinessSDKAddress.m */,
+				2B42A15B2CBFB814004F7F5A /* ZZZZTikTokBusinessSDKEnd.m */,
+			);
+			path = TTSDKAddress;
+			sourceTree = "<group>";
+		};
 		8B23DF802502BA73008351FA = {
 			isa = PBXGroup;
 			children = (
@@ -371,7 +1152,9 @@
 				8B89A237251A64AB00B61811 /* TikTokAdditions */,
 				0A1A064D250953E2001463B8 /* AppEvents */,
 				8B23DF8D2502BA73008351FA /* TikTokBusinessSDK.h */,
+				2B429F662CBFAED8004F7F5A /* TTSDKCrash */,
 				8B23DFBD25080872008351FA /* TikTokBusiness.h */,
+				2B42A15C2CBFB814004F7F5A /* TTSDKAddress */,
 				2B870C2B2BF2367B009CB42C /* TikTokBusiness+private.h */,
 				8B23DFBE25080872008351FA /* TikTokBusiness.m */,
 				8B23DFB925080821008351FA /* TikTokConfig.h */,
@@ -475,6 +1258,102 @@
 				2BCE07DD2AFE2B9D00816335 /* TikTokSKAdNetworkWindow.h in Headers */,
 				0ADCF53B2538CF1C00D7B57C /* TikTokErrorHandler.h in Headers */,
 				8B23DFBF25080872008351FA /* TikTokBusiness.h in Headers */,
+				2B42A0CC2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.h in Headers */,
+				2B42A0CD2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.h in Headers */,
+				2B42A0CF2CBFAEF7004F7F5A /* TTSDKGZipHelper.h in Headers */,
+				2B42A0D02CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.h in Headers */,
+				2B42A0D12CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.h in Headers */,
+				2B42A0D22CBFAEF7004F7F5A /* TTSDKCrashReportFilter.h in Headers */,
+				2B42A0D32CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.h in Headers */,
+				2B42A0D42CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.h in Headers */,
+				2B42A0D52CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.h in Headers */,
+				2B42A0D62CBFAEF7004F7F5A /* TTSDKDate.h in Headers */,
+				2B42A0D72CBFAEF7004F7F5A /* TTSDKCrashReportFixer.h in Headers */,
+				2B42A0D82CBFAEF7004F7F5A /* TTSDKMachineContext.h in Headers */,
+				2B42A0D92CBFAEF7004F7F5A /* TTSDKMemory.h in Headers */,
+				2B42A0DA2CBFAEF7004F7F5A /* TTSDKSystemCapabilities.h in Headers */,
+				2B42A0DB2CBFAEF7004F7F5A /* TTSDKSysCtl.h in Headers */,
+				2B42A0DC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.h in Headers */,
+				2B42A0DE2CBFAEF7004F7F5A /* TTSDKDebug.h in Headers */,
+				2B42A0E02CBFAEF7004F7F5A /* TTSDKCrashAppMemory+Private.h in Headers */,
+				2B42A0E12CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.h in Headers */,
+				2B42A0E32CBFAEF7004F7F5A /* TTSDKCrashInstallation+Private.h in Headers */,
+				2B42A0E42CBFAEF7004F7F5A /* TTSDKCPU_Apple.h in Headers */,
+				2B42A0E52CBFAEF7004F7F5A /* TTSDKCrashReportC.h in Headers */,
+				2B42A0E72CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.h in Headers */,
+				2B42A0E82CBFAEF7004F7F5A /* TTSDKCrashMonitorHelper.h in Headers */,
+				2B42A0E92CBFAEF7004F7F5A /* TTSDKMach-O.h in Headers */,
+				2B42A0EA2CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.h in Headers */,
+				2B42A0EB2CBFAEF7004F7F5A /* TTSDKCrashReportStore.h in Headers */,
+				2B42A0EC2CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.h in Headers */,
+				2B42A0ED2CBFAEF7004F7F5A /* TTSDKCrashCConfiguration.h in Headers */,
+				2B42A0EF2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.h in Headers */,
+				2B42A0F02CBFAEF7004F7F5A /* TTSDKCrashConfiguration.h in Headers */,
+				2B42A0F12CBFAEF7004F7F5A /* TTSDKCrashCachedData.h in Headers */,
+				2B42A0F22CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.h in Headers */,
+				2B42A0F32CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.h in Headers */,
+				2B42A0F52CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.h in Headers */,
+				2B42A0F62CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.h in Headers */,
+				2B42A0F72CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.h in Headers */,
+				2B42A0F92CBFAEF7004F7F5A /* TTSDKCrashC.h in Headers */,
+				2B42A0FA2CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.h in Headers */,
+				2B42A0FF2CBFAEF7004F7F5A /* TTSDKJSONCodec.h in Headers */,
+				2B42A1002CBFAEF7004F7F5A /* TTSDKCrashDoctor.h in Headers */,
+				2B42A1012CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.h in Headers */,
+				2B42A1022CBFAEF7004F7F5A /* TTSDKCrashMonitorFlag.h in Headers */,
+				2B42A1052CBFAEF7004F7F5A /* TTSDKThread.h in Headers */,
+				2B42A1062CBFAEF7004F7F5A /* TTSDKCrashMonitor.h in Headers */,
+				2B42A15D2CBFB814004F7F5A /* TikTokBusinessSDKAddress.h in Headers */,
+				2B42A1072CBFAEF7004F7F5A /* TTSDKID.h in Headers */,
+				2B42A1082CBFAEF7004F7F5A /* TTSDKMach.h in Headers */,
+				2B42A1092CBFAEF7004F7F5A /* TTSDKCrashReportFields.h in Headers */,
+				2B42A10A2CBFAEF7004F7F5A /* TTSDKObjC.h in Headers */,
+				2B42A10B2CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.h in Headers */,
+				2B42A10E2CBFAEF7004F7F5A /* TTSDKCrash.h in Headers */,
+				2B42A10F2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.h in Headers */,
+				2B42A1112CBFAEF7004F7F5A /* TTSDKCrashInstallation.h in Headers */,
+				2B42A1122CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.h in Headers */,
+				2B42A1132CBFAEF7004F7F5A /* TTSDKCrashError.h in Headers */,
+				2B42A1162CBFAEF7004F7F5A /* TTSDKCrashConfiguration+Private.h in Headers */,
+				2B42A1172CBFAEF7004F7F5A /* TTSDKMachineContext_Apple.h in Headers */,
+				2B42A1192CBFAEF7004F7F5A /* TTSDKCrashMonitorContext.h in Headers */,
+				2B42A11A2CBFAEF7004F7F5A /* TTSDKCString.h in Headers */,
+				2B42A11C2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.h in Headers */,
+				2B42A11D2CBFAEF7004F7F5A /* TTSDKCrashAppMemory.h in Headers */,
+				2B42A11E2CBFAEF7004F7F5A /* TTSDKCrashReportWriter.h in Headers */,
+				2B42A11F2CBFAEF7004F7F5A /* TTSDKSymbolicator.h in Headers */,
+				2B42A1202CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.h in Headers */,
+				2B42A1212CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.h in Headers */,
+				2B42A1232CBFAEF7004F7F5A /* TTSDKFileUtils.h in Headers */,
+				2B42A1242CBFAEF7004F7F5A /* TTSDKCrashMonitorContextHelper.h in Headers */,
+				2B42A1252CBFAEF7004F7F5A /* TTSDKNSErrorHelper.h in Headers */,
+				2B42A1272CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.h in Headers */,
+				2B42A1292CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.h in Headers */,
+				2B42A12A2CBFAEF7004F7F5A /* TTSDKSignalInfo.h in Headers */,
+				2B42A12B2CBFAEF7004F7F5A /* TTSDKCrash+Private.h in Headers */,
+				2B42A12C2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.h in Headers */,
+				2B42A12D2CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.h in Headers */,
+				2B42A12F2CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.h in Headers */,
+				2B42A1312CBFAEF7004F7F5A /* TTSDKObjCApple.h in Headers */,
+				2B42A1322CBFAEF7004F7F5A /* TTSDKVarArgs.h in Headers */,
+				2B42A1332CBFAEF7004F7F5A /* TTSDKCrashReportStoreC+Private.h in Headers */,
+				2B42A1342CBFAEF7004F7F5A /* TTSDKStackCursor.h in Headers */,
+				2B42A1352CBFAEF7004F7F5A /* TTSDKCPU.h in Headers */,
+				2B42A1362CBFAEF7004F7F5A /* TTSDKCrashReport.h in Headers */,
+				2B42A1392CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.h in Headers */,
+				2B42A13A2CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.h in Headers */,
+				2B42A13C2CBFAEF7004F7F5A /* TTSDKLogger.h in Headers */,
+				2B42A13D2CBFAEF7004F7F5A /* TTSDKCrashReportVersion.h in Headers */,
+				2B42A13E2CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.h in Headers */,
+				2B42A13F2CBFAEF7004F7F5A /* TTSDKString.h in Headers */,
+				2B42A1402CBFAEF7004F7F5A /* TTSDKCrashAppTransitionState.h in Headers */,
+				2B42A1412CBFAEF7004F7F5A /* TTSDKPlatformSpecificDefines.h in Headers */,
+				2B42A1422CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.h in Headers */,
+				2B42A1432CBFAEF7004F7F5A /* TTSDKCrashMonitorType.h in Headers */,
+				2B42A1442CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.h in Headers */,
+				2B42A1452CBFAEF7004F7F5A /* TTSDKDynamicLinker.h in Headers */,
+				2B42A1462CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.h in Headers */,
+				2B42A1472CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.h in Headers */,
 				8B7512C326429A05009DE653 /* TikTokSKAdNetworkRule.h in Headers */,
 				8B23DFB72505DE7F008351FA /* TikTokLogger.h in Headers */,
 				8B23DF8F2502BA73008351FA /* TikTokBusinessSDK.h in Headers */,
@@ -674,6 +1553,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B42A15F2CBFB814004F7F5A /* aaaaTikTokBusinessSDKBegin.m in Sources */,
 				8B64FDED2548BA82004AFC49 /* TikTokUserAgentCollector.m in Sources */,
 				8B23DFC025080872008351FA /* TikTokBusiness.m in Sources */,
 				2B3368F92BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.m in Sources */,
@@ -688,6 +1568,83 @@
 				0A41C64525BF52B900245575 /* TikTokIdentifyUtility.m in Sources */,
 				0ADCF552253A212A00D7B57C /* TikTokTypeUtility.m in Sources */,
 				8B7512C426429A05009DE653 /* TikTokSKAdNetworkRule.m in Sources */,
+				2B42A0732CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.m in Sources */,
+				2B42A0742CBFAEF7004F7F5A /* TTSDKCrashInstallation.m in Sources */,
+				2B42A0752CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.m in Sources */,
+				2B42A0762CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.m in Sources */,
+				2B42A0792CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.m in Sources */,
+				2B42A07A2CBFAEF7004F7F5A /* TTSDKMachineContext.c in Sources */,
+				2B42A07C2CBFAEF7004F7F5A /* TTSDKCrashReportC.c in Sources */,
+				2B42A07D2CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.m in Sources */,
+				2B42A07E2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.m in Sources */,
+				2B42A07F2CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.c in Sources */,
+				2B42A0802CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.m in Sources */,
+				2B42A0812CBFAEF7004F7F5A /* TTSDKDebug.c in Sources */,
+				2B42A0822CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.c in Sources */,
+				2B42A0832CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.m in Sources */,
+				2B42A0842CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.m in Sources */,
+				2B42A0852CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.m in Sources */,
+				2B42A0872CBFAEF7004F7F5A /* TTSDKDate.c in Sources */,
+				2B42A0882CBFAEF7004F7F5A /* TTSDKCrashReportFixer.c in Sources */,
+				2B42A0892CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.m in Sources */,
+				2B42A08A2CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.m in Sources */,
+				2B42A08B2CBFAEF7004F7F5A /* TTSDKLogger.c in Sources */,
+				2B42A08C2CBFAEF7004F7F5A /* TTSDKCrashReportStore.m in Sources */,
+				2B42A1602CBFB814004F7F5A /* TikTokBusinessSDKAddress.m in Sources */,
+				2B42A08D2CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.m in Sources */,
+				2B42A08F2CBFAEF7004F7F5A /* TTSDKFileUtils.c in Sources */,
+				2B42A0902CBFAEF7004F7F5A /* TTSDKCPU_x86_64.c in Sources */,
+				2B42A0912CBFAEF7004F7F5A /* TTSDKCPU_arm64.c in Sources */,
+				2B42A0922CBFAEF7004F7F5A /* TTSDKSymbolicator.c in Sources */,
+				2B42A0932CBFAEF7004F7F5A /* TTSDKCrash.m in Sources */,
+				2B42A0942CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.cpp in Sources */,
+				2B42A0952CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.m in Sources */,
+				2B42A0962CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.c in Sources */,
+				2B42A0972CBFAEF7004F7F5A /* TTSDKMemory.c in Sources */,
+				2B42A0982CBFAEF7004F7F5A /* TTSDKCrashCachedData.c in Sources */,
+				2B42A0992CBFAEF7004F7F5A /* TTSDKCrashC.c in Sources */,
+				2B42A09A2CBFAEF7004F7F5A /* TTSDKCrashReport.m in Sources */,
+				2B42A09B2CBFAEF7004F7F5A /* TTSDKNSErrorHelper.m in Sources */,
+				2B42A09C2CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.m in Sources */,
+				2B42A09E2CBFAEF7004F7F5A /* TTSDKCString.m in Sources */,
+				2B42A09F2CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.m in Sources */,
+				2B42A0A02CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.m in Sources */,
+				2B42A0A12CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.m in Sources */,
+				2B42A0A32CBFAEF7004F7F5A /* TTSDKString.c in Sources */,
+				2B42A0A42CBFAEF7004F7F5A /* TTSDKMach.c in Sources */,
+				2B42A0A62CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.m in Sources */,
+				2B42A0A82CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.m in Sources */,
+				2B42A0A92CBFAEF7004F7F5A /* TTSDKCrashAppMemory.m in Sources */,
+				2B42A0AA2CBFAEF7004F7F5A /* TTSDKCPU_x86_32.c in Sources */,
+				2B42A0AB2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.m in Sources */,
+				2B42A0AC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.c in Sources */,
+				2B42A0AD2CBFAEF7004F7F5A /* TTSDKJSONCodec.c in Sources */,
+				2B42A0AE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.m in Sources */,
+				2B42A0AF2CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.m in Sources */,
+				2B42A0B02CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.m in Sources */,
+				2B42A0B22CBFAEF7004F7F5A /* TTSDKGZipHelper.m in Sources */,
+				2B42A0B32CBFAEF7004F7F5A /* TTSDKThread.c in Sources */,
+				2B42A0B42CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.m in Sources */,
+				2B42A0B52CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.c in Sources */,
+				2B42A0B62CBFAEF7004F7F5A /* TTSDKCPU_arm.c in Sources */,
+				2B42A0B72CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.m in Sources */,
+				2B42A0B82CBFAEF7004F7F5A /* TTSDKSignalInfo.c in Sources */,
+				2B42A0B92CBFAEF7004F7F5A /* TTSDKMach-O.c in Sources */,
+				2B42A0BB2CBFAEF7004F7F5A /* TTSDKDynamicLinker.c in Sources */,
+				2B42A0BC2CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.c in Sources */,
+				2B42A0BD2CBFAEF7004F7F5A /* TTSDKCrashDoctor.m in Sources */,
+				2B42A0BE2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.c in Sources */,
+				2B42A0BF2CBFAEF7004F7F5A /* TTSDKCPU.c in Sources */,
+				2B42A0C02CBFAEF7004F7F5A /* TTSDKID.c in Sources */,
+				2B42A0C12CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.c in Sources */,
+				2B42A0C22CBFAEF7004F7F5A /* TTSDKSysCtl.c in Sources */,
+				2B42A0C32CBFAEF7004F7F5A /* TTSDKStackCursor.c in Sources */,
+				2B42A0C52CBFAEF7004F7F5A /* TTSDKObjC.c in Sources */,
+				2B42A0C62CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.c in Sources */,
+				2B42A0C82CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.m in Sources */,
+				2B42A0C92CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.c in Sources */,
+				2B42A0CA2CBFAEF7004F7F5A /* TTSDKCrashMonitor.c in Sources */,
+				2B42A0CB2CBFAEF7004F7F5A /* TTSDKCrashConfiguration.m in Sources */,
 				2BE60B7D2B1F1D9700AB386C /* TikTokContentsEvent.m in Sources */,
 				0A1A065125095429001463B8 /* TikTokAppEvent.m in Sources */,
 				8B64FE052548C68D004AFC49 /* TikTokSKAdNetworkSupport.m in Sources */,
@@ -700,6 +1657,7 @@
 				2B3368CC2BFCBF1E00E8D51C /* TikTokCurrencyUtility.m in Sources */,
 				0A1A06592509551F001463B8 /* TikTokAppEventStore.m in Sources */,
 				0A29066F250B232B00CF3B73 /* TikTokAppEventUtility.m in Sources */,
+				2B931AE82CC0F40A008133D0 /* ZZZZTikTokBusinessSDKEnd.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1024,10 +1982,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 624HWF744P;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 624HWF744P;
 				INFOPLIST_FILE = TikTokBusinessSDKTestApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1039,7 +1995,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tiktok.TikTokBusinessSDKTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = AppSDK;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -1052,10 +2007,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 624HWF744P;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 624HWF744P;
 				INFOPLIST_FILE = TikTokBusinessSDKTestApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1067,7 +2020,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tiktok.TikTokBusinessSDKTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = AppSDK;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;

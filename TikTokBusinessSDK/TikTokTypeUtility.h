@@ -8,22 +8,14 @@
 #import <Foundation/Foundation.h>
 
 /** VALID CHECKING**/
-#define TTCheckValidString(__string)                (__string && [__string isKindOfClass:[NSString class]] && [__string length])
-#define TTCheckValidNumber(__aNumber)               (__aNumber && [__aNumber isKindOfClass:[NSNumber class]])
-#define TTCheckValidArray(__aArray)                 (__aArray && [__aArray isKindOfClass:[NSArray class]] && [__aArray count])
-#define TTCheckValidDictionary(__aDictionary)       (__aDictionary && [__aDictionary isKindOfClass:[NSDictionary class]] && [__aDictionary count])
-#define TTCheckValidDate(__aDate)                   (__aDate && [__aDate isKindOfClass:[NSDate class]])
-#define TTCheckValidData(__aData)                   (__aData && [__aData isKindOfClass:[NSData class]])
+#define TTCheckValidString(__string)                ((BOOL)(__string && [__string isKindOfClass:[NSString class]] && [__string length]))
+#define TTCheckValidNumber(__aNumber)               ((BOOL)(__aNumber && [__aNumber isKindOfClass:[NSNumber class]]))
+#define TTCheckValidArray(__aArray)                 ((BOOL)(__aArray && [__aArray isKindOfClass:[NSArray class]] && [__aArray count]))
+#define TTCheckValidDictionary(__aDictionary)       ((BOOL)(__aDictionary && [__aDictionary isKindOfClass:[NSDictionary class]] && [__aDictionary count]))
+#define TTCheckValidDate(__aDate)                   ((BOOL)(__aDate && [__aDate isKindOfClass:[NSDate class]]))
+#define TTCheckValidData(__aData)                   ((BOOL)(__aData && [__aData isKindOfClass:[NSData class]]))
 
 NS_ASSUME_NONNULL_BEGIN
-
-/** VALID CHECKING**/
-#define TTCheckValidString(__string)                (__string && [__string isKindOfClass:[NSString class]] && [__string length])
-#define TTCheckValidNumber(__aNumber)               (__aNumber && [__aNumber isKindOfClass:[NSNumber class]])
-#define TTCheckValidArray(__aArray)                 (__aArray && [__aArray isKindOfClass:[NSArray class]] && [__aArray count])
-#define TTCheckValidDictionary(__aDictionary)       (__aDictionary && [__aDictionary isKindOfClass:[NSDictionary class]] && [__aDictionary count])
-#define TTCheckValidDate(__aDate)                   (__aDate && [__aDate isKindOfClass:[NSDate class]])
-#define TTCheckValidData(__aData)                   (__aData && [__aData isKindOfClass:[NSData class]])
 
 @interface TikTokTypeUtility : NSObject
 
@@ -67,6 +59,12 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief  Match a string with defined regex pattern and return the matched part.
  */
 + (NSString *)matchString:(NSString *)inputString withRegex:(NSString *)pattern;
+
+/**
+ * @brief  Match the middle part of the string starting from startString (include) to endString (exclude).
+ */
+
++ (NSString *)partialString:(NSString *)string fromStart:(NSString *)startString toEnd:(NSString *)endString;
 
 @end
 

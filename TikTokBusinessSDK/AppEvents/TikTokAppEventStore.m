@@ -86,7 +86,7 @@ NSString * const SKANEventsFileName = @"com-tiktok-sdk-SKANEventsPersistedEvents
     if (!canSkipAppEventDiskCheck) {
         NSDictionary *fileReadMeta = @{
             @"ts": fileReadEndTime,
-            @"latency": [NSNumber numberWithInt:[fileReadEndTime intValue] - [fileReadStartTime intValue]],
+            @"latency": [NSNumber numberWithLongLong:[fileReadEndTime longLongValue] - [fileReadStartTime longLongValue]],
             @"size":@(events.count)
         };
         NSDictionary *monitorFileReadProperties = @{
@@ -172,7 +172,7 @@ NSString * const SKANEventsFileName = @"com-tiktok-sdk-SKANEventsPersistedEvents
                 NSNumber *fileWriteEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
                 NSDictionary *fileWriteMeta = @{
                     @"ts": fileWriteEndTime,
-                    @"latency": [NSNumber numberWithInt:[fileWriteEndTime intValue] - [fileWriteStartTime intValue]],
+                    @"latency": [NSNumber numberWithLongLong:[fileWriteEndTime longLongValue] - [fileWriteStartTime longLongValue]],
                     @"size":@(existingEvents.count)
                 };
                 NSDictionary *monitorFileWriteProperties = @{

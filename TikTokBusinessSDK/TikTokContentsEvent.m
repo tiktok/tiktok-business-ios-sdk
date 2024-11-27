@@ -28,12 +28,12 @@ NSString * const TTContentsEventNameViewContent   = @"ViewContent";
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *res = [NSMutableDictionary dictionary];
-    [res setValue:@([self.price floatValue]) forKey:@"price"];
-    [res setValue:@(self.quantity) forKey:@"quantity"];
-    [res setValue:self.contentId forKey:@"content_id"];
-    [res setValue:self.contentCategory forKey:@"content_category"];
-    [res setValue:self.contentName forKey:@"content_name"];
-    [res setValue:self.brand forKey:@"brand"];
+    [TikTokTypeUtility dictionary:res setObject:@([self.price floatValue]) forKey:@"price"];
+    [TikTokTypeUtility dictionary:res setObject:@(self.quantity) forKey:@"quantity"];
+    [TikTokTypeUtility dictionary:res setObject:self.contentId forKey:@"content_id"];
+    [TikTokTypeUtility dictionary:res setObject:self.contentCategory forKey:@"content_category"];
+    [TikTokTypeUtility dictionary:res setObject:self.contentName forKey:@"content_name"];
+    [TikTokTypeUtility dictionary:res setObject:self.brand forKey:@"brand"];
     return res.copy;
 }
 

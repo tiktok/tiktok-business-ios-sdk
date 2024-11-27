@@ -1,42 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Bucket
-   uuid = "0891150E-988A-411F-8BA8-6E933961DAC4"
+   uuid = "297F22A0-5D63-45ED-9E76-3A25B481002E"
    type = "1"
    version = "2.0">
    <Breakpoints>
       <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "103A8670-48B2-4C49-80B2-DB9FEAC72DDC"
-            shouldBeEnabled = "Yes"
+            uuid = "58FE6AE4-0204-4480-95D2-028AB43D1E97"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            symbolName = "__NSMakeSpecialForwardingCaptureBlock"
-            moduleName = "">
-            <Locations>
-               <Location
-                  uuid = "103A8670-48B2-4C49-80B2-DB9FEAC72DDC - 32222489d1a519b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__NSMakeSpecialForwardingCaptureBlock"
-                  moduleName = "CoreFoundation"
-                  usesParentBreakpointCondition = "Yes">
-               </Location>
-            </Locations>
+            filePath = "TikTokBusinessSDK/TikTokRequestHandler.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "89"
+            endingLineNumber = "89"
+            landmarkName = "-getRemoteSwitch:withCompletionHandler:"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "15A92759-F250-4E11-8B03-6B00085FC6A4"
+            uuid = "3A42FDCC-49D4-4B31-9F1D-F3146E76F8DE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "TikTokBusinessSDK/TikTokAdditions/UIApplication+TikTokAdditions.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "-hook_sendEvent:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7CD2251F-174C-41DB-9F43-977853064C6C"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            symbolName = ""
-            moduleName = "">
-            <Locations>
-            </Locations>
+            filePath = "TikTokBusinessSDK/TikTokBusiness.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "653"
+            endingLineNumber = "653"
+            landmarkName = "-applicationDidBecomeActive:"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
