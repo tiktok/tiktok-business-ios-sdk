@@ -513,9 +513,17 @@ withType:(NSString *)type
     TikTokAppEvent *appEvent = [[TikTokAppEvent alloc] initWithEventName:eventName withProperties:properties];
      
     if(self.SKAdNetworkSupportEnabled) {
-        NSString *value = [properties objectForKey:@"value"];
+        id value = [properties objectForKey:@"value"];
+        NSString *valueString;
+        if ([value isKindOfClass:[NSString class]]) {
+            valueString = value;
+        } else if ([value isKindOfClass:[NSNumber class]]) {
+            valueString = [value stringValue];
+        } else {
+            valueString = @"0";
+        }
         NSString *currency = [properties objectForKey:@"currency"];
-        [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:value currency:TTSafeString(currency)];
+        [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:valueString currency:TTSafeString(currency)];
     }
     [self.queue addEvent:appEvent];
     if([eventName isEqualToString:@"Purchase"]) {
