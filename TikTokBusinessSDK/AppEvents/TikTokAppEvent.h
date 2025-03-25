@@ -45,6 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) NSString *eventID;
 
+/**
+ * @brief Snapshot of the screen when event is generated (only when Debug Token is valid from TTEM).
+ */
+@property (nonatomic, copy, nullable) NSString *screenshot;
+
 - (instancetype)initWithEventName: (NSString *)eventName;
 
 - (instancetype)initWithEventName: (NSString *)eventName

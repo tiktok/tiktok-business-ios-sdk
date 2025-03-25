@@ -5,7 +5,6 @@
 // the LICENSE file in the root directory of this source tree.
 //
 
-#import <UIKit/UIKit.h>
 #import "TikTokAppEventStore.h"
 #import "TikTokAppEventQueue.h"
 #import "TikTokErrorHandler.h"
@@ -113,14 +112,21 @@ NSString * const SKANEventsFileName = @"com-tiktok-sdk-SKANEventsPersistedEvents
 
 #pragma mark - Private Helpers
 + (void)clearPersistedEventsAtFile:(NSString *)path {
-    [[NSFileManager defaultManager] removeItemAtPath:path
-                                               error:NULL];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-    
-    if ([path containsString:appEventsFileName]) {
-        canSkipAppEventDiskCheck = YES;
-    } else if ([path containsString:monitorEventsFileName]) {
-        canSkipMonitorEventDiskCheck = YES;
+    if (!TTCheckValidString(path)) {
+        return;
+    }
+    @try {
+        [[NSFileManager defaultManager] removeItemAtPath:path
+                                                   error:NULL];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
+        
+        if ([path containsString:appEventsFileName]) {
+            canSkipAppEventDiskCheck = YES;
+        } else if ([path containsString:monitorEventsFileName]) {
+            canSkipMonitorEventDiskCheck = YES;
+        }
+    } @catch (NSException *exception) {
+        [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to clear events" exception:exception];
     }
 }
 
@@ -218,22 +224,34 @@ NSString * const SKANEventsFileName = @"com-tiktok-sdk-SKANEventsPersistedEvents
     NSSearchPathDirectory directory = NSLibraryDirectory;
     NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
     NSString *docDirectory = [paths objectAtIndex:0];
-    return docDirectory;
+    return TTSafeString(docDirectory);
 }
 
 + (NSString *)getAppEventsFilePath
 {
-    return [[self getFileDirectory]  stringByAppendingPathComponent:appEventsFileName];
+    NSString *fileDirectory = [self getFileDirectory];
+    if (!TTCheckValidString(fileDirectory)) {
+        return @"";
+    }
+    return [fileDirectory stringByAppendingPathComponent:appEventsFileName];
 }
 
 + (NSString *)getMonitorEventsFilePath
 {
-    return [[self getFileDirectory]  stringByAppendingPathComponent:monitorEventsFileName];
+    NSString *fileDirectory = [self getFileDirectory];
+    if (!TTCheckValidString(fileDirectory)) {
+        return @"";
+    }
+    return [fileDirectory stringByAppendingPathComponent:monitorEventsFileName];
 }
 
 + (NSString *)getSKANEventsFilePath
 {
-    return [[self getFileDirectory]  stringByAppendingPathComponent:SKANEventsFileName];
+    NSString *fileDirectory = [self getFileDirectory];
+    if (!TTCheckValidString(fileDirectory)) {
+        return @"";
+    }
+    return [fileDirectory stringByAppendingPathComponent:SKANEventsFileName];
 }
 
 + (NSUInteger)persistedAppEventsCount {

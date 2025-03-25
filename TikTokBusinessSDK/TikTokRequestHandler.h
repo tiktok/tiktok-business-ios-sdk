@@ -35,6 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sendMonitorRequest:(NSArray *)eventsToBeFlushed
                 withConfig:(TikTokConfig *)config;
 
+/**
+ * @brief Method to obtain deferred deeplink with completion handler
+ */
+- (void)fetchDeferredDeeplinkWithConfig:(TikTokConfig * _Nullable)config completion:(void (^)(NSURL * _Nullable, NSError * _Nullable))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

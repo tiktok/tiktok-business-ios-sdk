@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  @brief Obtain singleton TikTokBusiness class
  *  @return id referencing the singleton TikTokBusiness class
 */
-+ (nullable id)getInstance;
++ (instancetype)getInstance;
 
 /**
  *  @brief Reset TikTokBusiness class singleton
@@ -261,6 +261,14 @@ NS_ASSUME_NONNULL_BEGIN
  *  @brief Method to get TikTok iOS SDK Version
 */
 + (NSString *)getSDKVersion;
+
+/**
+ * @brief Call this method from main thread to fetch the deferred deeplink url.
+ *        This requires AppTrackingTransparency authorization.
+ *        The completion handler may contain an NSError indicating any errors happened when fetching the url.
+ *        This method should be called after any launching URL has been processed (e.g. applicationDidBecomeActive: in application delegate).
+*/
++ (void)fetchDeferredDeeplinkWithCompletion:(void (^)(NSURL * _Nullable, NSError * _Nullable))completion;
 
 @end
 

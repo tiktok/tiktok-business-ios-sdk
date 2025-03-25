@@ -227,7 +227,7 @@
     @try {
         [self.logger info:@"[TikTokAppEventQueue] Total number events to be flushed: %lu", eventsToBeFlushed.count];
         if(eventsToBeFlushed.count > 0) {
-            if([[TikTokBusiness getInstance] isTrackingEnabled] && [[TikTokBusiness getInstance] accessToken] != nil && self.config.appId != nil) {
+            if([TikTokBusiness isTrackingEnabled] && [[TikTokBusiness getInstance] accessToken] != nil && self.config.appId != nil) {
                 // chunk eventsToBeFlushed into subarrays of API_LIMIT length or less and send requests for each
                 NSMutableArray *eventChunks = [[NSMutableArray alloc] init];
                 NSUInteger eventsRemaining = eventsToBeFlushed.count;

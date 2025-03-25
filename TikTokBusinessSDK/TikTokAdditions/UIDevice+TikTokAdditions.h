@@ -16,12 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIDevice(TikTokAdditions)
 
 - (BOOL)tiktokUserTrackingEnabled;
-- (NSString *)tiktokDeviceType;
 - (NSString *)tiktokDeviceName;
 - (NSString *)tiktokCreateUuid;
 - (NSString *)tiktokVendorId;
 - (NSString *)tiktokDeviceIp;
-- (void)requestTrackingAuthorizationWithCompletionHandler: (void(^)(NSUInteger status))completion;
 - (NSString *)getIPAddress:(BOOL)preferIPv4;
 - (NSDictionary *)getIPAddresses;
 

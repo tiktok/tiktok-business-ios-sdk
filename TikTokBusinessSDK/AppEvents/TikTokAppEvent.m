@@ -14,6 +14,7 @@
 #define TIKTOKSDK_TIMESTAMP_KEY @"timestamp"
 #define TIKTOKSDK_PROPERTIES_KEY @"properties"
 #define TIKTOKSDK_EVENTID_KEY @"eventID"
+#define TIKTOKSDK_SCREENSHOT_KEY @"screenshot"
 
 @implementation TikTokAppEvent
 
@@ -64,6 +65,7 @@
     self.userInfo = [[TikTokIdentifyUtility sharedInstance] getUserInfoDictionary];
     self.type = type;
     self.eventID = eventID;
+    self.screenshot = nil;
    
     return self;
 }
@@ -93,6 +95,7 @@
     [encoder encodeObject:self.timestamp forKey:TIKTOKSDK_TIMESTAMP_KEY];
     [encoder encodeObject:self.properties forKey:TIKTOKSDK_PROPERTIES_KEY];
     [encoder encodeObject:self.eventID forKey:TIKTOKSDK_EVENTID_KEY];
+    [encoder encodeObject:self.screenshot forKey:TIKTOKSDK_SCREENSHOT_KEY];
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)decoder
@@ -101,11 +104,13 @@
     NSString *timestamp = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_TIMESTAMP_KEY];
     NSDictionary *properties = [decoder decodeObjectOfClass:[NSDictionary class] forKey:TIKTOKSDK_PROPERTIES_KEY];
     NSString *eventID = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_EVENTID_KEY];
+    NSString *screenshot = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_SCREENSHOT_KEY];
     if(self = [self initWithEventName:eventName]) {
         self.eventName = eventName;
         self.timestamp = timestamp;
         self.properties = properties;
         self.eventID = eventID;
+        self.screenshot = screenshot;
     }
     return self;
 }

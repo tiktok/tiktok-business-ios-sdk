@@ -81,7 +81,7 @@
     [TikTokTypeUtility dictionary:userInfo setObject:self.email forKey:@"email"];
     [TikTokTypeUtility dictionary:userInfo setObject:self.externalUserName forKey:@"external_username"];
     
-    return userInfo;
+    return userInfo.copy;
 }
 
 - (void)resetUserInfo
@@ -96,6 +96,13 @@
     _phoneNumber = nil;
     _isIdentified = NO;
     _externalUserName = nil;
+}
+
+- (NSString *)app_session_id {
+    if (!_app_session_id) {
+        _app_session_id = [[NSUUID UUID] UUIDString];
+    }
+    return _app_session_id;
 }
 
 

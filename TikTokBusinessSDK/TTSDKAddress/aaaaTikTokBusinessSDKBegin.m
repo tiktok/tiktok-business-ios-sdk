@@ -7,7 +7,6 @@
 //
 
 #import <mach-o/dyld.h>
-#import <UIKit/UIKit.h>
 
 extern void * TikTokBusinessSDKFuncBeginAddress(void) {
     return &TikTokBusinessSDKFuncBeginAddress;

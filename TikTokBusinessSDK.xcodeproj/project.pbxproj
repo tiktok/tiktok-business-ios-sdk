@@ -43,6 +43,8 @@
 		0ADCF5422538D16900D7B57C /* TikTokRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADCF5402538D16900D7B57C /* TikTokRequestHandler.m */; };
 		0ADCF551253A212A00D7B57C /* TikTokTypeUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ADCF54F253A212A00D7B57C /* TikTokTypeUtility.h */; };
 		0ADCF552253A212A00D7B57C /* TikTokTypeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADCF550253A212A00D7B57C /* TikTokTypeUtility.m */; };
+		2B0F7A422D923DAC001638CF /* TikTokCypher.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B0F7A402D923DAC001638CF /* TikTokCypher.m */; };
+		2B0F7A432D923DAC001638CF /* TikTokCypher.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B0F7A3F2D923DAC001638CF /* TikTokCypher.h */; };
 		2B1138542B9EEDC200215812 /* InitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1138532B9EEDC200215812 /* InitViewController.swift */; };
 		2B1138562B9EF2A900215812 /* IdentifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1138552B9EF2A900215812 /* IdentifyViewController.swift */; };
 		2B1404B52C29919100CF56B2 /* TikTokRequestHandlerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1404B42C29919100CF56B2 /* TikTokRequestHandlerTests.m */; };
@@ -348,6 +350,8 @@
 		0ADCF5402538D16900D7B57C /* TikTokRequestHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokRequestHandler.m; sourceTree = "<group>"; };
 		0ADCF54F253A212A00D7B57C /* TikTokTypeUtility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TikTokTypeUtility.h; sourceTree = "<group>"; };
 		0ADCF550253A212A00D7B57C /* TikTokTypeUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokTypeUtility.m; sourceTree = "<group>"; };
+		2B0F7A3F2D923DAC001638CF /* TikTokCypher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TikTokCypher.h; sourceTree = "<group>"; };
+		2B0F7A402D923DAC001638CF /* TikTokCypher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokCypher.m; sourceTree = "<group>"; };
 		2B1138532B9EEDC200215812 /* InitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitViewController.swift; sourceTree = "<group>"; };
 		2B1138552B9EF2A900215812 /* IdentifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifyViewController.swift; sourceTree = "<group>"; };
 		2B1404B42C29919100CF56B2 /* TikTokRequestHandlerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokRequestHandlerTests.m; sourceTree = "<group>"; };
@@ -694,6 +698,15 @@
 				0A29066D250B232B00CF3B73 /* TikTokAppEventUtility.m */,
 			);
 			path = AppEvents;
+			sourceTree = "<group>";
+		};
+		2B0F7A412D923DAC001638CF /* TTSDKEncrypt */ = {
+			isa = PBXGroup;
+			children = (
+				2B0F7A3F2D923DAC001638CF /* TikTokCypher.h */,
+				2B0F7A402D923DAC001638CF /* TikTokCypher.m */,
+			);
+			path = TTSDKEncrypt;
 			sourceTree = "<group>";
 		};
 		2B429F662CBFAED8004F7F5A /* TTSDKCrash */ = {
@@ -1161,6 +1174,7 @@
 				2BC7650C2B1F0B2D00E7C698 /* TikTokBaseEvent.h */,
 				2BE60B9E2B1F2A2100AB386C /* TikTokConstants.h */,
 				2BE60B9F2B1F2A2100AB386C /* TikTokConstants.m */,
+				2B0F7A412D923DAC001638CF /* TTSDKEncrypt */,
 				2BE60B7A2B1F1D9700AB386C /* TikTokContentsEvent.h */,
 				2BE60B7B2B1F1D9700AB386C /* TikTokContentsEvent.m */,
 				2BC7650D2B1F0B2D00E7C698 /* TikTokBaseEvent.m */,
@@ -1279,6 +1293,7 @@
 				2B42A0E12CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.h in Headers */,
 				2B42A0E32CBFAEF7004F7F5A /* TTSDKCrashInstallation+Private.h in Headers */,
 				2B42A0E42CBFAEF7004F7F5A /* TTSDKCPU_Apple.h in Headers */,
+				2B0F7A432D923DAC001638CF /* TikTokCypher.h in Headers */,
 				2B42A0E52CBFAEF7004F7F5A /* TTSDKCrashReportC.h in Headers */,
 				2B42A0E72CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.h in Headers */,
 				2B42A0E82CBFAEF7004F7F5A /* TTSDKCrashMonitorHelper.h in Headers */,
@@ -1615,6 +1630,7 @@
 				2B42A0A62CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.m in Sources */,
 				2B42A0A82CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.m in Sources */,
 				2B42A0A92CBFAEF7004F7F5A /* TTSDKCrashAppMemory.m in Sources */,
+				2B0F7A422D923DAC001638CF /* TikTokCypher.m in Sources */,
 				2B42A0AA2CBFAEF7004F7F5A /* TTSDKCPU_x86_32.c in Sources */,
 				2B42A0AB2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.m in Sources */,
 				2B42A0AC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.c in Sources */,

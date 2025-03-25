@@ -54,6 +54,8 @@
 @property (nonatomic, assign, readwrite) BOOL isDebugMode;
 @property (nonatomic, copy) NSString *testEventCode;
 @property (nonatomic, assign, readwrite) BOOL isLDUMode;
+@property (nonatomic, strong, nullable) TikTokConfig *config;
+@property (nonatomic, assign) BOOL remoteDebugEnabled;
 
 @end
 
@@ -65,7 +67,7 @@
 static TikTokBusiness * defaultInstance = nil;
 static dispatch_once_t onceToken = 0;
 
-+ (id)getInstance
++ (instancetype)getInstance
 {
     dispatch_once(&onceToken, ^{
         defaultInstance = [[self alloc] init];
@@ -107,6 +109,7 @@ static dispatch_once_t onceToken = 0;
     self.SKAdNetworkSupportEnabled = YES;
     self.exchangeErrReportRate = 0.01;
     self.isRemoteSwitchOn = YES;
+    self.remoteDebugEnabled = NO;
     
     [self checkAttStatus];
 
@@ -256,8 +259,19 @@ withType:(NSString *)type
 
 + (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion
 {
-    @synchronized (self) {
-        [[TikTokBusiness getInstance] requestTrackingAuthorizationWithCompletionHandler:completion];
+    NSString *trackingDesc = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSUserTrackingUsageDescription"];
+    if (@available(iOS 14, *)) {
+        if (trackingDesc) {
+            [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
+                if(completion) {
+                    completion(status);
+                }
+            }];
+        } else {
+            [[TikTokFactory getLogger] warn:@"Please set NSUserTrackingUsageDescription in Property List before calling App Tracking Dialog"];
+        }
+    } else {
+        // Fallback on earlier versions
     }
 }
 
@@ -317,6 +331,14 @@ withType:(NSString *)type
     }
 }
 
++ (void)fetchDeferredDeeplinkWithCompletion:(void (^)(NSURL * _Nullable, NSError * _Nullable))completion {
+    [[TikTokBusiness getInstance] fetchDeferredDeeplinkWithCompletion:^(NSURL * _Nullable url, NSError * _Nullable error) {
+        if (completion) {
+            completion(url, error);
+        }
+    }];
+}
+
 // MARK: - private
 
 - (void)initializeSdk:(TikTokConfig *)tiktokConfig completionHandler:(void (^)(BOOL, NSError * _Nullable))completionHandler
@@ -352,6 +374,7 @@ withType:(NSString *)type
         return;
     }
     
+    self.config = tiktokConfig;
     self.trackingEnabled = tiktokConfig.trackingEnabled;
     self.automaticTrackingEnabled = tiktokConfig.automaticTrackingEnabled;
     self.installTrackingEnabled = tiktokConfig.installTrackingEnabled;
@@ -497,14 +520,7 @@ withType:(NSString *)type
 
 - (void)trackEvent:(NSString *)eventName
 {
-    TikTokAppEvent *appEvent = [[TikTokAppEvent alloc] initWithEventName:eventName];
-    if(self.SKAdNetworkSupportEnabled) {
-        [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:@"0" currency:@""];
-    }
-    [self.queue addEvent:appEvent];
-    if([eventName isEqualToString:@"Purchase"]) {
-        [self.queue flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
-    }
+    [self trackEvent:eventName withProperties:nil];
 }
 
 - (void)trackEvent:(NSString *)eventName
@@ -525,8 +541,20 @@ withType:(NSString *)type
         NSString *currency = [properties objectForKey:@"currency"];
         [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:valueString currency:TTSafeString(currency)];
     }
+    if (self.remoteDebugEnabled) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *screenshot = [self screenShot];
+            appEvent.screenshot = screenshot;
+            [self addEvent:appEvent];
+        });
+    } else {
+        [self addEvent:appEvent];
+    }
+}
+
+- (void)addEvent:(TikTokAppEvent *)appEvent {
     [self.queue addEvent:appEvent];
-    if([eventName isEqualToString:@"Purchase"]) {
+    if([appEvent.eventName isEqualToString:@"Purchase"]) {
         [self.queue flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
     }
 }
@@ -535,19 +563,13 @@ withType:(NSString *)type
           withType:(NSString *)type
 {
     TikTokAppEvent *appEvent = [[TikTokAppEvent alloc] initWithEventName:eventName withType:type];
-    [self.queue addEvent:appEvent];
-    if([eventName isEqualToString:@"Purchase"]) {
-        [self.queue flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
-    }
+    [self addEvent:appEvent];
 }
 
 - (void)trackEvent: (NSString *)eventName withId: (NSString *)eventId {
     TikTokAppEvent *appEvent = [[TikTokAppEvent alloc] initWithEventName:eventName];
     appEvent.eventID = eventId;
-    [self.queue addEvent:appEvent];
-    if([eventName isEqualToString:@"Purchase"]) {
-        [self.queue flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
-    }
+    [self addEvent:appEvent];
 }
 
 - (void)trackTTEvent: (TikTokBaseEvent *)event {
@@ -809,6 +831,7 @@ withType:(NSString *)type
             [defaults synchronize];
         }
         if (self.isGlobalConfigFetched) {
+            self.remoteDebugEnabled = [[globalConfig objectForKey:@"enable_debug_mode"] boolValue];
             NSNumber *exchangeErrReportRate = [globalConfig objectForKey:@"skan4_exchange_err_report_rate"];
             if (TTCheckValidNumber(exchangeErrReportRate)) {
                 self.exchangeErrReportRate = [exchangeErrReportRate doubleValue];
@@ -891,12 +914,7 @@ withType:(NSString *)type
             } else {
                 [TikTokPaymentObserver stopObservingTransactions];
             }
-
-            // Remove this later, based on where modal needs to be called to start tracking
-            // This will be needed to be called before we can call a function to get IDFA
-            if(!self.appTrackingDialogSuppressed) {
-                [self requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {}];
-            }
+            
             NSNumber *initStartTimestamp = [defaults objectForKey:@"monitorInitStartTime"];
             NSNumber *initEndTimestamp = [TikTokAppEventUtility getCurrentTimestampAsNumber];
             [self monitorInitialization:initStartTimestamp andEndTime:initEndTimestamp];
@@ -904,7 +922,7 @@ withType:(NSString *)type
         if (self.isGlobalConfigFetched && self.automaticTrackingEnabled && self.installTrackingEnabled) {
             BOOL matchedInstall = [defaults boolForKey:@"tiktokMatchedInstall"];
             if (!matchedInstall) {
-                [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:@"InstallApp" withValue:0 currency:@""];
+                [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:@"InstallApp" withValue:@"0" currency:@""];
                 [defaults setBool:YES forKey:@"tiktokMatchedInstall"];
                 [defaults synchronize];
             }
@@ -948,27 +966,6 @@ withType:(NSString *)type
     }
 }
 
-- (void)requestTrackingAuthorizationWithCompletionHandler:(void (^)(NSUInteger))completion
-{
-    [UIDevice.currentDevice requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status)
-    {
-        if (completion) {
-            completion(status);
-            if (@available(iOS 14, *)) {
-                if(status == ATTrackingManagerAuthorizationStatusAuthorized) {
-                    self.userTrackingEnabled = YES;
-                    [self.logger info:@"Tracking is enabled"];
-                } else {
-                    self.userTrackingEnabled = NO;
-                    [self.logger info:@"Tracking is disabled"];
-                }
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-    }];
-}
-
 - (void)checkAttStatus {
     if (@available(iOS 14, *)) {
         if(ATTrackingManager.trackingAuthorizationStatus == ATTrackingManagerAuthorizationStatusAuthorized) {
@@ -982,6 +979,24 @@ withType:(NSString *)type
         // For previous versions, we can assume that IDFA can be collected
         self.userTrackingEnabled = YES;
     }
+}
+
+- (void)fetchDeferredDeeplinkWithCompletion:(void (^)(NSURL * _Nullable, NSError * _Nullable))completion {
+    if (!completion) {
+        return;
+    }
+    if (!self.initialized) {
+        NSError *error = [NSError errorWithDomain:@"com.TikTokBusinessSDK.error"
+                                             code:-1
+                                         userInfo:@{
+            NSLocalizedDescriptionKey : @"SDK not initialized",
+        }];
+        completion(nil, error);
+        return;
+    }
+    [self.requestHandler fetchDeferredDeeplinkWithConfig:self.config completion:^(NSURL * _Nullable url, NSError * _Nullable error) {
+        completion(url, error);
+    }];
 }
 
 
@@ -1019,6 +1034,20 @@ withType:(NSString *)type
 + (NSString *)getSDKVersion
 {
     return SDK_VERSION;
+}
+
+- (NSString *)screenShot {
+    NSData *imageData = nil;
+    CGRect rect = [UIScreen mainScreen].bounds;
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, [UIScreen mainScreen].scale);
+    [window drawViewHierarchyInRect:rect afterScreenUpdates:NO];
+    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    // compress
+    imageData = UIImageJPEGRepresentation(snapshotImage, 0.5);
+    NSString *dataStr = [imageData base64EncodedStringWithOptions:0];
+    return dataStr;
 }
 
 @end

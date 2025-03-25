@@ -14,19 +14,33 @@
 #import "TikTokBusiness.h"
 #import "TikTokAppEvent.h"
 #import "TikTokBusiness+private.h"
+#import <AVFoundation/AVFoundation.h>
+#import "TikTokBusinessSDKMacros.h"
+#import <SystemConfiguration/CaptiveNetwork.h>
+#import <SystemConfiguration/SCNetworkReachability.h>
+
+static NSInteger const TTSystemVolumeValueDefault = -1;
+
 
 @interface TikTokDeviceInfo()
+
+@property (nonatomic, strong) dispatch_queue_t deviceQueue;
 
 @end
 
 @implementation TikTokDeviceInfo
 
-+ (TikTokDeviceInfo *)deviceInfoWithSdkPrefix:(NSString *)sdkPrefix
++ (TikTokDeviceInfo *)deviceInfo
 {
-    return [[TikTokDeviceInfo alloc] initWithSdkPrefix:sdkPrefix];
+    static id deviceInfo = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        deviceInfo = [[self alloc] init];
+    });
+    return deviceInfo;
 }
 
-- (id)initWithSdkPrefix:(NSString *)sdkPrefix
+- (instancetype)init
 {
     self = [super init];
     if (self == nil) return nil;
@@ -44,15 +58,30 @@
     self.devicePlatform = @"ios";
     self.deviceIdForAdvertisers = getIDFA();
     self.deviceVendorId = device.tiktokVendorId;
-    self.localeInfo = [NSString stringWithFormat:@"%@-%@", [locale objectForKey:NSLocaleLanguageCode], [locale objectForKey:NSLocaleCountryCode]];
+    self.localeInfo = [NSString stringWithFormat:@"%@/%@", [self language], [locale objectForKey:NSLocaleCountryCode]];
     self.ipInfo = device.tiktokDeviceIp;
     self.trackingEnabled = device.tiktokUserTrackingEnabled;
-    self.deviceType = device.tiktokDeviceType;
     self.deviceName = device.tiktokDeviceName;
     self.systemVersion = device.systemVersion;
+    self.deviceQueue = dispatch_queue_create([@"com.TikTokBusinessSDK.device" UTF8String], DISPATCH_QUEUE_CONCURRENT);
+    self.systemVolume = TTSystemVolumeValueDefault;
+    self.headset = TTDeviceHeadsetUnspecified;
+    
+    [self updateIdentifier];
+    
     
     return self;
     
+}
+
+- (void)updateIdentifier {
+    [self _setSystemVolume];
+    [self _setHeadset];
+    [self _checkUserInterfaceStyle];
+    if (self.deviceIdForAdvertisers.length && ![self.deviceIdForAdvertisers isEqualToString:@"00000000-0000-0000-0000-000000000000"]) {
+        return;
+    }
+    self.deviceIdForAdvertisers = getIDFA();
 }
 
 - (NSString *)getUserAgent
@@ -146,6 +175,65 @@ static NSString* phoneResolution(void)
 - (NSString*)fallbackUserAgent
 {
     return [NSString stringWithFormat:@"%@ %@ %@ %@ %@ %@", appNameAndVersion(), deviceName(), deviceVersion(), CFNetworkVersion(), DarwinVersion(), phoneResolution()];
+}
+
+- (NSString *)language {
+    NSString *language;
+    NSLocale *locale = [NSLocale currentLocale];
+    if ([[NSLocale preferredLanguages] count] > 0) {
+        language = [[NSLocale preferredLanguages]objectAtIndex:0];
+    } else {
+        language = [locale objectForKey:NSLocaleLanguageCode];
+    }
+    return language;
+}
+
+- (void)_setSystemVolume {
+    dispatch_async(self.deviceQueue, ^{
+        self.systemVolume = [AVAudioSession sharedInstance].outputVolume * 100;
+    });
+}
+
+- (NSInteger)volume { //not strong requirement for real-time value, report the value of last time
+    dispatch_async(self.deviceQueue, ^{
+        self.systemVolume = [AVAudioSession sharedInstance].outputVolume * 100;
+    });
+    return self.systemVolume;
+}
+
+- (void)_setHeadset {
+    dispatch_async(self.deviceQueue, ^{
+        BOOL hasHeadset = NO;
+        AVAudioSessionRouteDescription* route = [[AVAudioSession sharedInstance] currentRoute];
+        for (AVAudioSessionPortDescription *des in route.outputs) {
+            if ([des.portType isEqualToString:AVAudioSessionPortHeadphones]) {
+                hasHeadset = YES;
+                break;
+            }
+        }
+        self.headset = hasHeadset;
+    });
+}
+
+- (void)_checkUserInterfaceStyle {
+    tt_weakify(self)
+    [[NSOperationQueue mainQueue]addOperationWithBlock:^{
+        tt_strongify(self)
+        UIUserInterfaceStyle userInterfaceStyle = [[UIApplication sharedApplication]keyWindow].rootViewController.traitCollection.userInterfaceStyle;
+        TTDeviceDarkMode mode = TTDeviceDarkModeUnspecified;
+        switch (userInterfaceStyle) {
+            case UIUserInterfaceStyleLight:
+                mode = TTDeviceDarkModeLight;
+                break;
+            case UIUserInterfaceStyleDark:
+                mode = TTDeviceDarkModeDark;
+                break;
+            default:
+                mode = TTDeviceDarkModeUnspecified;
+                break;
+        }
+        self.darkmode = mode;
+    }];
 }
 
 @end

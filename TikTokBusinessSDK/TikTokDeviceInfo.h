@@ -9,6 +9,26 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+
+typedef NS_ENUM(NSInteger, TTDeviceDarkMode) {
+    TTDeviceDarkModeUnspecified = -1,
+    TTDeviceDarkModeLight = 0,
+    TTDeviceDarkModeDark = 1,
+};
+
+typedef NS_ENUM(NSInteger, TTDeviceAirplaneStatus) {
+    TTDeviceAirplaneStatusUnknown = -1,
+    TTDeviceAirplaneStatusClose = 0,
+    TTDeviceAirplaneStatusOpen = 1,
+};
+
+typedef NS_ENUM(NSInteger, TTDeviceHeadset) {
+    TTDeviceHeadsetUnspecified = -1,
+    TTDeviceHeadsetNoConnect = 0,
+    TTDeviceHeadsetConnect = 1,
+}; //wire headset plugged in
+
 /**
  * @brief Used to fetch device level information
 */
@@ -26,15 +46,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *ipInfo;
 @property (nonatomic, assign) BOOL trackingEnabled;
 @property (nonatomic, copy) NSString *clientSdk;
-@property (nonatomic, copy) NSString *deviceType;
 @property (nonatomic, copy) NSString *deviceName;
 @property (nonatomic, copy) NSString *systemVersion;
-@property (nonatomic, copy) NSString *machineModel;
-@property (nonatomic, copy) NSString *cpuSubType;
-@property (nonatomic, copy) NSString *osBuild;
+@property (assign, assign) TTDeviceAirplaneStatus airplane;
+@property (atomic, assign) TTDeviceDarkMode darkmode;
+@property (atomic, assign) TTDeviceHeadset headset;
+@property (atomic, assign) NSInteger systemVolume;
 
-- (id)initWithSdkPrefix:(NSString *)sdkPrefix;
-+ (TikTokDeviceInfo *)deviceInfoWithSdkPrefix:(NSString *)sdkPrefix;
++ (TikTokDeviceInfo *)deviceInfo;
+- (void)updateIdentifier;
 - (NSString *)getUserAgent;
 - (NSString *)fallbackUserAgent;
 

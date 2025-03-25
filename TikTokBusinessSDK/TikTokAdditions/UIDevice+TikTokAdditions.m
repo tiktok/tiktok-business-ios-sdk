@@ -23,24 +23,6 @@
 
 @implementation UIDevice(TikTokAdditions)
 
-- (void)requestTrackingAuthorizationWithCompletionHandler:(void (^)(NSUInteger))completion
-{
-    NSString *trackingDesc = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSUserTrackingUsageDescription"];
-    if (@available(iOS 14, *)) {
-        if (trackingDesc) {
-            [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
-                if(completion) {
-                    completion(status);
-                }
-            }];
-        } else {
-            [[TikTokFactory getLogger] warn:@"Please set NSUserTrackingUsageDescription in Property List before calling App Tracking Dialog"];
-        }
-    } else {
-        // Fallback on earlier versions
-    }
-}
-
 - (BOOL)tiktokUserTrackingEnabled
 {
     if (@available(iOS 14, *)) {
@@ -54,12 +36,6 @@
         // Fallback on earlier versions
         return YES;
     }
-}
-
-- (NSString *)tiktokDeviceType
-{
-    NSString *type = [self.model stringByReplacingOccurrencesOfString:@" " withString:@""];
-    return type;
 }
 
 - (NSString *)tiktokDeviceName
