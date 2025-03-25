@@ -22,7 +22,8 @@ The TikTok Business SDK is the easiest way to log events (e.g. app install, purc
 
   s.ios.deployment_target = '12.0'
 
-  s.frameworks = 'CoreGraphics','AdSupport','AppTrackingTransparency','StoreKit','UIKit','WebKit'
+  s.frameworks = 'CoreGraphics','AdSupport','StoreKit','UIKit','WebKit'
+  s.weak_frameworks = 'AppTrackingTransparency'
 
   s.source_files = 'TikTokBusinessSDK/**/*'
   s.exclude_files = [
