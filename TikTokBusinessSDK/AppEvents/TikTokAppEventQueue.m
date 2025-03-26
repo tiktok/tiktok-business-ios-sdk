@@ -77,8 +77,9 @@
 
 - (void)initializeFlushTimerWithSeconds:(long)seconds
 {
+  NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+  dispatch_async(dispatch_get_main_queue(), ^{
     __weak TikTokAppEventQueue *weakSelf = self;
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:seconds
         repeats:NO block:^(NSTimer *timer) {
         if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
@@ -89,18 +90,22 @@
             [weakSelf flush:TikTokAppEventsFlushReasonTimer];
         }];
     }];
+  });
+    
 }
 
 - (void)initializeFlushTimer
 {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  dispatch_async(dispatch_get_main_queue(), ^{
     __weak TikTokAppEventQueue *weakSelf = self;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
         repeats:YES block:^(NSTimer *timer) {
         if ([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
             [weakSelf flush:TikTokAppEventsFlushReasonTimer];
         }
     }];
+  });
 }
 
 - (void)addEvent:(TikTokAppEvent *)event
