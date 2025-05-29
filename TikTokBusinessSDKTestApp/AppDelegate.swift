@@ -26,5 +26,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         return true
     }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        return true
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        TikTokBusiness.requestTrackingAuthorization();
+    }
 }
 

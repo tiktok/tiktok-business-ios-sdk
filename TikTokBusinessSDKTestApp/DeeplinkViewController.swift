@@ -8,10 +8,12 @@
 
 import Foundation
 import UIKit
+import TikTokBusinessSDK
 
 class DeepLinkViewController: UIViewController {
     private let textView = UITextView()
-    private let button = UIButton()
+    private let openUrlButton = UIButton()
+    private let fetchDDLButton = UIButton()
     private let titleLabel = UILabel()
 
     override func viewDidLoad() {
@@ -39,16 +41,24 @@ class DeepLinkViewController: UIViewController {
         view.addSubview(textView)
         
         
-        button.setTitle("open url", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 1.0)
-        button.layer.cornerRadius = 20
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        button.frame = CGRect(x: 20, y: view.frame.height / 3 + 170, width: view.frame.width - 40, height: 40)
-        view.addSubview(button)
+        openUrlButton.setTitle("open url", for: .normal)
+        openUrlButton.setTitleColor(.white, for: .normal)
+        openUrlButton.backgroundColor = UIColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 1.0)
+        openUrlButton.layer.cornerRadius = 20
+        openUrlButton.addTarget(self, action: #selector(openUrlButtonTapped), for: .touchUpInside)
+        openUrlButton.frame = CGRect(x: 20, y: view.frame.height / 3 + 170, width: view.frame.width - 40, height: 40)
+        view.addSubview(openUrlButton)
+        
+        fetchDDLButton.setTitle("fetch deferred deep link", for: .normal)
+        fetchDDLButton.setTitleColor(.white, for: .normal)
+        fetchDDLButton.backgroundColor = UIColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 1.0)
+        fetchDDLButton.layer.cornerRadius = 20
+        fetchDDLButton.addTarget(self, action: #selector(fetchDDLButtonTapped), for: .touchUpInside)
+        fetchDDLButton.frame = CGRect(x: 20, y: view.frame.height / 3 + 230, width: view.frame.width - 40, height: 40)
+        view.addSubview(fetchDDLButton)
     }
     
-    @objc private func buttonTapped() {
+    @objc private func openUrlButtonTapped() {
         if let url = textView.text, let deepLink = URL(string: url) {
             if UIApplication.shared.canOpenURL(deepLink) {
                 UIApplication.shared.open(deepLink, options: [:], completionHandler: nil)
@@ -59,6 +69,19 @@ class DeepLinkViewController: UIViewController {
         } else {
             // invalid url
             print("Please enter a valid URL")
+        }
+    }
+    
+    @objc private func fetchDDLButtonTapped() {
+        TikTokBusiness.fetchDeferredDeeplink { url, error in
+            if error != nil {
+                print("error in fetching DDL:\(String(describing: error?.localizedDescription))")
+            } else {
+                print("url fetched: \(url!.absoluteString)")
+                if url != nil && UIApplication.shared.canOpenURL(url!) {
+                    UIApplication.shared.open(url!, options: [:], completionHandler: nil)
+                }
+            }
         }
     }
 }
