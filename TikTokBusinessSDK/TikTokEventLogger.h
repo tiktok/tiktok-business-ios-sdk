@@ -1,8 +1,9 @@
 //
-// Copyright (c) 2020. TikTok Inc.
+//  TikTokEventLogger.h
+//  TikTokBusinessSDK
 //
-// This source code is licensed under the MIT license found in
-// the LICENSE file in the root directory of this source tree.
+//  Created by TikTok on 2/10/25.
+//  Copyright © 2025 TikTok. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -13,17 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TikTokAppEventQueue : NSObject
-
-/**
- * @brief Event queue as a mutable array
- */
-@property (nonatomic, strong) NSMutableArray *eventQueue;
-
-/**
- * @brief Monitor queue as a mutable array
- */
-@property (nonatomic, strong) NSMutableArray *monitorQueue;
+@interface TikTokEventLogger : NSObject
 
 /**
  * @brief Timer for flush
@@ -34,11 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Time in seconds until flush
  */
 @property (nonatomic) int timeInSecondsUntilFlush;
-
-/**
- * @brief Remaining events until flush
- */
-@property (nonatomic) int remainingEventsUntilFlushThreshold;
 
 /**
  * @brief Configuration from SDK initialization
@@ -70,10 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)initializeFlushTimer;
 
-/**
- * @brief Clear cached events.
- */
-- (void)clear;
 @end
 
 NS_ASSUME_NONNULL_END

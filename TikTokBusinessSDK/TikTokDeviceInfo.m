@@ -119,8 +119,8 @@ static NSString * getIDFA(void) {
         };
         TikTokAppEvent *idfaStartEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:idfaStartProperties withType:@"monitor"];
         TikTokAppEvent *idfaEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:idfaEndProperties withType:@"monitor"];
-        [[TikTokBusiness getQueue] addEvent:idfaStartEvent];
-        [[TikTokBusiness getQueue] addEvent:idfaEndEvent];
+        [[TikTokBusiness getEventLogger] addEvent:idfaStartEvent];
+        [[TikTokBusiness getEventLogger] addEvent:idfaEndEvent];
     });
     return IDFA;
 }

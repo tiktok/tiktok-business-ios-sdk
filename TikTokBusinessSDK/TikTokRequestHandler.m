@@ -7,7 +7,6 @@
 
 #import "TikTokAppEvent.h"
 #import "TikTokRequestHandler.h"
-#import "TikTokAppEventStore.h"
 #import "TikTokConfig.h"
 #import "TikTokBusiness.h"
 #import "TikTokLogger.h"
@@ -19,9 +18,11 @@
 #import "TikTokSKAdNetworkConversionConfiguration.h"
 #import "TikTokBusinessSDKMacros.h"
 #import "TikTokBusiness+private.h"
+#import <UIKit/UIKit.h>
 #import "TikTokCurrencyUtility.h"
+#import "TikTokUnityBridge.h"
 #import "TikTokCypher.h"
-#import "TikTokCypher.h"
+#import "TikTokBaseEventPersistence.h"
 
 @interface TikTokRequestHandler()
 
@@ -58,7 +59,7 @@
     // Device Info
     NSDictionary *device = [self getDeviceInfo:deviceInfo withConfig:config isMonitor:YES];
     // Library Info
-    NSDictionary *library = [self getLibrary];
+    NSDictionary *library = [self getLibraryWithConfig:config];
     
     NSDictionary *parametersDict = @{
         @"app": app,
@@ -123,14 +124,14 @@
                     @"latency": [NSNumber numberWithLongLong:[configMonitorEndTime longLongValue] - [configMonitorStartTime longLongValue]],
                     @"success": [NSNumber numberWithBool:false]
                 };
-                NSDictionary *monitorUserAgentStartProperties = @{
+                NSDictionary *configMonitorEndProperties = @{
                     @"monitor_type": @"metric",
                     @"monitor_name": @"config_api",
                     @"meta": configMonitorEndMeta
                 };
-                TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorUserAgentStartProperties withType:@"monitor"];
+                TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:configMonitorEndProperties withType:@"monitor"];
                 @synchronized(self) {
-                    [[TikTokBusiness getQueue] addEvent:configMonitorEndEvent];
+                    [[TikTokBusiness getEventLogger] addEvent:configMonitorEndEvent];
                 }
                 NSString *log_id = @"";
                 if([dataDictionary isKindOfClass:[NSDictionary class]]) {
@@ -164,14 +165,14 @@
                     @"latency": [NSNumber numberWithLongLong:[configMonitorEndTime longLongValue] - [configMonitorStartTime longLongValue]],
                     @"success": [NSNumber numberWithBool:false]
                 };
-                NSDictionary *monitorUserAgentStartProperties = @{
+                NSDictionary *configMonitorEndProperties = @{
                     @"monitor_type": @"metric",
                     @"monitor_name": @"config_api",
                     @"meta": configMonitorEndMeta
                 };
-                TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorUserAgentStartProperties withType:@"monitor"];
+                TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:configMonitorEndProperties withType:@"monitor"];
                 @synchronized(self) {
-                    [[TikTokBusiness getQueue] addEvent:configMonitorEndEvent];
+                    [[TikTokBusiness getEventLogger] addEvent:configMonitorEndEvent];
                 }
                 NSString *log_id = @"";
                 if([dataDictionary isKindOfClass:[NSDictionary class]]) {
@@ -206,6 +207,24 @@
             NSDictionary *currencyMap = [dataValue objectForKey:@"currency_exchange_info"];
             [[TikTokCurrencyUtility sharedInstance] configWithDict:currencyMap];
             
+            if (config.isLowPerf) {
+                NSMutableDictionary *tmpConfigDict = businessSDKConfig.mutableCopy;
+                NSDictionary *tmpUnityConfigDict = [tmpConfigDict objectForKey:@"enhanced_data_postback_unity_config"];
+                NSDictionary *tmpNativeConfigDict = [tmpConfigDict objectForKey:@"enhanced_data_postback_native_config"];
+                if (TTCheckValidDictionary(tmpUnityConfigDict)) {
+                    NSMutableDictionary *mcopyDict = tmpUnityConfigDict.mutableCopy;
+                    [mcopyDict setObject:@(NO) forKey:@"enable_sdk"];
+                    [tmpConfigDict setObject:mcopyDict.copy forKey:@"enhanced_data_postback_unity_config"];
+                }
+                if (TTCheckValidDictionary(tmpNativeConfigDict)) {
+                    NSMutableDictionary *mcopyDict = tmpNativeConfigDict.mutableCopy;
+                    [mcopyDict setObject:@(NO) forKey:@"enable_sdk"];
+                    [tmpConfigDict setObject:mcopyDict.copy forKey:@"enhanced_data_postback_native_config"];
+                }
+                businessSDKConfig = tmpConfigDict.copy;
+            }
+            [TikTokUnityBridge sendConfigCallback:@{@"business_sdk_config": TTSafeDictionary(businessSDKConfig)}];
+            
             completionHandler(isSwitchOn, businessSDKConfig);
             
             NSString *requestResponse = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
@@ -216,14 +235,14 @@
                 @"success": [NSNumber numberWithBool:true],
                 @"log_id": TTSafeString([dataDictionary objectForKey:@"request_id"]),
             };
-            NSDictionary *monitorUserAgentStartProperties = @{
+            NSDictionary *configMonitorEndProperties = @{
                 @"monitor_type": @"metric",
                 @"monitor_name": @"config_api",
                 @"meta": configMonitorEndMeta
             };
-            TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorUserAgentStartProperties withType:@"monitor"];
+            TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:configMonitorEndProperties withType:@"monitor"];
             @synchronized(self) {
-                [[TikTokBusiness getQueue] addEvent:configMonitorEndEvent];
+                [[TikTokBusiness getEventLogger] addEvent:configMonitorEndEvent];
             }
             [self.logger verbose:@"[TikTokRequestHandler] Request global config response: %@", requestResponse];
             return;
@@ -248,7 +267,7 @@
     NSDictionary *device = [self getDeviceInfo:deviceInfo withConfig:config isMonitor:NO];
 
     // Library Info
-    NSDictionary *library = [self getLibrary];
+    NSDictionary *library = [self getLibraryWithConfig:config];
     
     // format events into object[]
     NSMutableArray *batch = [[NSMutableArray alloc] init];
@@ -303,6 +322,7 @@
         // API version compatibility b/w 1.0 and 2.0
         NSDictionary *tempParametersDict = @{
             @"batch": batch,
+            @"timestamp": [TikTokAppEventUtility getCurrentTimestampInISO8601],
             @"event_source": @"APP_EVENTS_SDK",
         };
         
@@ -356,12 +376,7 @@
             // handle basic connectivity issues
             if(error) {
                 [self.logger error:@"[TikTokRequestHandler] error in connection: %@", error];
-                @synchronized(self) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [TikTokAppEventStore persistAppEvents:appEventsToBeFlushed];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                    });
-                }
+                [[TikTokAppEventPersistence persistence] handleSentResult:NO events:eventsToBeFlushed];
                 return;
             }
             NSNumber *networkEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
@@ -383,12 +398,7 @@
                         @"log_id":TTSafeString(log_id)
                     };
                     [self reportApiErrWithMeta:apiErrorMeta];
-                    @synchronized(self) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [TikTokAppEventStore persistAppEvents:appEventsToBeFlushed];
-                            [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                        });
-                    }
+                    [[TikTokAppEventPersistence persistence] handleSentResult:NO events:eventsToBeFlushed];
                     return;
                 }
                 
@@ -413,38 +423,17 @@
                     };
                     [self reportApiErrWithMeta:apiErrorMeta];
                 }
-                // code == 40000 indicates error from API call
-                // meaning all events have unhashed values or deprecated field is used
-                // we do not persist events in the scenario
-                if([code intValue] == 40000) {
+                if ([code intValue] == 0) {
+                    [[TikTokAppEventPersistence persistence] handleSentResult:YES events:eventsToBeFlushed];
+                } else if([code intValue] == 40000) {
+                    // code == 40000 indicates error from API call
+                    // meaning all events have unhashed values or deprecated field is used
+                    // we do not persist events in the scenario
                     [self.logger error:@"[TikTokRequestHandler] data error: %@, message: %@", code, message];
-                
-                // code == 20001 indicates partial error from API call
-                // meaning some events have unhashed values
-                } else if([code intValue] == 20001) {
-                    [self.logger error:@"[TikTokRequestHandler] partial error: %@, message: %@", code, message];
-                    NSDictionary *data = [dataDictionary objectForKey:@"data"];
-                    NSArray *failedEventsFromResponse = [data objectForKey:@"failed_events"];
-                    NSMutableIndexSet *failedIndicesSet = [[NSMutableIndexSet alloc] init];
-                    for(NSDictionary* event in failedEventsFromResponse) {
-                        if([event objectForKey:@"order_in_batch"] != nil) {
-                            [failedIndicesSet addIndex:[[event objectForKey:@"order_in_batch"] intValue]];
-                        }
-                    }
-                    for(int i = 0; i < [appEventsToBeFlushed count]; i++) {
-                        if([failedIndicesSet containsIndex:i]) {
-                            [self.logger error:@"[TikTokRequestHandler] event with error was not processed: %@", [[appEventsToBeFlushed objectAtIndex:i] eventName]];
-                        }
-                    }
-                    [self.logger error:@"[TikTokRequestHandler] partial error data: %@", data];
-                } else if([code intValue] != 0) { // code != 0 indicates error from API call
+                    [[TikTokAppEventPersistence persistence] handleSentResult:YES events:eventsToBeFlushed];
+                } else { // code != 0 indicates error from API call
                     [self.logger error:@"[TikTokRequestHandler] code error: %@, message: %@", code, message];
-                    @synchronized(self) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [TikTokAppEventStore persistAppEvents:appEventsToBeFlushed];
-                            [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                        });
-                    }
+                    [[TikTokAppEventPersistence persistence] handleSentResult:NO events:eventsToBeFlushed];
                     return;
                 }
                 
@@ -467,7 +456,7 @@
     NSDictionary *device = [self getDeviceInfo:deviceInfo withConfig:config isMonitor:YES];
 
     // Library Info
-    NSDictionary *library = [self getLibrary];
+    NSDictionary *library = [self getLibraryWithConfig:config];
     
     // format events into object[]
     NSMutableArray *monitorBatch = [[NSMutableArray alloc] init];
@@ -495,6 +484,7 @@
                 @"app": tempAppDict.copy,
                 @"library": library,
                 @"device": device,
+                @"timestamp": event.timestamp,
                 @"log_extra": @{}
             }.mutableCopy;
             
@@ -516,6 +506,7 @@
         // API version compatibility b/w 1.0 and 2.0
         NSDictionary *tempParametersDict = @{
             @"batch": monitorBatch,
+            @"timestamp": [TikTokAppEventUtility getCurrentTimestampInISO8601],
             @"event_source": @"APP_EVENTS_SDK",
         };
         
@@ -540,10 +531,11 @@
         
         NSString *postLength = [NSString stringWithFormat:@"%lu", [compressedData length]];
         NSString *postDataJSONString = [[NSString alloc] initWithData:postData encoding:NSUTF8StringEncoding];
-        
+
         NSString *token = [[TikTokBusiness getInstance] accessToken];
         NSString *signature = [TikTokCypher hmacSHA256WithSecret:token content:postDataJSONString];
         
+
         [self.logger verbose:@"[TikTokRequestHandler] MonitorDataJSON: %@", postDataJSONString];
         
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
@@ -566,75 +558,37 @@
             // handle basic connectivity issues
             if(error) {
                 [self.logger error:@"[TikTokRequestHandler] error in connection: %@", error];
-                @synchronized(self) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [TikTokAppEventStore persistMonitorEvents:monitorEventsToBeFlushed];
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                    });
-                }
+                [[TikTokMonitorEventPersistence persistence] handleSentResult:NO events:eventsToBeFlushed];
                 return;
             }
             
             // handle HTTP errors
             if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
                 NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
-                
                 if (statusCode != 200) {
                     [self.logger error:@"[TikTokRequestHandler] HTTP error status code: %lu", statusCode];
-                    @synchronized(self) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [TikTokAppEventStore persistMonitorEvents:monitorEventsToBeFlushed];
-                            [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                        });
-                    }
+                    [[TikTokMonitorEventPersistence persistence] handleSentResult:NO events:eventsToBeFlushed];
                     return;
                 }
-                
             }
-            
             id dataDictionary = [TikTokTypeUtility JSONObjectWithData:data options:0 error:nil origin:NSStringFromClass([self class])];
             
             if([dataDictionary isKindOfClass:[NSDictionary class]]) {
                 NSNumber *code = [dataDictionary objectForKey:@"code"];
                 NSString *message = [dataDictionary objectForKey:@"message"];
                 
-                // code == 40000 indicates error from API call
-                // meaning all events have unhashed values or deprecated field is used
-                // we do not persist events in the scenario
-                if([code intValue] == 40000) {
+                if ([code intValue] == 0) {
+                    [[TikTokMonitorEventPersistence persistence] handleSentResult:YES events:eventsToBeFlushed];
+                    
+                } else if([code intValue] == 40000) {
+                    // code == 40000 indicates error from API call
+                    // meaning all events have unhashed values or deprecated field is used
+                    // we do not persist events in the scenario
                     [self.logger error:@"[TikTokRequestHandler] data error: %@, message: %@", code, message];
-                    @synchronized(self) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [TikTokAppEventStore persistMonitorEvents:monitorEventsToBeFlushed];
-                            [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                        });
-                    }
-                // code == 20001 indicates partial error from API call
-                // meaning some events have unhashed values
-                } else if([code intValue] == 20001) {
-                    [self.logger error:@"[TikTokRequestHandler] partial error: %@, message: %@", code, message];
-                    NSDictionary *data = [dataDictionary objectForKey:@"data"];
-                    NSArray *failedEventsFromResponse = [data objectForKey:@"failed_events"];
-                    NSMutableIndexSet *failedIndicesSet = [[NSMutableIndexSet alloc] init];
-                    for(NSDictionary* event in failedEventsFromResponse) {
-                        if([event objectForKey:@"order_in_batch"] != nil) {
-                            [failedIndicesSet addIndex:[[event objectForKey:@"order_in_batch"] intValue]];
-                        }
-                    }
-                    for(int i = 0; i < [monitorEventsToBeFlushed count]; i++) {
-                        if([failedIndicesSet containsIndex:i]) {
-                            [self.logger error:@"[TikTokRequestHandler] event with error was not processed: %@", [[monitorEventsToBeFlushed objectAtIndex:i] eventName]];
-                        }
-                    }
-                    [self.logger error:@"[TikTokRequestHandler] partial error data: %@", data];
-                } else if([code intValue] != 0) { // code != 0 indicates error from API call
+                    [[TikTokMonitorEventPersistence persistence] handleSentResult:YES events:eventsToBeFlushed];
+                } else { // code != 0 indicates error from API call
                     [self.logger error:@"[TikTokRequestHandler] code error: %@, message: %@", code, message];
-                    @synchronized(self) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [TikTokAppEventStore persistMonitorEvents:monitorEventsToBeFlushed];
-                            [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                        });
-                    }
+                    [[TikTokMonitorEventPersistence persistence] handleSentResult:NO events:eventsToBeFlushed];
                     return;
                 }
                 
@@ -784,10 +738,10 @@
                                 config:(TikTokConfig *)config
 {
     NSDictionary *tempApp = @{
-        @"name" : deviceInfo.appName,
-        @"namespace": deviceInfo.appNamespace,
-        @"version": deviceInfo.appVersion,
-        @"build": deviceInfo.appBuild,
+        @"name" : TTSafeString(deviceInfo.appName),
+        @"namespace": TTSafeString(deviceInfo.appNamespace),
+        @"version": TTSafeString(deviceInfo.appVersion),
+        @"build": TTSafeString(deviceInfo.appBuild),
         @"app_session_id": [[TikTokIdentifyUtility sharedInstance] app_session_id]
     };
 
@@ -820,15 +774,28 @@
             attAuthorizationStatus = @"RESTRICTED";
         }
     }
+    
+    UIScreen *screen = [UIScreen mainScreen];
+    CGRect screenBounds = screen.bounds;
+    CGFloat screenWidth = CGRectGetWidth(screenBounds);
+    CGFloat screenHeight = CGRectGetHeight(screenBounds);
+    CGFloat screenScale = [UIScreen mainScreen].scale;
+    
     [deviceInfo updateIdentifier];
-    
-    
+
     // API version compatibility b/w 1.0 and 2.0
     NSDictionary *tempDevice = @{
-        @"att_status": TTSafeString(attAuthorizationStatus),
-        @"platform" : TTSafeString(deviceInfo.devicePlatform),
-        @"idfa": TTSafeString(deviceInfo.deviceIdForAdvertisers),
-        @"idfv": TTSafeString(deviceInfo.deviceVendorId),
+        @"att_status": attAuthorizationStatus,
+        @"platform" : deviceInfo.devicePlatform,
+        @"idfa": deviceInfo.deviceIdForAdvertisers,
+        @"idfv": deviceInfo.deviceVendorId,
+        @"ip": deviceInfo.ipInfo,
+        @"user_agent": [self getUserAgentWithDeviceInfo:deviceInfo],
+        @"locale": deviceInfo.localeInfo,
+        @"model" : deviceInfo.deviceName,
+        @"screen_width": @(screenWidth),
+        @"screen_height": @(screenHeight),
+        @"scale": @(screenScale)
     };
 
     NSMutableDictionary *device = [[NSMutableDictionary alloc] initWithDictionary:tempDevice];
@@ -844,7 +811,7 @@
     return [device copy];
 }
 
-- (NSDictionary *)getLibrary
+- (NSDictionary *)getLibraryWithConfig:(TikTokConfig *)config
 {
     NSString *libraryName = @"tiktok/tiktok-business-ios-sdk";
     if (NSClassFromString(@"UnityViewControllerBase") || NSClassFromString(@"UnityView")) {
@@ -852,7 +819,8 @@
     }
     NSDictionary *library = @{
         @"name": libraryName,
-        @"version": SDK_VERSION
+        @"version": SDK_VERSION,
+        @"smart_sdk_client_flag": @(config.autoEDPEventEnabled)
     };
 
     return library;
@@ -895,7 +863,7 @@
         @"meta": meta
     };
     TikTokAppEvent *monitorApiErrorEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:apiErrorProperties withType:@"monitor"];
-    [[TikTokBusiness getQueue] addEvent:monitorApiErrorEvent];
+    [[TikTokBusiness getEventLogger] addEvent:monitorApiErrorEvent];
 }
 
 - (NSString *)urlType:(NSString *)url {

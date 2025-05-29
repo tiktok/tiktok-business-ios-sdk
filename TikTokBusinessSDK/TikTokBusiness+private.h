@@ -7,23 +7,23 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "TikTokAppEventQueue.h"
 #import "TikTokBusiness.h"
+#import "TikTokEventLogger.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TikTokBusiness()
 
-@property (nonatomic, strong, nullable) TikTokAppEventQueue *queue;
+@property (nonatomic, strong, nullable) TikTokEventLogger *eventLogger;
+
 @property (nonatomic, assign) double exchangeErrReportRate;
 
 /**
- * @brief This method is used internally to keep track of event queue state
- *        The event queue is populated by several tracked events and then
- *        flushed to the Marketing API endpoint every 15 seconds or when the
- *        event queue has 100 events
+ * @brief This method is used internally to keep track of event logger state
+ *        The event persistence is populated by several tracked events and then
+ *        flushed every 15 seconds or when the event persistence has 100 events
 */
-+ (TikTokAppEventQueue *)getQueue;
++ (TikTokEventLogger *)getEventLogger;
 
 @end
 

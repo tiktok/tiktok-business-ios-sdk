@@ -17,8 +17,9 @@
 #import "TikTokBusiness+private.h"
 #import "TikTokAppEvent.h"
 #import "TikTokSKAdNetworkRuleEvent.h"
-#import "TikTokAppEventStore.h"
 #import "TikTokCurrencyUtility.h"
+#import "TikTokBaseEventPersistence.h"
+#import "TikTokSKANEventPersistence.h"
 
 static const long long firstWindowEnds = 172800000;
 static const long long secondWindowEnds = 604800000;
@@ -85,7 +86,7 @@ static const long long thirdWindowEnds = 3024000000;
     formatter.numberStyle = NSNumberFormatterDecimalStyle;
     NSNumber *eventValue = [formatter numberFromString:value];
     // Persist current event
-    [TikTokAppEventStore persistSKANEventWithName:eventName value:eventValue currency:currency];
+    [[TikTokSKANEventPersistence persistence] persistSKANEventWithName:eventName value:eventValue currency:currency];
     
     if (TTCheckValidString(currency)) {
         eventValue = [[TikTokCurrencyUtility sharedInstance] exchangeAmount:eventValue fromCurrency:currency toCurrency:[TikTokSKAdNetworkConversionConfiguration sharedInstance].currency shouldReport:YES];
@@ -172,7 +173,7 @@ static const long long thirdWindowEnds = 3024000000;
                         @"meta": skanUpdateCVMeta.copy
                     };
                     TikTokAppEvent *skanUpdateCVEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorSkanUpdateCVProperties withType:@"monitor"];
-                    [[TikTokBusiness getQueue] addEvent:skanUpdateCVEvent];
+                    [[TikTokBusiness getEventLogger] addEvent:skanUpdateCVEvent];
                 }];
             }
             break;
@@ -241,7 +242,7 @@ static const long long thirdWindowEnds = 3024000000;
 }
 
 - (void)matchPersistedSKANEventsInWindow:(TikTokSKAdNetworkWindow *)window {
-    NSArray *skanEvents = [TikTokAppEventStore retrievePersistedSKANEvents];
+    NSArray *skanEvents = [[TikTokSKANEventPersistence persistence] retrievePersistedEvents];
     if (TTCheckValidArray(skanEvents)) {
         for (NSDictionary *eventDict in skanEvents) {
             if (TTCheckValidDictionary(eventDict)) {

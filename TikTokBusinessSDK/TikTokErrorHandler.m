@@ -12,7 +12,6 @@
 #import "TikTokTypeUtility.h"
 #import "TikTokRequestHandler.h"
 #import "TikTokBusinessSDKMacros.h"
-#import "TikTokAppEventStore.h"
 #import "TikTokBusinessSDKAddress.h"
 
 #define TTSDK_CRASH_PATH_NAME @"monitoring"
@@ -32,36 +31,6 @@ NSString *const kTTSDKCrashTimestamp = @"timestamp";
 NSString *const kTTSDKVersion = @"TikTok SDK Version";
 
 @implementation TikTokErrorHandler
-
-static void handleUncaughtException(NSException *exception)
-{
-    [TikTokAppEventStore persistAppEvents:[TikTokBusiness getQueue].eventQueue];
-    [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([TikTokErrorHandler class]) message:@"Uncaught Exception" exception:exception];
-
-    NSArray<NSString *> *callStack = [exception callStackSymbols];
-    if([TikTokErrorHandler _callstack:callStack containsTTSDKInfo:TTSDK_KEYWORDS]) {
-        NSMutableArray<NSString *> *crash_info = [[NSMutableArray alloc]init];
-        [crash_info addObject:[NSString stringWithFormat:@"%@: %@", kTTSDKVersion, SDK_VERSION]];
-        [crash_info addObject:[NSString stringWithFormat:@"%@: %@", kTTSDKCrashName, [exception name]]];
-        [crash_info addObject:[NSString stringWithFormat:@"%@: %@", kTTSDKCrashReason, [exception reason]]];
-        [crash_info addObjectsFromArray:callStack];
-
-        NSString *crashReportId = [[NSUUID UUID] UUIDString];
-        NSString *currentTimestamp = [NSString stringWithFormat:@"%.0lf", [[NSDate date] timeIntervalSince1970]];
-
-        directoryPath = [TikTokErrorHandler initDirectPath];
-        NSString *path = [TikTokErrorHandler getCrashReportPathWithCrashReportId:crashReportId currentTimestamp:currentTimestamp];
-        NSMutableDictionary *crashReport =  [[NSMutableDictionary alloc] init];
-        [TikTokTypeUtility dictionary:crashReport setObject:crash_info forKey:kTTSDKCrashInfo];
-        [TikTokTypeUtility dictionary:crashReport setObject:crashReportId forKey:kTTSDKCrashReportID];
-        [TikTokTypeUtility dictionary:crashReport setObject:currentTimestamp forKey:kTTSDKCrashTimestamp];
-
-        NSData *crashReportData = [TikTokTypeUtility dataWithJSONObject:crashReport options:NSJSONWritingPrettyPrinted error:nil origin:@"TikTokErrorHandler"];
-        [crashReportData writeToFile:path atomically:YES];
-    }
-
-    [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([TikTokErrorHandler class]) message:@"Uncaught Exception" exception:exception];
-}
 
 + (NSString *)initDirectPath
 {

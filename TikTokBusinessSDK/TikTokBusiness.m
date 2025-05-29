@@ -18,7 +18,6 @@
 #import "TikTokConfig.h"
 #import "TikTokLogger.h"
 #import "TikTokAppEvent.h"
-#import "TikTokAppEventStore.h"
 #import "TikTokPaymentObserver.h"
 #import "TikTokFactory.h"
 #import "TikTokErrorHandler.h"
@@ -28,13 +27,18 @@
 #import "UIDevice+TikTokAdditions.h"
 #import "TikTokSKAdNetworkConversionConfiguration.h"
 #import "TikTokBusinessSDKMacros.h"
+#import "UIViewController+TikTokAdditions.h"
+#import "TikTokViewUtility.h"
 #import "TikTokRequestHandler.h"
 #import "TikTokTypeUtility.h"
+#import "TikTokEDPConfig.h"
 #import "TTSDKCrash.h"
 #import "TTSDKCrashInstallationConsole.h"
 #import "TTSDKCrashConfiguration.h"
 #import "TTSDKCrashReport.h"
 #import "TikTokBusinessSDKAddress.h"
+#import "TikTokBaseEventPersistence.h"
+#import "TikTokSKANEventPersistence.h"
 
 @interface TikTokBusiness()
 
@@ -56,6 +60,7 @@
 @property (nonatomic, assign, readwrite) BOOL isLDUMode;
 @property (nonatomic, strong, nullable) TikTokConfig *config;
 @property (nonatomic, assign) BOOL remoteDebugEnabled;
+@property (nonatomic, strong, nullable) NSTimer *sessionActivityTimer;
 
 @end
 
@@ -85,6 +90,42 @@ static dispatch_once_t onceToken = 0;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self stopTimer];
+}
+
+- (void)stopTimer {
+    if (self.sessionActivityTimer) {
+        [self.sessionActivityTimer invalidate];
+        self.sessionActivityTimer = nil;
+    }
+}
+
+- (void)startTimer {
+    self.sessionActivityTimer = [NSTimer scheduledTimerWithTimeInterval:60.0
+                                                           target:self
+                                                         selector:@selector(checkSessionActivity)
+                                                         userInfo:nil
+                                                          repeats:YES];
+             [[NSRunLoop currentRunLoop] addTimer:self.sessionActivityTimer forMode:NSRunLoopCommonModes];
+}
+
+- (void)checkSessionActivity {
+    UIApplicationState state = [UIApplication sharedApplication].applicationState;
+    if (state == UIApplicationStateActive) {
+        NSNumber *currentTS = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+        NSDictionary *meta = @{
+            @"ts": currentTS,
+        };
+        NSDictionary *monitorSessionActivityProperties = @{
+            @"monitor_type": @"metric",
+            @"monitor_name": @"session_activity",
+            @"meta": meta
+        };
+        TikTokAppEvent *monitorSessionActivityEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorSessionActivityProperties withType:@"monitor"];
+        @synchronized (self) {
+            [self.eventLogger addEvent:monitorSessionActivityEvent];
+        }
+    }
 }
 
 - (id)init
@@ -95,7 +136,6 @@ static dispatch_once_t onceToken = 0;
     }
     
     self.isolationQueue = dispatch_queue_create([@"tiktokIsolationQueue" UTF8String], DISPATCH_QUEUE_SERIAL);
-    self.queue = nil;
     self.requestHandler = nil;
     self.logger = [TikTokFactory getLogger];
     self.enabled = YES;
@@ -140,7 +180,7 @@ static dispatch_once_t onceToken = 0;
     withProperties:(NSDictionary *)properties
 {
     @synchronized (self) {
-        [[TikTokBusiness getInstance] trackEvent:eventName withProperties:properties];
+        [[TikTokBusiness getInstance] trackEvent:eventName withProperties:properties withId:@""];
     }
 }
 
@@ -275,38 +315,10 @@ withType:(NSString *)type
     }
 }
 
-+ (TikTokAppEventQueue *)getQueue
++ (TikTokEventLogger *)getEventLogger
 {
     @synchronized (self) {
-        return [[TikTokBusiness getInstance] queue];
-    }
-}
-
-+ (long)getInMemoryEventCount
-{
-    @synchronized (self) {
-        return [[[TikTokBusiness getInstance] queue] eventQueue].count;
-    }
-}
-
-+ (long)getInDiskEventCount
-{
-    @synchronized (self) {
-        return [TikTokAppEventStore persistedAppEventsCount];
-    }
-}
-
-+ (long)getTimeInSecondsUntilFlush
-{
-    @synchronized (self) {
-        return [[[TikTokBusiness getInstance] queue] timeInSecondsUntilFlush];
-    }
-}
-
-+ (long)getRemainingEventsUntilFlushThreshold
-{
-    @synchronized (self) {
-        return [[[TikTokBusiness getInstance] queue] remainingEventsUntilFlushThreshold];
+        return [[TikTokBusiness getInstance] eventLogger];
     }
 }
 
@@ -343,7 +355,7 @@ withType:(NSString *)type
 
 - (void)initializeSdk:(TikTokConfig *)tiktokConfig completionHandler:(void (^)(BOOL, NSError * _Nullable))completionHandler
 {
-    if (self.queue != nil) {
+    if (self.eventLogger != nil) {
         [self.logger warn:@"TikTok SDK has been initialized already!"];
         return;
     }
@@ -355,13 +367,13 @@ withType:(NSString *)type
             @"latency": [NSNumber numberWithLongLong:([initEndTimestamp longLongValue] - [initStartTimestamp longLongValue])],
             @"success": [NSNumber numberWithBool:false]
         };
-        NSDictionary *monitorUserAgentStartProperties = @{
+        NSDictionary *configMonitorEndProperties = @{
             @"monitor_type": @"metric",
             @"monitor_name": @"config_api",
             @"meta": configMonitorEndMeta
         };
-        TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorUserAgentStartProperties withType:@"monitor"];
-        [TikTokAppEventStore persistMonitorEvents:@[configMonitorEndEvent]];
+        TikTokAppEvent *configMonitorEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:configMonitorEndProperties withType:@"monitor"];
+        [[TikTokMonitorEventPersistence persistence] persistEvents:@[configMonitorEndEvent]];
         
         if (completionHandler) {
             NSError *error = [NSError errorWithDomain:@"com.TikTokBusinessSDK.error"
@@ -391,8 +403,9 @@ withType:(NSString *)type
     self.isLDUMode = tiktokConfig.LDUModeEnabled;
 
     self.requestHandler = [TikTokFactory getRequestHandler];
-    self.queue = [[TikTokAppEventQueue alloc] initWithConfig:tiktokConfig];
+    self.eventLogger = [[TikTokEventLogger alloc] initWithConfig:tiktokConfig];
     self.initialized = NO;
+    [self startTimer];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:@"true" forKey:@"AreTimersOn"];
@@ -461,7 +474,7 @@ withType:(NSString *)type
     };
     TikTokAppEvent *monitorCrashLogEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorCrashLogProperties withType:@"monitor"];
     @synchronized(self) {
-        [self.queue addEvent:monitorCrashLogEvent];
+        [self.eventLogger addEvent:monitorCrashLogEvent];
     }
 }
 
@@ -487,8 +500,8 @@ withType:(NSString *)type
     };
     TikTokAppEvent *monitorInitEnd = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorInitEndProperties withType:@"monitor"];
     @synchronized(self) {
-        [self.queue addEvent:monitorInitStart];
-        [self.queue addEvent:monitorInitEnd];
+        [self.eventLogger addEvent:monitorInitStart];
+        [self.eventLogger addEvent:monitorInitEnd];
     }
 }
 
@@ -506,7 +519,7 @@ withType:(NSString *)type
         NSTimeInterval secondsBetween = [currentLaunch timeIntervalSinceDate:installDate];
         int numberOfDays = secondsBetween / 86400;
         if ([[NSCalendar currentCalendar] isDate:oneDayAgo inSameDayAsDate:installDate] && !logged2DRetention) {
-            [self trackEvent:@"2Dretention" withProperties:@{@"type":@"auto"}];
+            [self trackEvent:@"2Dretention" withProperties:@{@"type":@"auto"} withId:@""];
             [defaults setBool:YES forKey:@"tiktokLogged2DRetention"];
             [defaults synchronize];
         }
@@ -520,14 +533,13 @@ withType:(NSString *)type
 
 - (void)trackEvent:(NSString *)eventName
 {
-    [self trackEvent:eventName withProperties:nil];
+    [self trackEvent:eventName withProperties:nil withId:@""];
 }
 
 - (void)trackEvent:(NSString *)eventName
     withProperties: (NSDictionary *)properties
+            withId: (NSString *)eventId
 {
-    TikTokAppEvent *appEvent = [[TikTokAppEvent alloc] initWithEventName:eventName withProperties:properties];
-     
     if(self.SKAdNetworkSupportEnabled) {
         id value = [properties objectForKey:@"value"];
         NSString *valueString;
@@ -541,6 +553,8 @@ withType:(NSString *)type
         NSString *currency = [properties objectForKey:@"currency"];
         [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:valueString currency:TTSafeString(currency)];
     }
+    
+    TikTokAppEvent *appEvent = [[TikTokAppEvent alloc] initWithEventName:eventName withProperties:properties withEventID:eventId];
     if (self.remoteDebugEnabled) {
         dispatch_async(dispatch_get_main_queue(), ^{
             NSString *screenshot = [self screenShot];
@@ -553,9 +567,9 @@ withType:(NSString *)type
 }
 
 - (void)addEvent:(TikTokAppEvent *)appEvent {
-    [self.queue addEvent:appEvent];
+    [self.eventLogger addEvent:appEvent];
     if([appEvent.eventName isEqualToString:@"Purchase"]) {
-        [self.queue flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
+        [self.eventLogger flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
     }
 }
 
@@ -573,40 +587,36 @@ withType:(NSString *)type
 }
 
 - (void)trackTTEvent: (TikTokBaseEvent *)event {
-    [self trackEvent:event.eventName withProperties:event.properties];
+    [self trackEvent:event.eventName withProperties:event.properties withId:event.eventId];
 }
 
 
 - (void)trackEventAndEagerlyFlush:(NSString *)eventName
 {
     [self trackEvent:eventName];
-    [self.queue flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
+    [self.eventLogger flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
 }
 
 - (void)trackEventAndEagerlyFlush:(NSString *)eventName
        withProperties: (NSDictionary *)properties
 {
-    [self trackEvent:eventName withProperties:properties];
-    [self.queue flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
+    [self trackEvent:eventName withProperties:properties withId:@""];
+    [self.eventLogger flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
 }
 
 - (void)trackEventAndEagerlyFlush:(NSString *)eventName
        withType:(NSString *)type
 {
     [self trackEvent:eventName withType:type];
-    [self.queue flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
+    [self.eventLogger flush:TikTokAppEventsFlushReasonEagerlyFlushingEvent];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     NSNumber *backgroundMonitorTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
-    [TikTokAppEventStore persistAppEvents:self.queue.eventQueue];
-    [TikTokAppEventStore persistAppEvents:self.queue.monitorQueue];
-    [self.queue.eventQueue removeAllObjects];
-    [self.queue.monitorQueue removeAllObjects];
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
-    if(self.queue.config.initialFlushDelay && ![[preferences objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
+    if(self.config.initialFlushDelay && ![[preferences objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
         // pause timer when entering background when first flush has not happened
         [preferences setObject:@"false" forKey:@"AreTimersOn"];
     }
@@ -626,20 +636,20 @@ withType:(NSString *)type
     [self checkAttStatus];
     
     if ([[defaults objectForKey:@"HasBeenInitialized"] isEqual: @"true"]) {
-        [self getGlobalConfig:self.queue.config isFirstInitialization:NO];
+        [self getGlobalConfig:self.config isFirstInitialization:NO];
     }
 
     if(self.automaticTrackingEnabled && installDate && self.retentionTrackingEnabled) {
         [self track2DRetention];
     }
     
-    if(self.queue.config.initialFlushDelay && ![[defaults objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
+    if(self.config.initialFlushDelay && ![[defaults objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
         // if first flush has not occurred, resume timer without flushing
         [defaults setObject:@"true" forKey:@"AreTimersOn"];
         [defaults synchronize];
     } else {
         // else flush when entering foreground
-        [self.queue flush:TikTokAppEventsFlushReasonAppBecameActive];
+        [self.eventLogger flush:TikTokAppEventsFlushReasonAppBecameActive];
     }
     
     if([defaults objectForKey:@"backgroundMonitorTime"] != nil) {
@@ -665,10 +675,28 @@ withType:(NSString *)type
         };
         TikTokAppEvent *monitorForegroundEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorForegroundProperties withType:@"monitor"];
         TikTokAppEvent *monitorBackgroundEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorBackgroundProperties withType:@"monitor"];
+        
         @synchronized (self) {
-            [self.queue addEvent:monitorForegroundEvent];
-            [self.queue addEvent:monitorBackgroundEvent];
+            [self.eventLogger addEvent:monitorForegroundEvent];
+            [self.eventLogger addEvent:monitorBackgroundEvent];
         }
+        
+        if ([TikTokEDPConfig sharedConfig].enable_sdk && [TikTokEDPConfig sharedConfig].enable_from_ttconfig && [TikTokEDPConfig sharedConfig].enable_page_show_track) {
+            // Report when coming back from background.
+            NSInteger pageDepth = 0;
+            UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+            NSDictionary *viewTree = [TikTokViewUtility digView:window.rootViewController.view atDepth:0 maxDepth:&pageDepth];
+            NSDictionary *pageShowProperties = @{
+                @"current_page_name": NSStringFromClass([self class]),
+                @"index": @(pageIndex),
+                @"from_background": @(YES),
+                @"page_components": viewTree,
+                @"page_deep_count": @([TikTokViewUtility maxDepthOfSubviews:window.rootViewController.view]),
+                @"monitor_type": @"enhanced_data_postback"
+            };
+            [TikTokBusiness trackEvent:@"page_show" withProperties:pageShowProperties];
+        }
+        
     }
     [defaults setObject:foregroundMonitorTime forKey:@"foregroundMonitorTime"];
     [defaults removeObjectForKey:@"backgroundMonitorTime"];
@@ -721,7 +749,7 @@ withType:(NSString *)type
 {
     self.accessToken = accessToken;
     if(!self.isGlobalConfigFetched) {
-        [self getGlobalConfig:self.queue.config isFirstInitialization:NO];
+        [self getGlobalConfig:self.config isFirstInitialization:NO];
     }
 }
 
@@ -755,7 +783,7 @@ withType:(NSString *)type
     };
     TikTokAppEvent *monitorIdentifyEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorIdentifyProperties withType:@"monitor"];
     @synchronized(self) {
-        [self.queue addEvent:monitorIdentifyEvent];
+        [self.eventLogger addEvent:monitorIdentifyEvent];
     }
 }
 
@@ -769,7 +797,7 @@ withType:(NSString *)type
     NSString *anonymousID = [[TikTokIdentifyUtility sharedInstance] getOrGenerateAnonymousID];
     [[TikTokBusiness getInstance] setAnonymousID:anonymousID];
     [self.logger verbose:@"AnonymousID on logout: %@", self.anonymousID];
-    [self.queue flush:TikTokAppEventsFlushReasonLogout];
+    [self.eventLogger flush:TikTokAppEventsFlushReasonLogout];
     NSNumber *logoutMonitorEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     NSDictionary *meta = @{
         @"ts": logoutMonitorStartTime,
@@ -782,13 +810,13 @@ withType:(NSString *)type
     };
     TikTokAppEvent *monitorIdentifyEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorIdentifyProperties withType:@"monitor"];
     @synchronized (self) {
-        [self.queue addEvent:monitorIdentifyEvent];
+        [self.eventLogger addEvent:monitorIdentifyEvent];
     }
 }
 
 - (void)explicitlyFlush
 {
-    [self.queue flush:TikTokAppEventsFlushReasonExplicitlyFlush];
+    [self.eventLogger flush:TikTokAppEventsFlushReasonExplicitlyFlush];
 }
 
 - (BOOL)isTrackingEnabled
@@ -818,8 +846,6 @@ withType:(NSString *)type
             [self.logger info:@"Remote switch is off"];
             [defaults setObject:@"false" forKey:@"AreTimersOn"];
             [defaults synchronize];
-            self.queue.timeInSecondsUntilFlush = 0;
-            [self.queue clear];
             return;
         }
         [self loadUserAgent];
@@ -845,7 +871,7 @@ withType:(NSString *)type
                     [defaults removeObjectForKey:TTLatestCoarseValueKey];
                     [defaults removeObjectForKey:TTAccumulatedSKANValuesKey];
                     [defaults synchronize];
-                    [TikTokAppEventStore clearPersistedSKANEvents];
+                    [[TikTokSKANEventPersistence persistence] clearEvents];
                 }
                 // match historical events and flag "matched"
                 for (TikTokSKAdNetworkWindow *window in [TikTokSKAdNetworkConversionConfiguration sharedInstance].conversionValueWindows) {
@@ -855,6 +881,23 @@ withType:(NSString *)type
                     }
                 }
                 
+            }
+            
+            NSDictionary *EDPConfigDict = [globalConfig objectForKey:@"enhanced_data_postback_native_config"];
+            [TikTokEDPConfig sharedConfig].enable_from_ttconfig = tiktokConfig.autoEDPEventEnabled;
+            if (TTCheckValidDictionary(EDPConfigDict)) {
+                [[TikTokEDPConfig sharedConfig] configWithDict:EDPConfigDict];
+                
+                NSString *sourceURLString = [defaults objectForKey:@"source_url"];
+                NSString *referString = [defaults objectForKey:@"refer"];
+                if ((TTCheckValidString(referString) || isFirstInitialization) && [TikTokEDPConfig sharedConfig].enable_sdk && [TikTokEDPConfig sharedConfig].enable_from_ttconfig && [TikTokEDPConfig sharedConfig].enable_app_launch_track) {
+                    NSDictionary *launchOptionProperties = @{
+                        @"source_url": TTSafeString(sourceURLString),
+                        @"refer": TTSafeString(referString),
+                        @"monitor_type": @"enhanced_data_postback"
+                    };
+                    [TikTokBusiness trackEvent:@"app_launch" withProperties:launchOptionProperties];
+                }
             }
          }
         
@@ -886,7 +929,7 @@ withType:(NSString *)type
             if(self.automaticTrackingEnabled && !launchedBefore){
                 
                 if (self.installTrackingEnabled) {
-                    [self trackEvent:@"InstallApp" withProperties:@{@"type":@"auto"}];
+                    [self trackEvent:@"InstallApp" withProperties:@{@"type":@"auto"} withId:@""];
                     if (self.isGlobalConfigFetched) {
                         [defaults setBool:YES forKey:@"tiktokMatchedInstall"];
                     }
@@ -899,7 +942,7 @@ withType:(NSString *)type
 
             // Enabled: Tracking, Auto Tracking, Launch Logging
             if(self.automaticTrackingEnabled && self.launchTrackingEnabled){
-                [self trackEvent:@"LaunchAPP" withProperties:@{@"type":@"auto"}];
+                [self trackEvent:@"LaunchAPP" withProperties:@{@"type":@"auto"} withId:@""];
             }
 
             // Enabled: Auto Tracking, 2DRetention Tracking
@@ -961,8 +1004,8 @@ withType:(NSString *)type
     TikTokAppEvent *monitorUserAgentStartEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorUserAgentStartProperties withType:@"monitor"];
     TikTokAppEvent *monitorUserAgentEndEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorUserAgentEndProperties withType:@"monitor"];
     @synchronized(self) {
-        [self.queue addEvent:monitorUserAgentStartEvent];
-        [self.queue addEvent:monitorUserAgentEndEvent];
+        [self.eventLogger addEvent:monitorUserAgentStartEvent];
+        [self.eventLogger addEvent:monitorUserAgentEndEvent];
     }
 }
 

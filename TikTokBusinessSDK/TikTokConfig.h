@@ -21,11 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL launchTrackingEnabled;
 @property (nonatomic, assign) BOOL retentionTrackingEnabled;
 @property (nonatomic, assign) BOOL paymentTrackingEnabled;
-@property (nonatomic, assign) BOOL appTrackingDialogSuppressed;
+@property (nonatomic, assign) BOOL appTrackingDialogSuppressed DEPRECATED_MSG_ATTRIBUTE("Deprecated. SDK won't actively call ATT dialog. Use requestTrackingAuthorizationWithCompletionHandler if needed");
 @property (nonatomic, assign) BOOL SKAdNetworkSupportEnabled;
 @property (nonatomic, assign) BOOL debugModeEnabled;
 @property (nonatomic, assign) BOOL LDUModeEnabled;
-
+@property (nonatomic, assign) BOOL autoEDPEventEnabled;
+@property (nonatomic, assign) BOOL isLowPerf;
 @property (nonatomic) long initialFlushDelay;
 
 + (nullable TikTokConfig *)configWithAccessToken:(nonnull NSString *)accessToken
@@ -38,13 +39,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)disableLaunchTracking;
 - (void)disableRetentionTracking;
 - (void)disablePaymentTracking;
-- (void)disableAppTrackingDialog;
+- (void)disableAppTrackingDialog DEPRECATED_MSG_ATTRIBUTE("Deprecated. SDK won't actively call ATT dialog. Use requestTrackingAuthorizationWithCompletionHandler if needed");
 - (void)disableSKAdNetworkSupport;
+- (void)disableAutoEnhancedDataPostbackEvent;
 - (void)setCustomUserAgent:(NSString *)customUserAgent;
 - (void)setLogLevel:(TikTokLogLevel)logLevel;
 - (void)setDelayForATTUserAuthorizationInSeconds:(long)seconds;
 - (void)enableDebugMode;
 - (void)enableLDUMode;
+- (void)setIsLowPerformanceDevice:(BOOL)isLow;
 
 - (nullable id)initWithAppId:(nonnull NSString *)appId
                        tiktokAppId:(nonnull NSString *)tiktokAppId;

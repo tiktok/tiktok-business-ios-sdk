@@ -7,12 +7,17 @@
 
 #import "TikTokPaymentObserver.h"
 #import "TikTokBusiness.h"
+#import "TikTokBusiness+private.h"
+#import "TikTokAppEvent.h"
 #import "TikTokLogger.h"
 #import "TikTokFactory.h"
 #import "TikTokTypeUtility.h"
 #import <StoreKit/StoreKit.h>
 #import <StoreKit/SKPaymentQueue.h>
 #import <StoreKit/SKPaymentTransaction.h>
+#import "TikTokBusinessSDKMacros.h"
+#import "TikTokTypeUtility.h"
+#import "TikTokEDPConfig.h"
 
 static NSMutableArray *g_pendingRequestors;
 
@@ -94,16 +99,7 @@ static NSMutableArray *g_pendingRequestors;
 
 - (void)paymentQueue:(nonnull SKPaymentQueue *)queue updatedTransactions:(nonnull NSArray<SKPaymentTransaction *> *)transactions {
     for(SKPaymentTransaction *transaction in transactions) {
-        switch (transaction.transactionState) {
-            case SKPaymentTransactionStatePurchased:
-                [self handleTransaction:transaction];
-                break;
-            case SKPaymentTransactionStatePurchasing:
-            case SKPaymentTransactionStateFailed:
-            case SKPaymentTransactionStateRestored:
-            case SKPaymentTransactionStateDeferred:
-                break;
-        }
+        [self handleTransaction:transaction];
     }
 }
 
@@ -178,21 +174,8 @@ static NSMutableArray *g_pendingRequestors;
 
 - (NSMutableDictionary<NSString *, id> *)getEventParametersOfProduct: (SKProduct *)product withTransaction: (SKPaymentTransaction *)transaction
 {
-    NSString *transactionId = nil;
+    NSString *transactionId = TTSafeString(self.transaction.transactionIdentifier);
     
-    switch (transaction.transactionState) {
-        case SKPaymentTransactionStatePurchasing:
-            break;
-        case SKPaymentTransactionStatePurchased:
-            transactionId = self.transaction.transactionIdentifier;
-            break;
-        case SKPaymentTransactionStateFailed:
-            break;
-        case SKPaymentTransactionStateRestored:
-            break;
-        default:
-            break;
-    }
     SKPayment *payment = transaction.payment;
     
     NSMutableDictionary *eventParameters = [[NSMutableDictionary alloc] initWithDictionary:@{
@@ -204,6 +187,7 @@ static NSMutableArray *g_pendingRequestors;
             @"currency": [product.priceLocale objectForKey:NSLocaleCurrencyCode] ? : @"",
             @"description": product.localizedTitle ? : @"",
             @"query":@"",
+            @"code": @(self.transaction.transactionState),
             @"type": @"auto"
         }];
         [TikTokTypeUtility dictionary:eventParameters setObject:transactionId forKey:@"order_id"];
@@ -292,6 +276,11 @@ static NSMutableArray *g_pendingRequestors;
     NSMutableDictionary *eventParameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
     [TikTokTypeUtility dictionary:eventParameters setObject:[[NSNumber numberWithDouble:valueToSum] stringValue] forKey:@"value"];
     [TikTokBusiness trackEvent:eventName withProperties:eventParameters];
+    
+    if ([TikTokEDPConfig sharedConfig].enable_sdk && [TikTokEDPConfig sharedConfig].enable_from_ttconfig && [TikTokEDPConfig sharedConfig].enable_pay_show_track) {
+        [eventParameters setObject:@"enhanced_data_postback" forKey:@"monitor_type"];
+        [TikTokBusiness trackEvent:@"pay_show" withProperties:eventParameters.copy];
+    }
 }
 
 - (NSData *)fetchDeviceReceipt

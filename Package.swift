@@ -41,6 +41,7 @@ let package = Package(
                 .headerSearchPath("TTSDKCrash/TTSDKCrashRecording/Monitors"),
                 .headerSearchPath("TTSDKAddress"),
                 .headerSearchPath("TTSDKEncrypt"),
+                .headerSearchPath("Storage"),
             ],
             linkerSettings: [
                 .linkedFramework("UIKit"),

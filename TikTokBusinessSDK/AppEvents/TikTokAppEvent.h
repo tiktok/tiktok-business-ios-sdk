@@ -43,7 +43,17 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Event ID defined by advertisers.
  */
-@property (nonatomic) NSString *eventID;
+@property (nonatomic, copy, nullable) NSString *eventID;
+
+/**
+ * @brief ID in database storage.
+ */
+@property (nonatomic, copy, nullable) NSString *dbID;
+
+/**
+ * @brief Count of retried sending.
+ */
+@property (nonatomic, assign) NSInteger retryTimes;
 
 /**
  * @brief Snapshot of the screen when event is generated (only when Debug Token is valid from TTEM).
@@ -56,7 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
                          withType: (NSString *)type;
 
 - (instancetype)initWithEventName: (NSString *)eventName
-                   withProperties: (NSDictionary *)properties;
+                   withProperties: (NSDictionary *)properties
+                      withEventID:(NSString *)eventID;
 
 - (instancetype)initWithEventName: (NSString *)eventName
                    withProperties: (NSDictionary *)properties

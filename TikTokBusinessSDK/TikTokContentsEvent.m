@@ -28,7 +28,7 @@ NSString * const TTContentsEventNameViewContent   = @"ViewContent";
 
 - (NSDictionary *)dictionaryValue {
     NSMutableDictionary *res = [NSMutableDictionary dictionary];
-    [TikTokTypeUtility dictionary:res setObject:@([self.price floatValue]) forKey:@"price"];
+    [TikTokTypeUtility dictionary:res setObject:[NSString stringWithFormat:@"%@",self.price] forKey:@"price"];
     [TikTokTypeUtility dictionary:res setObject:@(self.quantity) forKey:@"quantity"];
     [TikTokTypeUtility dictionary:res setObject:self.contentId forKey:@"content_id"];
     [TikTokTypeUtility dictionary:res setObject:self.contentCategory forKey:@"content_category"];

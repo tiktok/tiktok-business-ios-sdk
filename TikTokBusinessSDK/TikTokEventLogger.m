@@ -1,13 +1,12 @@
 //
-// Copyright (c) 2020. TikTok Inc.
+//  TikTokEventLogger.m
+//  TikTokBusinessSDK
 //
-// This source code is licensed under the MIT license found in
-// the LICENSE file in the root directory of this source tree.
+//  Created by TikTok on 2/10/25.
+//  Copyright © 2025 TikTok. All rights reserved.
 //
 
-#import "TikTokAppEvent.h"
-#import "TikTokAppEventQueue.h"
-#import "TikTokAppEventStore.h"
+#import "TikTokEventLogger.h"
 #import "TikTokAppEventUtility.h"
 #import "TikTokBusiness.h"
 #import "TikTokConfig.h"
@@ -15,20 +14,20 @@
 #import "TikTokFactory.h"
 #import "TikTokErrorHandler.h"
 #import "TikTokTypeUtility.h"
+#import "TikTokBaseEventPersistence.h"
 
-#define APP_FLUSH_LIMIT 100
-#define MONITOR_FLUSH_LIMIT 5
+#define EVENT_FLUSH_LIMIT 100
 #define API_LIMIT 50
 #define FLUSH_PERIOD_IN_SECONDS 15
 
-@interface TikTokAppEventQueue()
+@interface TikTokEventLogger()
 
 @property (nonatomic, weak) id<TikTokLogger> logger;
 @property (nonatomic, strong, nullable) TikTokRequestHandler *requestHandler;
 
 @end
 
-@implementation TikTokAppEventQueue
+@implementation TikTokEventLogger
 
 - (id)init
 {
@@ -51,9 +50,6 @@
     if (self == nil) {
         return nil;
     }
-    
-    self.eventQueue = [NSMutableArray array];
-    self.monitorQueue = [NSMutableArray array];
             
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
@@ -69,36 +65,37 @@
     self.logger = [TikTokFactory getLogger];
     
     self.requestHandler = [TikTokFactory getRequestHandler];
-    
-    [self calculateAndSetRemainingEventThreshold];
 
     return self;
 }
 
 - (void)initializeFlushTimerWithSeconds:(long)seconds
 {
-    __weak TikTokAppEventQueue *weakSelf = self;
+    __weak TikTokEventLogger *weakSelf = self;
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:seconds
         repeats:NO block:^(NSTimer *timer) {
         if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
             [weakSelf flush:TikTokAppEventsFlushReasonTimer];
+            [weakSelf flushMonitorEvents];
         }
         self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
             repeats:YES block:^(NSTimer *timer) {
             [weakSelf flush:TikTokAppEventsFlushReasonTimer];
+            [weakSelf flushMonitorEvents];
         }];
     }];
 }
 
 - (void)initializeFlushTimer
 {
-    __weak TikTokAppEventQueue *weakSelf = self;
+    __weak TikTokEventLogger *weakSelf = self;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
         repeats:YES block:^(NSTimer *timer) {
         if ([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
             [weakSelf flush:TikTokAppEventsFlushReasonTimer];
+            [weakSelf flushMonitorEvents];
         }
     }];
 }
@@ -111,21 +108,18 @@
     }
     if ([event.type isEqualToString:@"monitor"]) {
         @synchronized (self) {
-            [self.monitorQueue addObject:event];
+            [[TikTokMonitorEventPersistence persistence] persistEvents:@[event]];
+            if ([[TikTokMonitorEventPersistence persistence] eventsCount] >= EVENT_FLUSH_LIMIT) {
+                [self flushMonitorEvents];
+            }
         }
-        if (self.monitorQueue.count >= MONITOR_FLUSH_LIMIT) {
-            [self flushMonitorEvents];
-        }
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryMonitorQueueUpdated" object:nil];
     } else {
         @synchronized (self) {
-            [self.eventQueue addObject:event];
+            [[TikTokAppEventPersistence persistence] persistEvents:@[event]];
+            if([[TikTokAppEventPersistence persistence] eventsCount] >= EVENT_FLUSH_LIMIT) {
+                [self flush:TikTokAppEventsFlushReasonEventThreshold];
+            }
         }
-        if(self.eventQueue.count >= APP_FLUSH_LIMIT) {
-            [self flush:TikTokAppEventsFlushReasonEventThreshold];
-        }
-        [self calculateAndSetRemainingEventThreshold];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryEventQueueUpdated" object:nil];
     }
     
 }
@@ -161,18 +155,11 @@
     NSInteger flushSize = 0;
     @try {
         @synchronized (self) {
-            [self.logger info:@"[TikTokAppEventQueue] Start flush, with flush reason: %lu current queue count: %lu", flushReason, self.eventQueue.count];
-            NSArray *eventsFromDisk = [TikTokAppEventStore retrievePersistedAppEvents];
-            [TikTokAppEventStore clearPersistedAppEvents];
+            [self.logger info:@"[TikTokAppEventQueue] Start flush, with flush reason: %lu", flushReason];
+            NSArray *eventsFromDisk = [[TikTokAppEventPersistence persistence] retrievePersistedEvents];
             [self.logger info:@"[TikTokAppEventQueue] Number events from disk: %lu", eventsFromDisk.count];
             NSMutableArray *eventsToBeFlushed = [NSMutableArray arrayWithArray:eventsFromDisk];
-            NSArray *copiedEventQueue = [self.eventQueue copy];
-            [eventsToBeFlushed addObjectsFromArray:copiedEventQueue];
             flushSize = eventsToBeFlushed.count;
-            [self.eventQueue removeAllObjects];
-            [self calculateAndSetRemainingEventThreshold];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryEventQueueUpdated" object:nil];
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self flushOnMainQueue:eventsToBeFlushed forReason:flushReason isMonitor:NO];
             });
@@ -203,13 +190,9 @@
 - (void)flushMonitorEvents {
     @try {
         @synchronized (self) {
-            NSArray *eventsFromDisk = [TikTokAppEventStore retrievePersistedMonitorEvents];
-            [TikTokAppEventStore clearPersistedMonitorEvents];
+            NSArray *eventsFromDisk =
+            [[TikTokMonitorEventPersistence persistence] retrievePersistedEvents];
             NSMutableArray *eventsToBeFlushed = [NSMutableArray arrayWithArray:eventsFromDisk];
-            NSArray *copiedEventQueue = [self.monitorQueue copy];
-            [eventsToBeFlushed addObjectsFromArray:copiedEventQueue];
-            [self.monitorQueue removeAllObjects];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"inMemoryMonitorQueueUpdated" object:nil];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self flushOnMainQueue:eventsToBeFlushed forReason:TikTokAppEventsFlushReasonExplicitlyFlush isMonitor:YES];
@@ -248,32 +231,11 @@
                         [self.requestHandler sendBatchRequest:eventChunk withConfig:self.config];
                     }
                 }
-            } else {
-                if (isMonitor) {
-                    [TikTokAppEventStore persistMonitorEvents:eventsToBeFlushed];
-                } else {
-                    [TikTokAppEventStore persistAppEvents:eventsToBeFlushed];
-                }
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"inDiskEventQueueUpdated" object:nil];
-                if([[TikTokBusiness getInstance] accessToken] == nil) {
-                    [self.logger info:@"[TikTokAppEventQueue] Request not sent because access token is null"];
-                }
             }
         }
-        [self.logger info:@"[TikTokAppEventQueue] End flush, current queue count: %lu", self.eventQueue.count];
     } @catch (NSException *exception) {
         [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flushing main queue" exception:exception];
     }
-}
-
-- (void)clear {
-    [self.eventQueue removeAllObjects];
-    [self.monitorQueue removeAllObjects];
-}
-
-- (void)calculateAndSetRemainingEventThreshold
-{
-    self.remainingEventsUntilFlushThreshold = APP_FLUSH_LIMIT - (int)self.eventQueue.count;
 }
 
 - (NSString *)stringForReason:(TikTokAppEventsFlushReason)reason {
@@ -301,5 +263,4 @@
             break;
     }
 }
-
 @end

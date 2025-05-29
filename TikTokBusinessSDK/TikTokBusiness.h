@@ -9,6 +9,7 @@
 #import "TikTokLogger.h"
 #import "TikTokBaseEvent.h"
 #import "TikTokConstants.h"
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -63,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
  *                  You can either track a standardized event by passing a TTEventName or
  *                  trac a custom event by simply passing a custom name.
 */
-+ (void)trackEvent: (NSString *)eventName;
++ (void)trackEvent: (NSString *)eventName DEPRECATED_MSG_ATTRIBUTE("Deprecated, please use trackTTEvent:");
 
 /**
  * @brief This method should be called whenever an event needs to be tracked
@@ -79,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
  *                       structure provided in the documentation. For custom events,
  *                       you can pass in custom properties
 */
-+ (void)trackEvent: (NSString *)eventName withProperties: (NSDictionary *)properties;
++ (void)trackEvent: (NSString *)eventName withProperties: (NSDictionary *)properties DEPRECATED_MSG_ATTRIBUTE("Deprecated, please use trackTTEvent:");
 
 /**
  * @brief This method should be called whenever an event needs to be tracked
@@ -92,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
  *                  trac a custom event by simply passing a custom name.
  * @param type This parameter should be a string object ('track' or 'identify').
 */
-+ (void)trackEvent: (NSString *)eventName withType: (NSString *)type;
++ (void)trackEvent: (NSString *)eventName withType: (NSString *)type DEPRECATED_MSG_ATTRIBUTE("Deprecated, please use trackTTEvent:");
 
 /**
  * @brief This method should be called whenever an event needs to be tracked
@@ -105,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
  *                  trac a custom event by simply passing a custom name.
  * @param eventId This parameter should be a string object. You can define a custom event identifier.
 */
-+ (void)trackEvent: (NSString *)eventName withId: (NSString *)eventId;
++ (void)trackEvent: (NSString *)eventName withId: (NSString *)eventId DEPRECATED_MSG_ATTRIBUTE("Deprecated, please use trackTTEvent:");
 
 /**
  * @brief This method should be called whenever an event needs to be tracked
@@ -163,30 +164,6 @@ NS_ASSUME_NONNULL_BEGIN
  *        AppTrackingTransparency dialog is displayed in iOS 14.0 and onwards
 */
 + (BOOL)isUserTrackingEnabled;
-
-/**
- * @brief Use this method to get the count of events that are currently in
- *        the event queue
-*/
-+ (long)getInMemoryEventCount;
-
-/**
- * @brief Use this method to get the count of events that are currently in
- *        the disk and have to be flushed to the Marketing API endpoint
-*/
-+ (long)getInDiskEventCount;
-
-/**
- * @brief Use this method to find the number of seconds before next flush
- *        to the Marketing API endpoint
-*/
-+ (long)getTimeInSecondsUntilFlush;
-
-/**
- * @brief Use this method to find the threshold of the number of events that
- *        are flushed to the Marketing API
-*/
-+ (long)getRemainingEventsUntilFlushThreshold;
 
 /**
  * @brief Retrieve iOS device IDFA value.

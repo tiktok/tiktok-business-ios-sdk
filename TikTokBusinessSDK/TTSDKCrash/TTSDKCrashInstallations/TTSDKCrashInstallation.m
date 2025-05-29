@@ -37,9 +37,6 @@
 #import "TTSDKJSONCodecObjC.h"
 #import "TTSDKLogger.h"
 #import "TTSDKNSErrorHelper.h"
-#import "TikTokAppEventStore.h"
-#import "TikTokBusiness.h"
-#import "TikTokBusiness+private.h"
 
 /** Max number of properties that can be defined for writing to the report */
 #define kMaxProperties 500
@@ -273,13 +270,6 @@ static CrashHandlerData *g_crashHandlerData;
         g_crashHandlerData = self.crashHandlerData;
 
         configuration.crashNotifyCallback = ^(const struct TTSDKCrashReportWriter *_Nonnull writer) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [TikTokAppEventStore persistAppEvents:[TikTokBusiness getQueue].eventQueue];
-                [TikTokAppEventStore persistMonitorEvents:[TikTokBusiness getQueue].monitorQueue];
-                [[TikTokBusiness getQueue].eventQueue removeAllObjects];
-                [[TikTokBusiness getQueue].monitorQueue removeAllObjects];
-            });
-            
             CrashHandlerData *crashHandlerData = g_crashHandlerData;
             if (crashHandlerData == NULL) {
                 return;

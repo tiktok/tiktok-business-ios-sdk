@@ -91,6 +91,12 @@
     [self.logger info:@"[TikTokConfig] LDU mode has been opened"];
 }
 
+- (void)disableAutoEnhancedDataPostbackEvent {
+    self.autoEDPEventEnabled = NO;
+    
+    [self.logger info:@"[TikTokConfig] Auto enhanced data postback event reporting: NO"];
+}
+
 - (void)setCustomUserAgent: (NSString *)customUserAgent
 {
     [[TikTokUserAgentCollector singleton] setCustomUserAgent:customUserAgent];
@@ -107,6 +113,11 @@
 {
     self.initialFlushDelay = seconds;
     [self.logger info:@"[TikTokConfig] Initial flush delay set to: %lu", seconds];
+}
+
+- (void)setIsLowPerformanceDevice:(BOOL)isLow {
+    self.isLowPerf = isLow;
+    [self.logger info:@"[TikTokConfig] Device is set to low performance device"];
 }
 
 - (id)initWithAccessToken:(nonnull NSString *)accessToken appId:(nonnull NSString *)appId tiktokAppId:(nonnull NSString *)tiktokAppId
@@ -131,6 +142,7 @@
     _appTrackingDialogSuppressed = NO;
     _SKAdNetworkSupportEnabled = YES;
     _debugModeEnabled = NO;
+    _autoEDPEventEnabled = YES;
     
     self.logger = [TikTokFactory getLogger];
     return self;
@@ -158,6 +170,7 @@
     _appTrackingDialogSuppressed = NO;
     _SKAdNetworkSupportEnabled = YES;
     _debugModeEnabled = NO;
+    _autoEDPEventEnabled = YES;
     
     self.logger = [TikTokFactory getLogger];
     return self;

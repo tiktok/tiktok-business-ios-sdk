@@ -10,6 +10,7 @@
 #import "TikTokTypeUtility.h"
 #import "TikTokBusiness.h"
 #import "TikTokBusiness+private.h"
+#import "TikTokBaseEventPersistence.h"
 
 @implementation TikTokCurrencyUtility
 
@@ -71,7 +72,7 @@
         }
     };
     TikTokAppEvent *exchangeErrEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorExchangeErrProperties withType:@"monitor"];
-    [[TikTokBusiness getQueue] addEvent:exchangeErrEvent];
+    [[TikTokBusiness getEventLogger] addEvent:exchangeErrEvent];
 }
 
 @end
