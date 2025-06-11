@@ -63,7 +63,7 @@ static const long long thirdWindowEnds = 3024000000;
 - (void)registerAppForAdNetworkAttribution
 {
     if (@available(iOS 14.0, *)) {
-        NSLog(@"App registered for ad network attribution");
+//        NSLog(@"App registered for ad network attribution");
         ((id (*)(id, SEL))[self.skAdNetworkClass methodForSelector:self.skAdNetworkRegisterAppForAdNetworkAttribution])(self.skAdNetworkClass, self.skAdNetworkRegisterAppForAdNetworkAttribution);
     }
 }

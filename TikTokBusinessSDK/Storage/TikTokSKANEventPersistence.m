@@ -22,49 +22,37 @@
 @implementation TikTokSKANEventPersistence
 
 + (instancetype)persistence {
-    static TikTokSKANEventPersistence *device = nil;
+    static TikTokSKANEventPersistence *persistence = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        device = [[self alloc] init];
+        persistence = [[self alloc] init];
     });
 
-    return device;
+    return persistence;
 }
 
 + (NSString *)tableName {
     return @"skan_event_table";
 }
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        self.db = [TikTokDatabase databaseWithName:NSStringFromClass([self class])];
-        if ([self.db openDatabase]) {
-            NSDictionary<NSString *, NSString *> *fields = @{
-                @"id": @"INTEGER PRIMARY KEY AUTOINCREMENT",
-                @"event_name": @"TEXT",
-                @"value": @"DOUBLE",
-                @"currency": @"TEXT"
-            };
-            if (![self.db createTableWithName:[[self class] tableName] fields:fields]) {
-                [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to create table"];
-            }
-        } else {
-            [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to open database"];
-        }
-        [self.db closeDatabase];
-    }
-    return self;
++ (NSDictionary *)tableFields {
+    NSDictionary<NSString *, NSString *> *fields = @{
+        @"id": @"INTEGER PRIMARY KEY AUTOINCREMENT",
+        @"event_name": @"TEXT",
+        @"event_value": @"DOUBLE",
+        @"currency": @"TEXT"
+    };
+    return fields;
 }
 
 - (BOOL)persistSKANEventWithName:(NSString *)eventName value:(NSNumber *)value currency:(nullable TTCurrency)currency {
     if ([self.db openDatabase]) {
         if (![self.db insertIntoTable:[[self class] tableName] fields:@{
             @"event_name":TTSafeString(eventName),
-            @"value": value?:@(0),
+            @"event_value": value?:@(0),
             @"currency": TTSafeString(currency)
         }]) {
+            [self.db closeDatabase];
             return NO;
         }
     }

@@ -22,13 +22,23 @@
 @implementation TikTokBaseEventPersistence
 
 + (instancetype)persistence {
-    static TikTokBaseEventPersistence *device = nil;
+    static TikTokBaseEventPersistence *persistence = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        device = [[self alloc] init];
+        persistence = [[self alloc] init];
     });
 
-    return device;
+    return persistence;
+}
+
++ (NSDictionary *)tableFields {
+    NSDictionary<NSString *, NSString *> *fields = @{
+        @"id": @"INTEGER PRIMARY KEY AUTOINCREMENT",
+        @"event_data": @"BLOB",
+        @"ts": @"TEXT",
+        @"retry_times": @"INTEGER"
+    };
+    return fields;
 }
 
 + (NSString *)tableName {
@@ -41,13 +51,8 @@
     if (self) {
         self.db = [TikTokDatabase databaseWithName:NSStringFromClass([self class])];
         if ([self.db openDatabase]) {
-            NSDictionary<NSString *, NSString *> *fields = @{
-                @"id": @"INTEGER PRIMARY KEY AUTOINCREMENT",
-                @"event_data": @"BLOB",
-                @"ts": @"TEXT",
-                @"retry_times": @"INTEGER"
-            };
-            if (![self.db createTableWithName:[[self class] tableName] fields:fields]) {
+            
+            if (![self.db createTableWithName:[[self class] tableName] fields:[[self class] tableFields]]) {
                 [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to create table"];
             }
         } else {
@@ -70,6 +75,7 @@
             NSData *eventData = [NSKeyedArchiver archivedDataWithRootObject:event requiringSecureCoding:YES error:&errorArchiving];
             if (errorArchiving) {
                 NSLog(@"Failed to serialize event to data: %@", errorArchiving.localizedDescription);
+                [self.db closeDatabase];
                 return NO;
             }
             if (![self.db insertIntoTable:[[self class] tableName] fields:@{
@@ -77,6 +83,7 @@
                 @"ts": TTSafeString(event.timestamp),
                 @"retry_times": @(event.retryTimes)
             }]) {
+                [self.db closeDatabase];
                 return NO;
             }
         }
@@ -106,7 +113,6 @@
                 event.retryTimes = retry_times;
             }
             if (!error && event) {
-                NSLog(@"retrieved event: %ld, %@, ts:%@",(long)eID,event, event.timestamp);
                 [allEvents addObject:event];
             }
         }

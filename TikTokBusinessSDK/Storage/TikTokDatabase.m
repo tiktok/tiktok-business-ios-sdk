@@ -15,35 +15,46 @@
 #import <pthread/pthread.h>
 
 static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
-static pthread_mutex_t _abu_database_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 @interface TikTokDatabase ()
 
 @property (nonatomic, copy) NSString *path;
+@property (nonatomic, assign) pthread_mutex_t databaseMutex;
 
 @end
 
 @implementation TikTokDatabase
 {
     sqlite3 *_handler;
+    BOOL _isOpen;
 }
 
 + (instancetype)databaseWithName:(NSString *)name {
-    pthread_mutex_lock(&_abu_database_mutex);
-    TikTokDatabase *(^finish)(TikTokDatabase *) = ^(TikTokDatabase *db) {
-        pthread_mutex_unlock(&_abu_database_mutex);
-        return db;
-    };
     NSString *tp = [self _tablePathWithName:name];
     sqlite3 *handler = nil;
     if (sqlite3_open(tp.UTF8String, &handler) != SQLITE_OK) {
-        return finish(nil);
+        return nil;
     }
+    
     TikTokDatabase *database = [[TikTokDatabase alloc] init];
     database->_handler = handler;
+    database->_isOpen = YES;
     database.path = tp;
+    
+    // 初始化互斥锁
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&database->_databaseMutex, &attr);
+    pthread_mutexattr_destroy(&attr);
+    
     [database closeDatabase];
-    return finish(database);
+    return database;
+}
+
+- (void)dealloc {
+    [self closeDatabase];
+    pthread_mutex_destroy(&_databaseMutex);
 }
 
 + (NSString *)_tablePathWithName:(NSString *)name {
@@ -54,14 +65,36 @@ static pthread_mutex_t _abu_database_mutex = PTHREAD_MUTEX_INITIALIZER;
 }
 
 - (BOOL)openDatabase {
-    return sqlite3_open(self.path.UTF8String, &_handler) == SQLITE_OK;
+    pthread_mutex_lock(&_databaseMutex);
+    if (!_isOpen) {
+        int result = sqlite3_open(self.path.UTF8String, &_handler);
+        _isOpen = (result == SQLITE_OK);
+    }
+    pthread_mutex_unlock(&_databaseMutex);
+    return _isOpen;
 }
 
 - (BOOL)closeDatabase {
-    return _handler != NULL && sqlite3_close(_handler) == SQLITE_OK;
+    pthread_mutex_lock(&_databaseMutex);
+    BOOL result = NO;
+    if (_isOpen && _handler != NULL) {
+        result = (sqlite3_close(_handler) == SQLITE_OK);
+        if (result) {
+            _handler = NULL;
+            _isOpen = NO;
+        }
+    }
+    pthread_mutex_unlock(&_databaseMutex);
+    return result;
 }
 
 - (BOOL)createTableWithName:(NSString *)tableName fields:(NSDictionary<NSString *, NSString *> *)fields {
+    pthread_mutex_lock(&_databaseMutex);
+    if (![self openDatabase]) {
+        pthread_mutex_unlock(&_databaseMutex);
+        return NO;
+    }
+    
     NSMutableString *createTableQuery = [NSMutableString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (", tableName];
     
     NSInteger index = 0;
@@ -76,16 +109,24 @@ static pthread_mutex_t _abu_database_mutex = PTHREAD_MUTEX_INITIALIZER;
     [createTableQuery appendString:@");"];
     
     char *errorMessage;
-    if (sqlite3_exec(_handler, [createTableQuery UTF8String], NULL, 0, &errorMessage) == SQLITE_OK) {
-        return YES;
-    } else {
+    BOOL result = (sqlite3_exec(_handler, [createTableQuery UTF8String], NULL, 0, &errorMessage) == SQLITE_OK);
+    if (!result) {
         NSLog(@"Failed to create table %@: %s",tableName, errorMessage);
         sqlite3_free(errorMessage);
-        return NO;
     }
+    
+    [self closeDatabase];
+    pthread_mutex_unlock(&_databaseMutex);
+    return result;
 }
 
 - (BOOL)insertIntoTable:(NSString *)tableName fields:(NSDictionary<NSString *, id> *)fields {
+    pthread_mutex_lock(&_databaseMutex);
+    if (![self openDatabase]) {
+        pthread_mutex_unlock(&_databaseMutex);
+        return NO;
+    }
+    
     NSMutableString *insertQuery = [NSMutableString stringWithFormat:@"INSERT INTO %@ (", tableName];
     
     NSMutableArray<NSString *> *fieldNames = [NSMutableArray array];
@@ -102,35 +143,49 @@ static pthread_mutex_t _abu_database_mutex = PTHREAD_MUTEX_INITIALIZER;
     [insertQuery appendString:@");"];
     
     sqlite3_stmt *statement;
-    if (sqlite3_prepare_v2(_handler, [insertQuery UTF8String], -1, &statement, NULL) != SQLITE_OK) {
-        NSLog(@"Failed to prepare insert statement: %s", sqlite3_errmsg(_handler));
-        return NO;
-    }
+    BOOL result = NO;
     
-    int index = 1;
-    for (NSString *fieldName in fields.allKeys) {
-        id value = fields[fieldName];
-        if ([value isKindOfClass:[NSString class]]) {
-            sqlite3_bind_text(statement, index, [value UTF8String], -1, SQLITE_STATIC);
-        } else if ([value isKindOfClass:[NSNumber class]]) {
-            sqlite3_bind_double(statement, index, [value doubleValue]);
-        } else if ([value isKindOfClass:[NSData class]]) {
-            sqlite3_bind_blob(statement, index, [value bytes], (int)[value length], SQLITE_STATIC);
+    if (sqlite3_prepare_v2(_handler, [insertQuery UTF8String], -1, &statement, NULL) == SQLITE_OK) {
+        int index = 1;
+        for (NSString *fieldName in fields.allKeys) {
+            id value = fields[fieldName];
+            if ([value isKindOfClass:[NSString class]]) {
+                sqlite3_bind_text(statement, index, [value UTF8String], -1, SQLITE_STATIC);
+            } else if ([value isKindOfClass:[NSNumber class]]) {
+                if ([value isKindOfClass:[NSDecimalNumber class]]) {
+                    sqlite3_bind_text(statement, index, [[value stringValue] UTF8String], -1, SQLITE_STATIC);
+                } else {
+                    sqlite3_bind_double(statement, index, [value doubleValue]);
+                }
+            } else if ([value isKindOfClass:[NSData class]]) {
+                sqlite3_bind_blob(statement, index, [value bytes], (int)[value length], SQLITE_STATIC);
+            } else if (value == nil || [value isKindOfClass:[NSNull class]]) {
+                sqlite3_bind_null(statement, index);
+            }
+            index++;
         }
-        index++;
-    }
-    
-    if (sqlite3_step(statement) != SQLITE_DONE) {
-        NSLog(@"Failed to insert data: %s", sqlite3_errmsg(_handler));
+        
+        result = (sqlite3_step(statement) == SQLITE_DONE);
+        if (!result) {
+            NSLog(@"Failed to insert data: %s", sqlite3_errmsg(_handler));
+        }
         sqlite3_finalize(statement);
-        return NO;
+    } else {
+        NSLog(@"Failed to prepare insert statement: %s", sqlite3_errmsg(_handler));
     }
     
-    sqlite3_finalize(statement);
-    return YES;
+    [self closeDatabase];
+    pthread_mutex_unlock(&_databaseMutex);
+    return result;
 }
 
 - (NSArray<NSDictionary<NSString *, id> *> *)queryTable:(NSString *)tableName withWhere:(nullable NSString *)where orderBy:(TTDBOrderBy)orderBy limit:(TTDBLimit)limit {
+    pthread_mutex_lock(&_databaseMutex);
+    if (![self openDatabase]) {
+        pthread_mutex_unlock(&_databaseMutex);
+        return @[];
+    }
+    
     NSString *condition = [self _whereString:where];
     NSString *ob = [self _orderBy:orderBy];
     NSString *lt = [self _limit:limit];
@@ -139,58 +194,74 @@ static pthread_mutex_t _abu_database_mutex = PTHREAD_MUTEX_INITIALIZER;
     NSMutableArray<NSDictionary<NSString *, id> *> *results = [NSMutableArray array];
     
     sqlite3_stmt *statement;
-    if (sqlite3_prepare_v2(_handler, [sql UTF8String], -1, &statement, NULL) != SQLITE_OK) {
-        NSLog(@"Failed to prepare insert statement: %s", sqlite3_errmsg(_handler));
-        return results;
-    }
-    
-    int columns = sqlite3_column_count(statement);
-    while (sqlite3_step(statement) == SQLITE_ROW) {
-        NSMutableDictionary<NSString *, id> *row = [NSMutableDictionary dictionary];
-        for (int i = 0; i < columns; i++) {
-            const char *columnName = sqlite3_column_name(statement, i);
-            NSString *key = [NSString stringWithUTF8String:columnName];
-            switch (sqlite3_column_type(statement, i)) {
-                case SQLITE_INTEGER:
-                    row[key] = @(sqlite3_column_int(statement, i));
-                    break;
-                case SQLITE_FLOAT:
-                    row[key] = @(sqlite3_column_double(statement, i));
-                    break;
-                case SQLITE_TEXT:
-                    row[key] = [NSString stringWithUTF8String:(const char *)sqlite3_column_text(statement, i)];
-                    break;
-                case SQLITE_BLOB:
-                    row[key] = [NSData dataWithBytes:(const void *)sqlite3_column_blob(statement, i) length:(NSUInteger)sqlite3_column_bytes(statement, i)];
-                    break;
-                case SQLITE_NULL:
-                    row[key] = [NSNull null];
-                    break;
+    if (sqlite3_prepare_v2(_handler, [sql UTF8String], -1, &statement, NULL) == SQLITE_OK) {
+        int columns = sqlite3_column_count(statement);
+        while (sqlite3_step(statement) == SQLITE_ROW) {
+            NSMutableDictionary<NSString *, id> *row = [NSMutableDictionary dictionary];
+            for (int i = 0; i < columns; i++) {
+                const char *columnName = sqlite3_column_name(statement, i);
+                NSString *key = [NSString stringWithUTF8String:columnName];
+                switch (sqlite3_column_type(statement, i)) {
+                    case SQLITE_INTEGER:
+                        row[key] = @(sqlite3_column_int64(statement, i));
+                        break;
+                    case SQLITE_FLOAT:
+                        row[key] = @(sqlite3_column_double(statement, i));
+                        break;
+                    case SQLITE_TEXT:
+                        row[key] = [NSString stringWithUTF8String:(const char *)sqlite3_column_text(statement, i)];
+                        break;
+                    case SQLITE_BLOB:
+                        row[key] = [NSData dataWithBytes:(const void *)sqlite3_column_blob(statement, i) length:(NSUInteger)sqlite3_column_bytes(statement, i)];
+                        break;
+                    case SQLITE_NULL:
+                        row[key] = [NSNull null];
+                        break;
+                }
             }
+            [results addObject:row];
         }
-        [results addObject:row];
+        sqlite3_finalize(statement);
+    } else {
+        NSLog(@"Failed to prepare query statement: %s", sqlite3_errmsg(_handler));
     }
     
-    sqlite3_finalize(statement);
+    [self closeDatabase];
+    pthread_mutex_unlock(&_databaseMutex);
     return results;
 }
 
 - (BOOL)deleteTable:(NSString *)tableName withWhere:(nullable NSString *)where orderBy:(TTDBOrderBy)orderBy limit:(TTDBLimit)limit {
+    pthread_mutex_lock(&_databaseMutex);
+    if (![self openDatabase]) {
+        pthread_mutex_unlock(&_databaseMutex);
+        return NO;
+    }
+    
     NSString *condition = [self _whereString:where];
     NSString *ob = [self _orderBy:orderBy];
     NSString *lt = [self _limit:limit];
     NSString *deleteQuery = [NSString stringWithFormat:@"DELETE FROM '%@'%@%@%@;", tableName, condition, ob, lt];
     
     char *errorMsg;
-    if (sqlite3_exec(_handler, [deleteQuery UTF8String], NULL, 0, &errorMsg)!= SQLITE_OK) {
+    BOOL result = (sqlite3_exec(_handler, [deleteQuery UTF8String], NULL, 0, &errorMsg) == SQLITE_OK);
+    if (!result) {
         NSLog(@"Failed to delete events: %s", errorMsg);
         sqlite3_free(errorMsg);
-        return NO;
     }
-    return YES;
+    
+    [self closeDatabase];
+    pthread_mutex_unlock(&_databaseMutex);
+    return result;
 }
 
 - (BOOL)updateTable:(NSString *)tableName incrementField:(NSString *)incrementField value:(NSNumber *)incrementValue withWhere:(nullable NSString *)where {
+    pthread_mutex_lock(&_databaseMutex);
+    if (![self openDatabase]) {
+        pthread_mutex_unlock(&_databaseMutex);
+        return NO;
+    }
+    
     NSString *condition = [self _whereString:where];
     NSMutableString *updateQuery = [NSMutableString stringWithFormat:@"UPDATE %@ SET ", tableName];
     
@@ -202,33 +273,39 @@ static pthread_mutex_t _abu_database_mutex = PTHREAD_MUTEX_INITIALIZER;
     [updateQuery appendString:@";"];
     
     char *errorMessage;
-    if (sqlite3_exec(_handler, [updateQuery UTF8String], NULL, 0, &errorMessage) == SQLITE_OK) {
-        return YES;
-    } else {
+    BOOL result = (sqlite3_exec(_handler, [updateQuery UTF8String], NULL, 0, &errorMessage) == SQLITE_OK);
+    if (!result) {
         NSLog(@"Failed to update: %s", errorMessage);
         sqlite3_free(errorMessage);
-        return NO;
     }
+    
+    [self closeDatabase];
+    pthread_mutex_unlock(&_databaseMutex);
+    return result;
 }
 
 - (NSInteger)getCount:(NSString *)tableName {
+    pthread_mutex_lock(&_databaseMutex);
     if (![self openDatabase]) {
-        [self closeDatabase];
+        pthread_mutex_unlock(&_databaseMutex);
         return 0;
     }
+    
     NSString *countQuery = [NSString stringWithFormat:@"SELECT COUNT(*) FROM %@", tableName];
     sqlite3_stmt *statement;
-    if (sqlite3_prepare_v2(_handler, [countQuery UTF8String], -1, &statement, NULL) != SQLITE_OK) {
-        NSLog(@"Failed to prepare count query statement: %s", sqlite3_errmsg(_handler));
-        [self closeDatabase];
-        return 0;
-    }
     NSInteger rowCount = 0;
-    if (sqlite3_step(statement) == SQLITE_ROW) {
-        rowCount = sqlite3_column_int(statement, 0);
+    
+    if (sqlite3_prepare_v2(_handler, [countQuery UTF8String], -1, &statement, NULL) == SQLITE_OK) {
+        if (sqlite3_step(statement) == SQLITE_ROW) {
+            rowCount = sqlite3_column_int64(statement, 0);
+        }
+        sqlite3_finalize(statement);
+    } else {
+        NSLog(@"Failed to prepare count query statement: %s", sqlite3_errmsg(_handler));
     }
-    sqlite3_finalize(statement);
+    
     [self closeDatabase];
+    pthread_mutex_unlock(&_databaseMutex);
     return rowCount;
 }
 

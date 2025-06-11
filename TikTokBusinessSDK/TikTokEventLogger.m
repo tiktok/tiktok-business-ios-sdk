@@ -109,16 +109,10 @@
     if ([event.type isEqualToString:@"monitor"]) {
         @synchronized (self) {
             [[TikTokMonitorEventPersistence persistence] persistEvents:@[event]];
-            if ([[TikTokMonitorEventPersistence persistence] eventsCount] >= EVENT_FLUSH_LIMIT) {
-                [self flushMonitorEvents];
-            }
         }
     } else {
         @synchronized (self) {
             [[TikTokAppEventPersistence persistence] persistEvents:@[event]];
-            if([[TikTokAppEventPersistence persistence] eventsCount] >= EVENT_FLUSH_LIMIT) {
-                [self flush:TikTokAppEventsFlushReasonEventThreshold];
-            }
         }
     }
     
