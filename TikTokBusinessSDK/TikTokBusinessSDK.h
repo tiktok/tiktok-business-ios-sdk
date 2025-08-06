@@ -22,3 +22,8 @@ FOUNDATION_EXPORT const unsigned char TikTokBusinessSDKVersionString[];
 #import <TikTokBusinessSDK/TikTokConfig.h>
 #import <TikTokBusinessSDK/TikTokDeviceInfo.h>
 #import <TikTokBusinessSDK/TikTokConstants.h>
+#import "TikTokAppEventUtility.h"
+#import "TikTokRequestHandler.h"
+#import "TikTokAppEvent.h"
+#import "TikTokAppEventQueue.h"
+#import "TikTokAppEventStore.h"
