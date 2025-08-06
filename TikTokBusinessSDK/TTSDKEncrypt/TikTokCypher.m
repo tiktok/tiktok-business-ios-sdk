@@ -108,11 +108,14 @@ static const int kTikTokGodzippaChunkSize = 1024;
 }
 
 + (NSString *)hmacSHA256WithSecret:(NSString *)secret content:(NSString *)content {
-    if (!TTCheckValidString(secret)) {
+    if (!TTCheckValidString(secret) || !TTCheckValidString(content)) {
         return @"";
     }
     const char *cKey  = [secret cStringUsingEncoding:NSASCIIStringEncoding];
     const char *cData = [content cStringUsingEncoding:NSUTF8StringEncoding];
+    if (!cKey || !cData) {
+        return @"";
+    }
     unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
     CCHmac(kCCHmacAlgSHA256, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
     NSData *HMACData = [NSData dataWithBytes:cHMAC length:sizeof(cHMAC)];

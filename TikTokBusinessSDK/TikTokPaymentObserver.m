@@ -174,7 +174,7 @@ static NSMutableArray *g_pendingRequestors;
 
 - (NSMutableDictionary<NSString *, id> *)getEventParametersOfProduct: (SKProduct *)product withTransaction: (SKPaymentTransaction *)transaction
 {
-    NSString *transactionId = TTSafeString(self.transaction.transactionIdentifier);
+    NSString *transactionId = TTSafeString(transaction.transactionIdentifier);
     
     SKPayment *payment = transaction.payment;
     
@@ -187,7 +187,7 @@ static NSMutableArray *g_pendingRequestors;
             @"currency": [product.priceLocale objectForKey:NSLocaleCurrencyCode] ? : @"",
             @"description": product.localizedTitle ? : @"",
             @"query":@"",
-            @"code": @(self.transaction.transactionState),
+            @"code": @(transaction.transactionState),
             @"type": @"auto"
         }];
         [TikTokTypeUtility dictionary:eventParameters setObject:transactionId forKey:@"order_id"];

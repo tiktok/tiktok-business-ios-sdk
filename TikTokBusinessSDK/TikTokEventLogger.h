@@ -46,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)flush:(TikTokAppEventsFlushReason)flushReason;
 
+- (void)flushMonitorEvents;
+
 /**
  * @brief Initialize flush timer with number of seconds
  */

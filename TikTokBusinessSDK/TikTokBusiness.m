@@ -39,6 +39,7 @@
 #import "TikTokBusinessSDKAddress.h"
 #import "TikTokBaseEventPersistence.h"
 #import "TikTokSKANEventPersistence.h"
+#import "TikTokDebugInfo.h"
 
 @interface TikTokBusiness()
 
@@ -944,6 +945,20 @@ withType:(NSString *)type
             if(self.automaticTrackingEnabled && self.launchTrackingEnabled){
                 [self trackEvent:@"LaunchAPP" withProperties:@{@"type":@"auto"} withId:@""];
             }
+            
+            BOOL debugInfoEnabled = [[globalConfig objectForKey:@"enable_debug_info"] boolValue];
+            if (debugInfoEnabled) {
+                NSDictionary *monitorDebugInfoProperties = @{
+                    @"monitor_type": @"metric",
+                    @"monitor_name": @"debug_info",
+                    @"meta": [TikTokDebugInfo debugInfo]
+                };
+                TikTokAppEvent *monitorDebugInfoEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorDebugInfoProperties withType:@"monitor"];
+                @synchronized(self) {
+                    [self.eventLogger addEvent:monitorDebugInfoEvent];
+                    [self.eventLogger flushMonitorEvents];
+                }
+            }
 
             // Enabled: Auto Tracking, 2DRetention Tracking
             // Install Date: Available
@@ -1080,17 +1095,25 @@ withType:(NSString *)type
 }
 
 - (NSString *)screenShot {
-    NSData *imageData = nil;
-    CGRect rect = [UIScreen mainScreen].bounds;
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    UIGraphicsBeginImageContextWithOptions(rect.size, NO, [UIScreen mainScreen].scale);
-    [window drawViewHierarchyInRect:rect afterScreenUpdates:NO];
-    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    // compress
-    imageData = UIImageJPEGRepresentation(snapshotImage, 0.5);
+    UIUserInterfaceIdiom idiom = [UIDevice currentDevice].userInterfaceIdiom;
+    if (idiom == UIUserInterfaceIdiomPad) {
+        return @"";
+    }
+    
+    CGRect screenBounds = [UIScreen mainScreen].bounds;
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:screenBounds.size];
+    UIImage *snapshotImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull context) {
+        [keyWindow drawViewHierarchyInRect:screenBounds afterScreenUpdates:NO];
+    }];
+    
+    NSData *imageData = UIImageJPEGRepresentation(snapshotImage, 0.5);
+    if (!imageData) {
+        return @"";
+    }
     NSString *dataStr = [imageData base64EncodedStringWithOptions:0];
-    return dataStr;
+    return TTSafeString(dataStr);
 }
 
 @end

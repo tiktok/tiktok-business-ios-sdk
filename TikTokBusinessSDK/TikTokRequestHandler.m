@@ -18,7 +18,6 @@
 #import "TikTokSKAdNetworkConversionConfiguration.h"
 #import "TikTokBusinessSDKMacros.h"
 #import "TikTokBusiness+private.h"
-#import <UIKit/UIKit.h>
 #import "TikTokCurrencyUtility.h"
 #import "TikTokUnityBridge.h"
 #import "TikTokCypher.h"
@@ -286,8 +285,8 @@
                 @"app": tempAppDict.copy,
                 @"device": device,
                 @"library": library,
-                @"locale": deviceInfo.localeInfo,
-                @"ip": deviceInfo.ipInfo,
+                @"locale": TTSafeString(deviceInfo.localeInfo),
+                @"ip": TTSafeString(deviceInfo.ipInfo),
                 @"user_agent": [self getUserAgentWithDeviceInfo:deviceInfo],
                 @"user": user,
             };
@@ -613,13 +612,7 @@
         || [deviceInfo.deviceIdForAdvertisers isEqualToString:defaultAdvertiserID];
         
         if (identifierMissingOrDefault) {
-            NSError *error = [NSError errorWithDomain:@"com.TikTokBusinessSDK.error"
-                                                 code:-3
-                                             userInfo:@{
-                NSLocalizedDescriptionKey : @"ATTrackingManager.AuthorizationStatus must be `authorized` to fetch deferred deep link. Read more at: https://developer.apple.com/documentation/apptrackingtransparency"
-            }];
-            completion(nil, error);
-            return;
+            [self.logger warn:@"ATT tracking not authorized, deferred deeplinks may not work properly. Read more at: https://developer.apple.com/documentation/apptrackingtransparency"];
         }
     }
     
@@ -775,27 +768,18 @@
         }
     }
     
-    UIScreen *screen = [UIScreen mainScreen];
-    CGRect screenBounds = screen.bounds;
-    CGFloat screenWidth = CGRectGetWidth(screenBounds);
-    CGFloat screenHeight = CGRectGetHeight(screenBounds);
-    CGFloat screenScale = [UIScreen mainScreen].scale;
-    
     [deviceInfo updateIdentifier];
 
     // API version compatibility b/w 1.0 and 2.0
     NSDictionary *tempDevice = @{
         @"att_status": attAuthorizationStatus,
-        @"platform" : deviceInfo.devicePlatform,
-        @"idfa": deviceInfo.deviceIdForAdvertisers,
-        @"idfv": deviceInfo.deviceVendorId,
-        @"ip": deviceInfo.ipInfo,
+        @"platform" : TTSafeString(deviceInfo.devicePlatform),
+        @"idfa": TTSafeString(deviceInfo.deviceIdForAdvertisers),
+        @"idfv": TTSafeString(deviceInfo.deviceVendorId),
+        @"ip": TTSafeString(deviceInfo.ipInfo),
         @"user_agent": [self getUserAgentWithDeviceInfo:deviceInfo],
-        @"locale": deviceInfo.localeInfo,
-        @"model" : deviceInfo.deviceName,
-        @"screen_width": @(screenWidth),
-        @"screen_height": @(screenHeight),
-        @"scale": @(screenScale)
+        @"locale": TTSafeString(deviceInfo.localeInfo),
+        @"model" : TTSafeString(deviceInfo.deviceName)
     };
 
     NSMutableDictionary *device = [[NSMutableDictionary alloc] initWithDictionary:tempDevice];

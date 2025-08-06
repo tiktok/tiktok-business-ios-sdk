@@ -66,9 +66,14 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
 
 - (BOOL)openDatabase {
     pthread_mutex_lock(&_databaseMutex);
-    if (!_isOpen) {
-        int result = sqlite3_open(self.path.UTF8String, &_handler);
-        _isOpen = (result == SQLITE_OK);
+    if (!_isOpen && TTCheckValidString(self.path)) {
+        const char *pathCStr = self.path.UTF8String;
+        if (pathCStr) {
+            int result = sqlite3_open(pathCStr, &_handler);
+            _isOpen = (result == SQLITE_OK);
+        } else {
+            _isOpen = NO;
+        }
     }
     pthread_mutex_unlock(&_databaseMutex);
     return _isOpen;
@@ -150,15 +155,15 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
         for (NSString *fieldName in fields.allKeys) {
             id value = fields[fieldName];
             if ([value isKindOfClass:[NSString class]]) {
-                sqlite3_bind_text(statement, index, [value UTF8String], -1, SQLITE_STATIC);
+                sqlite3_bind_text(statement, index, [value UTF8String], -1, SQLITE_TRANSIENT);
             } else if ([value isKindOfClass:[NSNumber class]]) {
                 if ([value isKindOfClass:[NSDecimalNumber class]]) {
-                    sqlite3_bind_text(statement, index, [[value stringValue] UTF8String], -1, SQLITE_STATIC);
+                    sqlite3_bind_text(statement, index, [[value stringValue] UTF8String], -1, SQLITE_TRANSIENT);
                 } else {
                     sqlite3_bind_double(statement, index, [value doubleValue]);
                 }
             } else if ([value isKindOfClass:[NSData class]]) {
-                sqlite3_bind_blob(statement, index, [value bytes], (int)[value length], SQLITE_STATIC);
+                sqlite3_bind_blob(statement, index, [value bytes], (int)[value length], SQLITE_TRANSIENT);
             } else if (value == nil || [value isKindOfClass:[NSNull class]]) {
                 sqlite3_bind_null(statement, index);
             }
@@ -189,7 +194,7 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
     NSString *condition = [self _whereString:where];
     NSString *ob = [self _orderBy:orderBy];
     NSString *lt = [self _limit:limit];
-    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM '%@'%@%@%@;", tableName, condition, ob, lt];
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM \"%@\"%@%@%@;", tableName, condition, ob, lt];
     
     NSMutableArray<NSDictionary<NSString *, id> *> *results = [NSMutableArray array];
     
@@ -209,8 +214,11 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
                         row[key] = @(sqlite3_column_double(statement, i));
                         break;
                     case SQLITE_TEXT:
-                        row[key] = [NSString stringWithUTF8String:(const char *)sqlite3_column_text(statement, i)];
+                    {
+                        const char *text = (const char *)sqlite3_column_text(statement, i);
+                        row[key] = text ? [NSString stringWithUTF8String:text] : [NSNull null];
                         break;
+                    }
                     case SQLITE_BLOB:
                         row[key] = [NSData dataWithBytes:(const void *)sqlite3_column_blob(statement, i) length:(NSUInteger)sqlite3_column_bytes(statement, i)];
                         break;
@@ -241,7 +249,7 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
     NSString *condition = [self _whereString:where];
     NSString *ob = [self _orderBy:orderBy];
     NSString *lt = [self _limit:limit];
-    NSString *deleteQuery = [NSString stringWithFormat:@"DELETE FROM '%@'%@%@%@;", tableName, condition, ob, lt];
+    NSString *deleteQuery = [NSString stringWithFormat:@"DELETE FROM \"%@\"%@%@%@;", tableName, condition, ob, lt];
     
     char *errorMsg;
     BOOL result = (sqlite3_exec(_handler, [deleteQuery UTF8String], NULL, 0, &errorMsg) == SQLITE_OK);

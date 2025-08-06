@@ -16,10 +16,6 @@
 #import "TikTokBusiness+private.h"
 #import <AVFoundation/AVFoundation.h>
 #import "TikTokBusinessSDKMacros.h"
-#import <SystemConfiguration/CaptiveNetwork.h>
-#import <SystemConfiguration/SCNetworkReachability.h>
-
-static NSInteger const TTSystemVolumeValueDefault = -1;
 
 
 @interface TikTokDeviceInfo()
@@ -64,8 +60,6 @@ static NSInteger const TTSystemVolumeValueDefault = -1;
     self.deviceName = device.tiktokDeviceName;
     self.systemVersion = device.systemVersion;
     self.deviceQueue = dispatch_queue_create([@"com.TikTokBusinessSDK.device" UTF8String], DISPATCH_QUEUE_CONCURRENT);
-    self.systemVolume = TTSystemVolumeValueDefault;
-    self.headset = TTDeviceHeadsetUnspecified;
     
     [self updateIdentifier];
     
@@ -75,9 +69,6 @@ static NSInteger const TTSystemVolumeValueDefault = -1;
 }
 
 - (void)updateIdentifier {
-    [self _setSystemVolume];
-    [self _setHeadset];
-    [self _checkUserInterfaceStyle];
     if (self.deviceIdForAdvertisers.length && ![self.deviceIdForAdvertisers isEqualToString:@"00000000-0000-0000-0000-000000000000"]) {
         return;
     }
@@ -188,52 +179,5 @@ static NSString* phoneResolution(void)
     return language;
 }
 
-- (void)_setSystemVolume {
-    dispatch_async(self.deviceQueue, ^{
-        self.systemVolume = [AVAudioSession sharedInstance].outputVolume * 100;
-    });
-}
-
-- (NSInteger)volume { //not strong requirement for real-time value, report the value of last time
-    dispatch_async(self.deviceQueue, ^{
-        self.systemVolume = [AVAudioSession sharedInstance].outputVolume * 100;
-    });
-    return self.systemVolume;
-}
-
-- (void)_setHeadset {
-    dispatch_async(self.deviceQueue, ^{
-        BOOL hasHeadset = NO;
-        AVAudioSessionRouteDescription* route = [[AVAudioSession sharedInstance] currentRoute];
-        for (AVAudioSessionPortDescription *des in route.outputs) {
-            if ([des.portType isEqualToString:AVAudioSessionPortHeadphones]) {
-                hasHeadset = YES;
-                break;
-            }
-        }
-        self.headset = hasHeadset;
-    });
-}
-
-- (void)_checkUserInterfaceStyle {
-    tt_weakify(self)
-    [[NSOperationQueue mainQueue]addOperationWithBlock:^{
-        tt_strongify(self)
-        UIUserInterfaceStyle userInterfaceStyle = [[UIApplication sharedApplication]keyWindow].rootViewController.traitCollection.userInterfaceStyle;
-        TTDeviceDarkMode mode = TTDeviceDarkModeUnspecified;
-        switch (userInterfaceStyle) {
-            case UIUserInterfaceStyleLight:
-                mode = TTDeviceDarkModeLight;
-                break;
-            case UIUserInterfaceStyleDark:
-                mode = TTDeviceDarkModeDark;
-                break;
-            default:
-                mode = TTDeviceDarkModeUnspecified;
-                break;
-        }
-        self.darkmode = mode;
-    }];
-}
 
 @end

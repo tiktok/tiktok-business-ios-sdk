@@ -1,5 +1,5 @@
 //
-//  aaaaTikTokBusinessSDKBegin.m
+//  TikTokaaaaBusinessSDKBegin.m
 //  TikTokBusinessSDK
 //
 //  Created by TikTok on 9/26/24.

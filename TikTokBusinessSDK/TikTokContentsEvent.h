@@ -66,4 +66,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface TikTokAdRevenueEvent : TikTokBaseEvent
+
+- (instancetype)initWithAdRevenue:(NSDictionary *)adRevenue eventId:(NSString *)eventId;
+
+@end
+
 NS_ASSUME_NONNULL_END

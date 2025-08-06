@@ -9,26 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-
-typedef NS_ENUM(NSInteger, TTDeviceDarkMode) {
-    TTDeviceDarkModeUnspecified = -1,
-    TTDeviceDarkModeLight = 0,
-    TTDeviceDarkModeDark = 1,
-};
-
-typedef NS_ENUM(NSInteger, TTDeviceAirplaneStatus) {
-    TTDeviceAirplaneStatusUnknown = -1,
-    TTDeviceAirplaneStatusClose = 0,
-    TTDeviceAirplaneStatusOpen = 1,
-};
-
-typedef NS_ENUM(NSInteger, TTDeviceHeadset) {
-    TTDeviceHeadsetUnspecified = -1,
-    TTDeviceHeadsetNoConnect = 0,
-    TTDeviceHeadsetConnect = 1,
-}; //wire headset plugged in
-
 /**
  * @brief Used to fetch device level information
 */
@@ -48,10 +28,6 @@ typedef NS_ENUM(NSInteger, TTDeviceHeadset) {
 @property (nonatomic, copy) NSString *clientSdk;
 @property (nonatomic, copy) NSString *deviceName;
 @property (nonatomic, copy) NSString *systemVersion;
-@property (assign, assign) TTDeviceAirplaneStatus airplane;
-@property (atomic, assign) TTDeviceDarkMode darkmode;
-@property (atomic, assign) TTDeviceHeadset headset;
-@property (atomic, assign) NSInteger systemVolume;
 
 + (TikTokDeviceInfo *)deviceInfo;
 - (void)updateIdentifier;

@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setIsLowPerformanceDevice:(BOOL)isLow;
 
 - (nullable id)initWithAppId:(nonnull NSString *)appId
-                       tiktokAppId:(nonnull NSString *)tiktokAppId;
+                       tiktokAppId:(nonnull NSString *)tiktokAppId DEPRECATED_MSG_ATTRIBUTE("Deprecated. Use configWithAccessToken:appId:tiktokAppId: instead");
 
 @end
 

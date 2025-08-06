@@ -150,3 +150,20 @@ NSString * const TTContentsEventNameViewContent   = @"ViewContent";
 }
 
 @end
+
+
+
+@implementation TikTokAdRevenueEvent
+
+- (instancetype)init
+{
+    return [self initWithEventName:TTEventNameImpressionLevelAdRevenue];
+}
+
+- (instancetype)initWithAdRevenue:(NSDictionary *)adRevenue eventId:(nonnull NSString *)eventId {
+    TikTokAdRevenueEvent *adRevenueEvent = [self initWithEventName:TTEventNameImpressionLevelAdRevenue eventId:eventId];
+    [adRevenueEvent addPropertyWithKey:@"ad_revenue" value:adRevenue];
+    return adRevenueEvent;
+}
+
+@end
