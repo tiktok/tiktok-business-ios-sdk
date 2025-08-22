@@ -232,14 +232,15 @@ bool ttsdkfu_readEntireFile(const char *const path, char **data, int *length, in
     int bytesToRead = maxLength;
 
     struct stat st;
-    if (stat(path, &st) < 0) {
-        TTSDKLOG_ERROR("Could not stat %s: %s", path, strerror(errno));
+
+    fd = open(path, O_RDONLY | O_NOFOLLOW);
+    if (fd < 0) {
+        TTSDKLOG_ERROR("Could not open %s: %s", path, strerror(errno));
         goto done;
     }
 
-    fd = open(path, O_RDONLY);
-    if (fd < 0) {
-        TTSDKLOG_ERROR("Could not open %s: %s", path, strerror(errno));
+    if (fstat(fd, &st) < 0) {
+        TTSDKLOG_ERROR("Could not fstat %s: %s", path, strerror(errno));
         goto done;
     }
 
