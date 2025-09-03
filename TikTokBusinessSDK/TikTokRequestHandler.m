@@ -25,7 +25,7 @@
 
 @interface TikTokRequestHandler()
 
-@property (nonatomic, weak) id<TikTokLogger> logger;
+@property (nonatomic, strong) id<TikTokLogger> logger;
 
 @end
 
@@ -141,7 +141,7 @@
                     @"latency": [NSNumber numberWithLongLong:[networkEndTime longLongValue] - [networkStartTime longLongValue]],
                     @"api_type": [self urlType:url],
                     @"status_code": @(statusCode),
-                    @"log_id":log_id
+                    @"log_id":TTSafeString(log_id)
                 };
                 [self reportApiErrWithMeta:apiErrorMeta];
                 return;
@@ -296,7 +296,7 @@
                 @"event": TTSafeString(event.eventName),
                 @"timestamp":TTSafeString(event.timestamp),
                 @"context": context,
-                @"properties": event.properties,
+                @"properties": event.properties?:@{},
                 @"event_id" : TTSafeString(event.eventID)
             }.mutableCopy;
             
@@ -483,7 +483,7 @@
                 @"app": tempAppDict.copy,
                 @"library": library,
                 @"device": device,
-                @"timestamp": event.timestamp,
+                @"timestamp":TTSafeString(event.timestamp),
                 @"log_extra": @{}
             }.mutableCopy;
             
@@ -735,7 +735,7 @@
         @"namespace": TTSafeString(deviceInfo.appNamespace),
         @"version": TTSafeString(deviceInfo.appVersion),
         @"build": TTSafeString(deviceInfo.appBuild),
-        @"app_session_id": [[TikTokIdentifyUtility sharedInstance] app_session_id]
+        @"app_session_id":TTSafeString([[TikTokIdentifyUtility sharedInstance] app_session_id]) 
     };
 
     NSMutableDictionary *app = [[NSMutableDictionary alloc] initWithDictionary:tempApp];

@@ -14,7 +14,7 @@
 
 @interface TikTokConfig()
 
-@property (nonatomic, weak) id<TikTokLogger> logger;
+@property (nonatomic, strong) id<TikTokLogger> logger;
 @property (nonatomic, assign) TikTokLogLevel logLevel;
 
 @end

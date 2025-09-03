@@ -32,10 +32,6 @@
 #import "TikTokRequestHandler.h"
 #import "TikTokTypeUtility.h"
 #import "TikTokEDPConfig.h"
-#import "TTSDKCrash.h"
-#import "TTSDKCrashInstallationConsole.h"
-#import "TTSDKCrashConfiguration.h"
-#import "TTSDKCrashReport.h"
 #import "TikTokBusinessSDKAddress.h"
 #import "TikTokBaseEventPersistence.h"
 #import "TikTokSKANEventPersistence.h"
@@ -43,7 +39,7 @@
 
 @interface TikTokBusiness()
 
-@property (nonatomic, weak) id<TikTokLogger> logger;
+@property (nonatomic, strong) id<TikTokLogger> logger;
 @property (nonatomic) BOOL initialized;
 @property (nonatomic) BOOL enabled;
 @property (nonatomic) BOOL trackingEnabled;
@@ -65,6 +61,10 @@
 
 @end
 
+extern void * TikTokBusinessSDKFuncBeginAddress(void);
+extern void * TikTokBusinessSDKFuncEndAddress(void);
+
+typedef void(^registerApmConfigWithParamBlock)(NSDictionary *params);
 
 @implementation TikTokBusiness: NSObject
 
@@ -72,6 +72,13 @@
 
 static TikTokBusiness * defaultInstance = nil;
 static dispatch_once_t onceToken = 0;
+
++ (void)load {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(paramForApmConfig:)
+                                                 name:@"PAGParamForAPMConfigNotification"
+                                               object:nil];
+}
 
 + (instancetype)getInstance
 {
@@ -436,27 +443,72 @@ withType:(NSString *)type
 }
 
 - (void)setUpCrashMonitor {
-    TTSDKCrashInstallationConsole *installation = [TTSDKCrashInstallationConsole sharedInstance];
-    installation.printAppleFormat = YES;
+    Class installationClass = NSClassFromString(@"TTSDKCrashInstallationConsole");
+    if (!installationClass) {
+        return;
+    }
+    id installation;
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    installation = [installationClass performSelector:NSSelectorFromString(@"sharedInstance")];
+    #pragma clang diagnostic pop
+    if (!installation) return;
+
+    SEL setFormatSel = NSSelectorFromString(@"setPrintAppleFormat:");
+    if ([installation respondsToSelector:setFormatSel]) {
+        NSMethodSignature *formatSig = [installation methodSignatureForSelector:setFormatSel];
+        NSInvocation *formatInvocation = [NSInvocation invocationWithMethodSignature:formatSig];
+        formatInvocation.target = installation;
+        formatInvocation.selector = setFormatSel;
+        
+        BOOL value = YES;
+        // index starting from 2; 0:self, 1:_cmd
+        [formatInvocation setArgument:&value atIndex:2];
+        [formatInvocation invoke];
+    }
+
+    Class configClass = NSClassFromString(@"TTSDKCrashConfiguration");
+    id config = [[configClass alloc] init];
+    if (!config) return;
     
-    TTSDKCrashConfiguration *config = [[TTSDKCrashConfiguration alloc] init];
+    NSError __autoreleasing *installError = nil;
+    SEL installSel = NSSelectorFromString(@"installWithConfiguration:error:");
+    NSMethodSignature *signature = [installation methodSignatureForSelector:installSel];
+    if (signature) {
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+        invocation.target = installation;
+        invocation.selector = installSel;
+        [invocation setArgument:&config atIndex:2];
+        [invocation setArgument:&installError atIndex:3];
+        [invocation invoke];
+    }
     
-    NSError *installError;
-    [installation installWithConfiguration:config error:&installError];
-    [installation sendAllReportsWithCompletion:^(NSArray<id<TTSDKCrashReport>> * _Nullable filteredReports, NSError * _Nullable error) {
-        if (error) {
-            [self.logger warn:@"report sent failed: %@", error.description];
-        }
-        if (filteredReports.count) {
-            for (TTSDKCrashReportString *report in filteredReports) {
-                if ([report isKindOfClass:[TTSDKCrashReportString class]] == NO) {
-                    [self.logger warn:@"Unexpected non-string report: %@", report];
-                    continue;
+    __weak typeof(self) weakSelf = self;
+    void (^completion)(NSArray *, NSError *) = ^(NSArray *reports, NSError *error) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        if (error) [strongSelf.logger warn:@"report sent failed: %@", error.description];
+        Class reportClass = NSClassFromString(@"TTSDKCrashReportString");
+        for (id report in reports) {
+            if ([report isKindOfClass:reportClass]) {
+                id value = [report valueForKey:@"value"];
+                if ([value isKindOfClass:[NSString class]]) {
+                    [strongSelf sendCrashReport:value];
                 }
-                [self sendCrashReport:report.value];
             }
         }
-    }];
+    };
+    
+    SEL sendSel = NSSelectorFromString(@"sendAllReportsWithCompletion:");
+    if ([installation respondsToSelector:sendSel]) {
+        NSMethodSignature *sig = [installation methodSignatureForSelector:sendSel];
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:sig];
+        invocation.target = installation;
+        invocation.selector = sendSel;
+        [invocation setArgument:&completion atIndex:2];
+        [invocation invoke];
+    }
+    signal(SIGPIPE, SIG_IGN);
 }
 
 - (void)sendCrashReport:(NSString *)report {
@@ -1114,6 +1166,25 @@ withType:(NSString *)type
     }
     NSString *dataStr = [imageData base64EncodedStringWithOptions:0];
     return TTSafeString(dataStr);
+}
+
++ (void)paramForApmConfig:(NSNotification *)noti {
+    registerApmConfigWithParamBlock paramBlock = noti.userInfo[@"apmConfig"];
+    if (!paramBlock) return;
+    int64_t beginAddress = (int64_t)TikTokBusinessSDKFuncBeginAddress();
+    int64_t endAddress = (int64_t)TikTokBusinessSDKFuncEndAddress();
+    NSDictionary *apmConfigParams = @{
+        @"sdk_version_name": SDK_VERSION,
+        @"sdk_tag": @"TikTokBusinessSDK",
+        @"address_ranges":@[
+            @{
+                @"begin_address":@(beginAddress),
+                @"end_address":@(endAddress)
+            }
+        ],
+        @"sdk_adid":@"10000004"
+    };
+    paramBlock(apmConfigParams);
 }
 
 @end

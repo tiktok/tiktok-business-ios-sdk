@@ -32,7 +32,7 @@ static NSMutableArray *g_pendingRequestors;
 
 @interface TikTokPaymentObserver () <SKPaymentTransactionObserver>
 
-@property (nonatomic, weak) id<TikTokLogger> logger;
+@property (nonatomic, strong) id<TikTokLogger> logger;
 
 @end
 

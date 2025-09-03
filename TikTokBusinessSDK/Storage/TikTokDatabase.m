@@ -48,7 +48,6 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
     pthread_mutex_init(&database->_databaseMutex, &attr);
     pthread_mutexattr_destroy(&attr);
     
-    [database closeDatabase];
     return database;
 }
 
@@ -120,7 +119,6 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
         sqlite3_free(errorMessage);
     }
     
-    [self closeDatabase];
     pthread_mutex_unlock(&_databaseMutex);
     return result;
 }
@@ -179,7 +177,6 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
         NSLog(@"Failed to prepare insert statement: %s", sqlite3_errmsg(_handler));
     }
     
-    [self closeDatabase];
     pthread_mutex_unlock(&_databaseMutex);
     return result;
 }
@@ -234,7 +231,6 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
         NSLog(@"Failed to prepare query statement: %s", sqlite3_errmsg(_handler));
     }
     
-    [self closeDatabase];
     pthread_mutex_unlock(&_databaseMutex);
     return results;
 }
@@ -258,7 +254,6 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
         sqlite3_free(errorMsg);
     }
     
-    [self closeDatabase];
     pthread_mutex_unlock(&_databaseMutex);
     return result;
 }
@@ -287,7 +282,6 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
         sqlite3_free(errorMessage);
     }
     
-    [self closeDatabase];
     pthread_mutex_unlock(&_databaseMutex);
     return result;
 }
@@ -312,7 +306,6 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
         NSLog(@"Failed to prepare count query statement: %s", sqlite3_errmsg(_handler));
     }
     
-    [self closeDatabase];
     pthread_mutex_unlock(&_databaseMutex);
     return rowCount;
 }

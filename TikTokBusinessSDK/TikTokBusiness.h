@@ -247,6 +247,8 @@ NS_ASSUME_NONNULL_BEGIN
 */
 + (void)fetchDeferredDeeplinkWithCompletion:(void (^)(NSURL * _Nullable, NSError * _Nullable))completion;
 
++ (void)paramForApmConfig:(NSNotification *)noti;
+
 @end
 
 NS_ASSUME_NONNULL_END

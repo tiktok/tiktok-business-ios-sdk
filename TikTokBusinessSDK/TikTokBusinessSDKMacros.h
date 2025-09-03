@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define SDK_VERSION @"1.5.0"
+#define SDK_VERSION @"1.5.1"
 
 #define TT_CONFIG_PATH @"/api/v1/app_sdk/config"
 #define TT_BATCH_EVENT_PATH @"/api/v1/app_sdk/batch"

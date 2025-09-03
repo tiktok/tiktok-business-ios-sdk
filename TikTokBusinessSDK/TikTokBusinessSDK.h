@@ -15,10 +15,10 @@ FOUNDATION_EXPORT const unsigned char TikTokBusinessSDKVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <TikTokBusinessSDK/PublicHeader.h>
 
-#import <TikTokBusinessSDK/TikTokErrorHandler.h>
 #import <TikTokBusinessSDK/TikTokBusiness.h>
 #import <TikTokBusinessSDK/TikTokLogger.h>
 #import <TikTokBusinessSDK/TikTokContentsEvent.h>
 #import <TikTokBusinessSDK/TikTokConfig.h>
 #import <TikTokBusinessSDK/TikTokDeviceInfo.h>
 #import <TikTokBusinessSDK/TikTokConstants.h>
+#import <TikTokBusinessSDK/TikTokBusinessSDKAddress.h>

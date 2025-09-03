@@ -58,7 +58,6 @@
         } else {
             [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to open database"];
         }
-        [self.db closeDatabase];
     }
     return self;
 }
@@ -89,7 +88,6 @@
         }
         
     }
-    [self.db closeDatabase];
     return YES;
 }
 
@@ -117,7 +115,6 @@
             }
         }
     }
-    [self.db closeDatabase];
     return allEvents.copy;
 }
 
@@ -132,7 +129,6 @@
             return NO;
         }
     }
-    [self.db closeDatabase];
     return YES;
 }
 
@@ -153,7 +149,6 @@
             [self.db updateTable:[[self class] tableName] incrementField:@"retry_times" value:@(1) withWhere:whereCondition];
         }
     }
-    [self.db closeDatabase];
     return YES;
 }
 

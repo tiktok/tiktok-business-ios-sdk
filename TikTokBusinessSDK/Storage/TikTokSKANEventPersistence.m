@@ -56,7 +56,6 @@
             return NO;
         }
     }
-    [self.db closeDatabase];
     return YES;
 }
 
@@ -65,7 +64,6 @@
     if ([self.db openDatabase]) {
         res = [self.db queryTable:[[self class] tableName] withWhere:nil orderBy:TTDBOrderByNone limit:TTDBLimitNone];
     }
-    [self.db closeDatabase];
     return res.copy;
 }
 

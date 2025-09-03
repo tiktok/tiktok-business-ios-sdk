@@ -22,7 +22,7 @@
 
 @interface TikTokEventLogger()
 
-@property (nonatomic, weak) id<TikTokLogger> logger;
+@property (nonatomic, strong) id<TikTokLogger> logger;
 @property (nonatomic, strong, nullable) TikTokRequestHandler *requestHandler;
 
 @end

@@ -30,7 +30,7 @@ static const long long thirdWindowEnds = 3024000000;
 @property (nonatomic, strong, readwrite) Class skAdNetworkClass;
 @property (nonatomic, assign, readwrite) SEL skAdNetworkRegisterAppForAdNetworkAttribution;
 @property (nonatomic, assign, readwrite) SEL skAdNetworkUpdateConversionValue;
-@property (nonatomic, weak) id<TikTokLogger> logger;
+@property (nonatomic, strong) id<TikTokLogger> logger;
 
 @end
 
