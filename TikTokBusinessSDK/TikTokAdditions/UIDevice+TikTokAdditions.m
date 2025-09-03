@@ -58,12 +58,12 @@
     return lowerUuid;
 }
 
-- (NSString *)tiktokVendorId
-{
-    if ([UIDevice.currentDevice respondsToSelector:@selector(identifierForVendor)]) {
-        return [UIDevice.currentDevice.identifierForVendor UUIDString];
+- (NSString *)tiktokVendorId {
+    if (![UIDevice.currentDevice respondsToSelector:@selector(identifierForVendor)]) {
+        return @"";
     }
-    return @"";
+    NSUUID *idfv = UIDevice.currentDevice.identifierForVendor;
+    return idfv ? idfv.UUIDString : @"";
 }
 
 - (NSString *)tiktokDeviceIp
