@@ -30,7 +30,7 @@
 		0A41C64425BF52B900245575 /* TikTokIdentifyUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A41C64225BF52B900245575 /* TikTokIdentifyUtility.h */; };
 		0A41C64525BF52B900245575 /* TikTokIdentifyUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A41C64325BF52B900245575 /* TikTokIdentifyUtility.m */; };
 		0AD2939E2550DED300790024 /* TikTokBusinessSDK.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 0AD2939D2550DED300790024 /* TikTokBusinessSDK.podspec */; };
-		0ADCF53B2538CF1C00D7B57C /* TikTokErrorHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ADCF5392538CF1C00D7B57C /* TikTokErrorHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0ADCF53B2538CF1C00D7B57C /* TikTokErrorHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ADCF5392538CF1C00D7B57C /* TikTokErrorHandler.h */; };
 		0ADCF53C2538CF1C00D7B57C /* TikTokErrorHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADCF53A2538CF1C00D7B57C /* TikTokErrorHandler.m */; };
 		0ADCF5412538D16900D7B57C /* TikTokRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ADCF53F2538D16900D7B57C /* TikTokRequestHandler.h */; };
 		0ADCF5422538D16900D7B57C /* TikTokRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADCF5402538D16900D7B57C /* TikTokRequestHandler.m */; };
@@ -224,7 +224,7 @@
 		2B42A1452CBFAEF7004F7F5A /* TTSDKDynamicLinker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0182CBFAEF7004F7F5A /* TTSDKDynamicLinker.h */; };
 		2B42A1462CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0612CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.h */; };
 		2B42A1472CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE22CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.h */; };
-		2B42A15D2CBFB814004F7F5A /* TikTokBusinessSDKAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A1592CBFB814004F7F5A /* TikTokBusinessSDKAddress.h */; };
+		2B42A15D2CBFB814004F7F5A /* TikTokBusinessSDKAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A1592CBFB814004F7F5A /* TikTokBusinessSDKAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B42A15F2CBFB814004F7F5A /* TikTokaaaaBusinessSDKBegin.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A1582CBFB814004F7F5A /* TikTokaaaaBusinessSDKBegin.m */; };
 		2B42A1602CBFB814004F7F5A /* TikTokBusinessSDKAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A15A2CBFB814004F7F5A /* TikTokBusinessSDKAddress.m */; };
 		2B4E17732C62A121003644EA /* DeeplinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4E17722C62A121003644EA /* DeeplinkViewController.swift */; };
@@ -1192,9 +1192,10 @@
 				8B89A23A251A64E700B61811 /* UIDevice+TikTokAdditions.h in Headers */,
 				8B7512BD2642996D009DE653 /* TikTokSKAdNetworkConversionConfiguration.h in Headers */,
 				2BCE07DD2AFE2B9D00816335 /* TikTokSKAdNetworkWindow.h in Headers */,
-				0ADCF53B2538CF1C00D7B57C /* TikTokErrorHandler.h in Headers */,
+				2B42A15D2CBFB814004F7F5A /* TikTokBusinessSDKAddress.h in Headers */,
 				8B23DFBF25080872008351FA /* TikTokBusiness.h in Headers */,
 				2B42A0CC2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.h in Headers */,
+				0ADCF53B2538CF1C00D7B57C /* TikTokErrorHandler.h in Headers */,
 				2B42A0CD2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.h in Headers */,
 				2B42A0CF2CBFAEF7004F7F5A /* TTSDKGZipHelper.h in Headers */,
 				2B42A0D02CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.h in Headers */,
@@ -1242,7 +1243,6 @@
 				2B42A1022CBFAEF7004F7F5A /* TTSDKCrashMonitorFlag.h in Headers */,
 				2B42A1052CBFAEF7004F7F5A /* TTSDKThread.h in Headers */,
 				2B42A1062CBFAEF7004F7F5A /* TTSDKCrashMonitor.h in Headers */,
-				2B42A15D2CBFB814004F7F5A /* TikTokBusinessSDKAddress.h in Headers */,
 				2B42A1072CBFAEF7004F7F5A /* TTSDKID.h in Headers */,
 				2B42A1082CBFAEF7004F7F5A /* TTSDKMach.h in Headers */,
 				2B42A1092CBFAEF7004F7F5A /* TTSDKCrashReportFields.h in Headers */,
@@ -1398,7 +1398,7 @@
 					};
 					8B23DF892502BA73008351FA = {
 						CreatedOnToolsVersion = 11.6;
-						LastSwiftMigration = 1160;
+						LastSwiftMigration = 1640;
 					};
 					8BB88F1A250A96CA00EC9D74 = {
 						CreatedOnToolsVersion = 11.6;
