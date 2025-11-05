@@ -6,7 +6,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#if !TARGET_OS_TV
 #import <WebKit/WKWebView.h>
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
