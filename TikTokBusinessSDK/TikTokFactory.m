@@ -7,12 +7,12 @@
 
 #import "TikTokFactory.h"
 
-static id<TikTokLogger> internalLogger = nil;
+static TikTokLogger *internalLogger = nil;
 static TikTokRequestHandler *requestHandler = nil;
 
 @implementation TikTokFactory
 
-+ (id<TikTokLogger>)getLogger
++ (TikTokLogger *)getLogger
 {
     if (internalLogger == nil) {
         internalLogger = [[TikTokLogger alloc] init];
@@ -20,7 +20,7 @@ static TikTokRequestHandler *requestHandler = nil;
     return internalLogger;
 }
 
-+ (void)setLogger:(id<TikTokLogger>)logger
++ (void)setLogger:(TikTokLogger *)logger
 {
     internalLogger = logger;
 }

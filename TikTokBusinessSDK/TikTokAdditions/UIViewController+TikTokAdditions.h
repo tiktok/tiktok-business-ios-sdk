@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIViewController (TikTokAdditions)
 
++ (void)TT_StartUIViewControllerEDPMonitoring;
+
 @end
 
 NS_ASSUME_NONNULL_END

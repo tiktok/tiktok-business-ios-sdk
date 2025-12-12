@@ -23,7 +23,7 @@ static UIView *tempView;
 static long long touchStart;
 static long long previousTouch;
 
-+ (void)load {
++ (void)TT_StartUIApplicationEDPMonitoring {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         Class class = [self class];
@@ -34,6 +34,7 @@ static long long previousTouch;
         TTSwizzleSelector(class, originalSelector2, swizzledSelector2);
     });
 }
+
 - (void)hook_sendEvent:(UIEvent *)event {
     [self hook_sendEvent:event];
     if (!([TikTokEDPConfig sharedConfig].enable_sdk && [TikTokEDPConfig sharedConfig].enable_from_ttconfig && [TikTokEDPConfig sharedConfig].enable_click_track)) {

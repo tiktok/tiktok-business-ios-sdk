@@ -15,7 +15,8 @@
 #define TIKTOKSDK_EVENTNAME_KEY @"eventName"
 #define TIKTOKSDK_TIMESTAMP_KEY @"timestamp"
 #define TIKTOKSDK_PROPERTIES_KEY @"properties"
-#define TIKTOKSDK_EVENTID_KEY @"eventID"
+#define TIKTOKSDK_TTEVENTID_KEY @"eventID"
+#define TIKTOKSDK_DEDUPEVENTID_KEY @"dedupeventID"
 #define TIKTOKSDK_TYPE_KEY @"type"
 #define TIKTOKSDK_USERINFO_KEY @"userInfo"
 #define TIKTOKSDK_ANONYMOUSID_KEY @"anonymousID"
@@ -83,13 +84,15 @@
             [realProperties addEntriesFromDictionary:tmpProperty];
         }
     }
+    [realProperties setValue:TTSafeString(eventID) forKey:@"tt_event_id"];
     self.properties = realProperties.copy;
     self.anonymousID = [[TikTokIdentifyUtility sharedInstance] getOrGenerateAnonymousID];
     self.userInfo = [[TikTokIdentifyUtility sharedInstance] getUserInfoDictionary];
     self.type = type;
-    self.eventID = TTCheckValidString(eventID) ? eventID : [[NSUUID UUID] UUIDString];
+    self.tteventID = TTSafeString(eventID);
     self.dbID = @"";
     self.retryTimes = 0;
+    self.eventID = [[NSUUID UUID] UUIDString];
     self.screenshot = nil;
    
     return self;
@@ -103,6 +106,7 @@
         copy.eventName = [self.eventName copyWithZone:zone];
         copy.timestamp = [self.timestamp copyWithZone:zone];
         copy.properties = [self.properties copyWithZone:zone];
+        copy.tteventID = [self.tteventID copyWithZone:zone];
         copy.eventID = [self.eventID copyWithZone:zone];
         copy.anonymousID = [self.anonymousID copyWithZone:zone];
         copy.userInfo = [self.userInfo copyWithZone:zone];
@@ -124,7 +128,8 @@
     [encoder encodeObject:self.eventName forKey:TIKTOKSDK_EVENTNAME_KEY];
     [encoder encodeObject:self.timestamp forKey:TIKTOKSDK_TIMESTAMP_KEY];
     [encoder encodeObject:self.properties forKey:TIKTOKSDK_PROPERTIES_KEY];
-    [encoder encodeObject:self.eventID forKey:TIKTOKSDK_EVENTID_KEY];
+    [encoder encodeObject:self.tteventID forKey:TIKTOKSDK_TTEVENTID_KEY];
+    [encoder encodeObject:self.eventID forKey:TIKTOKSDK_DEDUPEVENTID_KEY];
     [encoder encodeObject:self.type forKey:TIKTOKSDK_TYPE_KEY];
     [encoder encodeObject:self.anonymousID forKey:TIKTOKSDK_ANONYMOUSID_KEY];
     [encoder encodeObject:self.userInfo forKey:TIKTOKSDK_USERINFO_KEY];
@@ -140,7 +145,8 @@
         self.timestamp = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_TIMESTAMP_KEY];
         NSSet *clsSet = [NSSet setWithObjects:[NSDictionary class], [NSString class],[NSArray class],[NSNumber class], nil];
         self.properties = [decoder decodeObjectOfClasses:clsSet forKey:TIKTOKSDK_PROPERTIES_KEY];
-        self.eventID = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_EVENTID_KEY];
+        self.tteventID = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_TTEVENTID_KEY];
+        self.eventID = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_DEDUPEVENTID_KEY];
         self.anonymousID = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_ANONYMOUSID_KEY];
         self.type = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_TYPE_KEY];
         self.userInfo = [decoder decodeObjectOfClasses:clsSet forKey:TIKTOKSDK_USERINFO_KEY];

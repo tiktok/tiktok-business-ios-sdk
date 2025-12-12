@@ -13,6 +13,8 @@
 #import "TikTokBUsinessSDKMacros.h"
 #import "TikTokTypeUtility.h"
 
+#define TT_DB_LIMIT 500
+
 @interface TikTokBaseEventPersistence ()
 
 @property (nonatomic, strong) TikTokDatabase *db;
@@ -64,6 +66,9 @@
 
 - (BOOL)persistEvents:(NSArray *)events {
     if ([self.db openDatabase]) {
+        if ([self eventsCount] > TT_DB_LIMIT) {
+            return NO;
+        }
         for (int i = 0; i < events.count; i++) {
             if (![[events objectAtIndex:i] isKindOfClass:[TikTokAppEvent class]]) {
                 continue;

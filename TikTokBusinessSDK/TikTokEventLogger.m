@@ -15,6 +15,7 @@
 #import "TikTokErrorHandler.h"
 #import "TikTokTypeUtility.h"
 #import "TikTokBaseEventPersistence.h"
+#import "TikTokBusinessSDKMacros.h"
 
 #define EVENT_FLUSH_LIMIT 100
 #define API_LIMIT 50
@@ -22,8 +23,9 @@
 
 @interface TikTokEventLogger()
 
-@property (nonatomic, strong) id<TikTokLogger> logger;
+@property (nonatomic, strong) TikTokLogger *logger;
 @property (nonatomic, strong, nullable) TikTokRequestHandler *requestHandler;
+@property (nonatomic, strong) dispatch_queue_t loggerQueue;
 
 @end
 
@@ -65,37 +67,42 @@
     self.logger = [TikTokFactory getLogger];
     
     self.requestHandler = [TikTokFactory getRequestHandler];
+    
+    self.loggerQueue = dispatch_queue_create("com.TikTokBusiness.TikTokEventLogger", DISPATCH_QUEUE_SERIAL);
 
     return self;
 }
 
 - (void)initializeFlushTimerWithSeconds:(long)seconds
 {
-    __weak TikTokEventLogger *weakSelf = self;
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    tt_weakify(self)
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:seconds
         repeats:NO block:^(NSTimer *timer) {
+        tt_strongify(self)
         if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
-            [weakSelf flush:TikTokAppEventsFlushReasonTimer];
-            [weakSelf flushMonitorEvents];
+            [self flush:TikTokAppEventsFlushReasonTimer];
+            [self flushMonitorEvents];
         }
         self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
             repeats:YES block:^(NSTimer *timer) {
-            [weakSelf flush:TikTokAppEventsFlushReasonTimer];
-            [weakSelf flushMonitorEvents];
+            tt_strongify(self)
+            [self flush:TikTokAppEventsFlushReasonTimer];
+            [self flushMonitorEvents];
         }];
     }];
 }
 
 - (void)initializeFlushTimer
 {
-    __weak TikTokEventLogger *weakSelf = self;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    tt_weakify(self)
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
         repeats:YES block:^(NSTimer *timer) {
+        tt_strongify(self)
         if ([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
-            [weakSelf flush:TikTokAppEventsFlushReasonTimer];
-            [weakSelf flushMonitorEvents];
+            [self flush:TikTokAppEventsFlushReasonTimer];
+            [self flushMonitorEvents];
         }
     }];
 }
@@ -107,13 +114,13 @@
         return;
     }
     if ([event.type isEqualToString:@"monitor"]) {
-        @synchronized (self) {
+        dispatch_async(self.loggerQueue, ^{
             [[TikTokMonitorEventPersistence persistence] persistEvents:@[event]];
-        }
+        });
     } else {
-        @synchronized (self) {
+        dispatch_async(self.loggerQueue, ^{
             [[TikTokAppEventPersistence persistence] persistEvents:@[event]];
-        }
+        });
     }
     
 }
@@ -146,21 +153,24 @@
     if(![[preferences objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
         [preferences setObject:@"true" forKey:@"HasFirstFlushOccurred"];
     }
-    NSInteger flushSize = 0;
-    @try {
-        @synchronized (self) {
+    __block NSInteger flushSize = 0;
+    tt_weakify(self)
+    dispatch_sync(self.loggerQueue, ^{
+        tt_strongify(self)
+        @try {
             [self.logger info:@"[TikTokAppEventQueue] Start flush, with flush reason: %lu", flushReason];
             NSArray *eventsFromDisk = [[TikTokAppEventPersistence persistence] retrievePersistedEvents];
             [self.logger info:@"[TikTokAppEventQueue] Number events from disk: %lu", eventsFromDisk.count];
             NSMutableArray *eventsToBeFlushed = [NSMutableArray arrayWithArray:eventsFromDisk];
             flushSize = eventsToBeFlushed.count;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self flushOnMainQueue:eventsToBeFlushed forReason:flushReason isMonitor:NO];
+            dispatch_async(self.loggerQueue, ^{
+                tt_strongify(self)
+                [self realFlushEvents:eventsToBeFlushed forReason:flushReason isMonitor:NO];
             });
+        } @catch (NSException *exception) {
+            [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flush" exception:exception];
         }
-    } @catch (NSException *exception) {
-        [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flush" exception:exception];
-    }
+    });
     if (flushSize > 0) {
         NSNumber *flushEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
         NSDictionary *flushMeta = @{
@@ -182,24 +192,21 @@
 
 
 - (void)flushMonitorEvents {
-    @try {
-        @synchronized (self) {
+    dispatch_async(self.loggerQueue, ^{
+        @try {
             NSArray *eventsFromDisk =
             [[TikTokMonitorEventPersistence persistence] retrievePersistedEvents];
             NSMutableArray *eventsToBeFlushed = [NSMutableArray arrayWithArray:eventsFromDisk];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self flushOnMainQueue:eventsToBeFlushed forReason:TikTokAppEventsFlushReasonExplicitlyFlush isMonitor:YES];
-            });
+            [self realFlushEvents:eventsToBeFlushed forReason:TikTokAppEventsFlushReasonExplicitlyFlush isMonitor:YES];
+        } @catch (NSException *exception) {
+            [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flush" exception:exception];
         }
-    } @catch (NSException *exception) {
-        [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flush" exception:exception];
-    }
+    });
 }
 
-- (void)flushOnMainQueue:(NSMutableArray *)eventsToBeFlushed
-               forReason:(TikTokAppEventsFlushReason)flushReason
-               isMonitor:(BOOL)isMonitor
+- (void)realFlushEvents:(NSMutableArray *)eventsToBeFlushed
+              forReason:(TikTokAppEventsFlushReason)flushReason
+              isMonitor:(BOOL)isMonitor
 {
     @try {
         [self.logger info:@"[TikTokAppEventQueue] Total number events to be flushed: %lu", eventsToBeFlushed.count];

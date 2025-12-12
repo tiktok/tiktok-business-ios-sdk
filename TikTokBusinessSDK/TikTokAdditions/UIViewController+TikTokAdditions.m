@@ -17,7 +17,7 @@
 
 @implementation UIViewController (TikTokAdditions)
 
-+ (void)load {
++ (void)TT_StartUIViewControllerEDPMonitoring {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         Class class = [self class];

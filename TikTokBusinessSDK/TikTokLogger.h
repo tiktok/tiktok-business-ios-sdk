@@ -24,7 +24,8 @@ typedef enum {
 /**
  * @brief Used to log helpful messages during SDK lifecycle
 */
-@protocol TikTokLogger
+
+@interface TikTokLogger : NSObject
 
 - (void)setLogLevel: (TikTokLogLevel)logLevel;
 - (void)lockLogLevel;
@@ -35,12 +36,6 @@ typedef enum {
 - (void)warnInProduction: (nonnull NSString *)message, ...;
 - (void)error: (nonnull NSString *)message, ...;
 - (void)assert: (nonnull NSString *)message, ...;
-
-@end
-
-@interface TikTokLogger : NSObject<TikTokLogger>
-
-+ (TikTokLogLevel)logLevelFromString: (nonnull NSString *)logLevelString;
 
 @end
 

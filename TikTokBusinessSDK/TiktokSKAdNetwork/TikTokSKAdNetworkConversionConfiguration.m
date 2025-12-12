@@ -43,7 +43,6 @@
             }
         }
     } @catch(NSException *exception) {
-        NSLog(@"failed to config SKAN rules");
     }
 //    [self logAllRules];
 }

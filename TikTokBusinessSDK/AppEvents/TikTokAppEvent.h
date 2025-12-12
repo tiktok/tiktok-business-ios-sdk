@@ -43,6 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @brief Event ID defined by advertisers.
  */
+@property (nonatomic, copy, nullable) NSString *tteventID;
+
+/**
+ * @brief Event ID for duplication.
+ */
 @property (nonatomic, copy, nullable) NSString *eventID;
 
 /**

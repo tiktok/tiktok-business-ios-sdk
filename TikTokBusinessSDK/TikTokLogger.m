@@ -106,40 +106,4 @@ static NSString * const kLogTag = @"TikTok";
     }
 }
 
-
-+ (TikTokLogLevel)logLevelFromString:(NSString *)logLevelString
-{
-    if([logLevelString isEqualToString:@"verbose"]){
-        return TikTokLogLevelVerbose;
-    }
-    
-    if([logLevelString isEqualToString:@"debug"]){
-        return TikTokLogLevelVerbose;
-    }
-    
-    if([logLevelString isEqualToString:@"info"]){
-        return TikTokLogLevelVerbose;
-    }
-    
-    if([logLevelString isEqualToString:@"warn"]){
-        return TikTokLogLevelVerbose;
-    }
-    
-    if([logLevelString isEqualToString:@"error"]){
-        return TikTokLogLevelVerbose;
-    }
-    
-    if([logLevelString isEqualToString:@"assert"]){
-        return TikTokLogLevelVerbose;
-    }
-    
-    if([logLevelString isEqualToString:@"suppress"]){
-        return TikTokLogLevelVerbose;
-    }
-    
-    // Return default value as "Info" if provided information
-    // does not match any of the pre-defined types
-    return TikTokLogLevelInfo;
-}
-
 @end

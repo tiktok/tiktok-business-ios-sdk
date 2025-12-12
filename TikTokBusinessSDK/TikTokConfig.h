@@ -8,6 +8,13 @@
 #import <Foundation/Foundation.h>
 #import "TikTokLogger.h"
 
+typedef NS_ENUM(NSInteger, TikTokPaymentTrackStatus)
+{
+    TikTokPaymentTrackStatus_default  = 0,
+    TikTokPaymentTrackStatus_enabled  = 1,
+    TikTokPaymentTrackStatus_disabled = 2
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TikTokConfig : NSObject
@@ -20,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL installTrackingEnabled;
 @property (nonatomic, assign) BOOL launchTrackingEnabled;
 @property (nonatomic, assign) BOOL retentionTrackingEnabled;
-@property (nonatomic, assign) BOOL paymentTrackingEnabled;
+@property (nonatomic, assign) TikTokPaymentTrackStatus paymentTrackingStatus;
 @property (nonatomic, assign) BOOL appTrackingDialogSuppressed DEPRECATED_MSG_ATTRIBUTE("Deprecated. SDK won't actively call ATT dialog. Use requestTrackingAuthorizationWithCompletionHandler if needed");
 @property (nonatomic, assign) BOOL SKAdNetworkSupportEnabled;
 @property (nonatomic, assign) BOOL debugModeEnabled;
@@ -39,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)disableLaunchTracking;
 - (void)disableRetentionTracking;
 - (void)disablePaymentTracking;
+- (void)enablePaymentTracking;
 - (void)disableAppTrackingDialog DEPRECATED_MSG_ATTRIBUTE("Deprecated. SDK won't actively call ATT dialog. Use requestTrackingAuthorizationWithCompletionHandler if needed");
 - (void)disableSKAdNetworkSupport;
 - (void)disableAutoEnhancedDataPostbackEvent;

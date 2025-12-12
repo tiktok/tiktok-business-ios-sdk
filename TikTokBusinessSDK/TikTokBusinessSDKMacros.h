@@ -7,9 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#define SDK_VERSION @"1.5.1"
+#define SDK_VERSION @"1.6.0"
 
 #define TT_CONFIG_PATH @"/api/v1/app_sdk/config"
+#define TT_CACHE_CONFIG_PATH @"/api/v1/app_sdk/cache/config"
 #define TT_BATCH_EVENT_PATH @"/api/v1/app_sdk/batch"
 #define TT_MONITOR_EVENT_PATH @"/api/v1/app_sdk/monitor"
 #define TT_FETCH_DDL_PATH @"/api/v1/app_sdk/ddl"

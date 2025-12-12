@@ -14,7 +14,7 @@
 
 @interface TikTokConfig()
 
-@property (nonatomic, strong) id<TikTokLogger> logger;
+@property (nonatomic, strong) TikTokLogger *logger;
 @property (nonatomic, assign) TikTokLogLevel logLevel;
 
 @end
@@ -63,8 +63,13 @@
 
 - (void)disablePaymentTracking
 {
-    self.paymentTrackingEnabled = NO;
+    self.paymentTrackingStatus = TikTokPaymentTrackStatus_disabled;
     [self.logger info:@"[TikTokConfig] Payment Tracking: NO"];
+}
+
+- (void)enablePaymentTracking {
+    self.paymentTrackingStatus = TikTokPaymentTrackStatus_enabled;
+    [self.logger info:@"[TikTokConfig] Payment Tracking: YES"];
 }
 
 - (void)disableAppTrackingDialog
@@ -138,8 +143,7 @@
     _installTrackingEnabled = YES;
     _launchTrackingEnabled = YES;
     _retentionTrackingEnabled = YES;
-    _paymentTrackingEnabled = YES;
-    _appTrackingDialogSuppressed = NO;
+    _paymentTrackingStatus = TikTokPaymentTrackStatus_default;
     _SKAdNetworkSupportEnabled = YES;
     _debugModeEnabled = NO;
     _autoEDPEventEnabled = YES;
@@ -166,8 +170,7 @@
     _installTrackingEnabled = YES;
     _launchTrackingEnabled = YES;
     _retentionTrackingEnabled = YES;
-    _paymentTrackingEnabled = YES;
-    _appTrackingDialogSuppressed = NO;
+    _paymentTrackingStatus = TikTokPaymentTrackStatus_default;
     _SKAdNetworkSupportEnabled = YES;
     _debugModeEnabled = NO;
     _autoEDPEventEnabled = YES;
