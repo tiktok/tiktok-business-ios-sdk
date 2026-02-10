@@ -20,6 +20,8 @@
 #import "TikTokCurrencyUtility.h"
 #import "TikTokBaseEventPersistence.h"
 #import "TikTokSKANEventPersistence.h"
+#import "TikTokDefaults.h"
+#import "TikTokDefaultsKeys.h"
 
 static const long long firstWindowEnds = 172800000;
 static const long long secondWindowEnds = 604800000;
@@ -92,7 +94,7 @@ static const long long thirdWindowEnds = 3024000000;
         eventValue = [[TikTokCurrencyUtility sharedInstance] exchangeAmount:eventValue fromCurrency:currency toCurrency:[TikTokSKAdNetworkConversionConfiguration sharedInstance].currency shouldReport:YES];
     }
     
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *defaults = [TikTokDefaults storage];
     id dicObj = [defaults objectForKey:TTAccumulatedSKANValuesKey];
     NSMutableDictionary *accumulatedValues = [NSMutableDictionary dictionary];
     NSNumber *accumulatedValue = nil;
@@ -184,7 +186,7 @@ static const long long thirdWindowEnds = 3024000000;
 - (NSInteger)getConversionWindowForTimestamp:(long long)timeStamp {
     if (@available(iOS 16.1, *)) {
         //Supports SKAN 4.0.
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSUserDefaults *defaults = [TikTokDefaults storage];
         long long firstLaunchTime = [[defaults objectForKey:TTUserDefaultsKey_firstLaunchTime] longLongValue];
         long long timePassed = timeStamp - firstLaunchTime;
         if (timePassed < 0 || timePassed >= thirdWindowEnds) {

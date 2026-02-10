@@ -8,8 +8,8 @@
 #import "TikTokUserAgentCollector.h"
 #import "TikTokBusinessSDKMacros.h"
 #import "TikTokTypeUtility.h"
-
-static NSString *TT_UserAgent = @"TT_UserAgent";
+#import "TikTokDefaults.h"
+#import "TikTokDefaultsKeys.h"
 
 @interface TikTokUserAgentCollector()
 
@@ -34,7 +34,7 @@ static NSString *TT_UserAgent = @"TT_UserAgent";
 {
     self = [super init];
     if(self) {
-        self.userAgent = [[NSUserDefaults standardUserDefaults] objectForKey:TT_UserAgent];
+        self.userAgent = [[TikTokDefaults storage] objectForKey:TikTokDefaultsKeyUserAgent];
         self.updatedUa = NO;
     }
     return self;
@@ -74,8 +74,8 @@ static NSString *TT_UserAgent = @"TT_UserAgent";
         self.updatedUa = YES;
         if (TTCheckValidString(result)) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-                [userDefaults setObject:result forKey:TT_UserAgent];
+                NSUserDefaults *userDefaults = [TikTokDefaults storage];
+                [userDefaults setObject:result forKey:TikTokDefaultsKeyUserAgent];
                 [userDefaults synchronize];
             });
         }
@@ -88,8 +88,8 @@ static NSString *TT_UserAgent = @"TT_UserAgent";
     self.updatedUa = YES;
     if (TTCheckValidString(userAgent)) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-            [userDefaults setObject:userAgent forKey:TT_UserAgent];
+            NSUserDefaults *userDefaults = [TikTokDefaults storage];
+            [userDefaults setObject:userAgent forKey:TikTokDefaultsKeyUserAgent];
             [userDefaults synchronize];
         });
     }

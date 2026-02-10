@@ -7,6 +7,8 @@
 
 #import "TikTokIdentifyUtility.h"
 #import "TikTokTypeUtility.h"
+#import "TikTokDefaults.h"
+#import "TikTokDefaultsKeys.h"
 
 @implementation TikTokIdentifyUtility
 
@@ -34,17 +36,16 @@
 
 - (NSString *)getOrGenerateAnonymousID
 {
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *anonymousIDkey = @"AnonymousID";
+    NSUserDefaults *preferences = [TikTokDefaults storage];
     NSString *anonymousID = nil;
     
-    if ([preferences objectForKey:anonymousIDkey] == nil)
+    if ([preferences objectForKey:TikTokDefaultsKeyAnonymousID] == nil)
     {
         anonymousID = [self generateNewAnonymousID];
-        [preferences setObject:anonymousID forKey:anonymousIDkey];
+        [preferences setObject:anonymousID forKey:TikTokDefaultsKeyAnonymousID];
         [preferences synchronize];
     }   else {
-        anonymousID = [preferences stringForKey:anonymousIDkey];
+        anonymousID = [preferences stringForKey:TikTokDefaultsKeyAnonymousID];
     }
     return anonymousID;
 }
@@ -86,9 +87,8 @@
 
 - (void)resetUserInfo
 {
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *anonymousIDkey = @"AnonymousID";
-    [preferences setObject:nil forKey:anonymousIDkey];
+    NSUserDefaults *preferences = [TikTokDefaults storage];
+    [preferences setObject:nil forKey:TikTokDefaultsKeyAnonymousID];
     [preferences synchronize];
     
     _email = nil;

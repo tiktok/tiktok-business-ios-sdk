@@ -8,9 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#define TTBTMsDictKey (@"bootTimeMsDict")
-#define TTBTSDictKey  (@"bootTimeSDict")
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TikTokDebugInfo : NSObject

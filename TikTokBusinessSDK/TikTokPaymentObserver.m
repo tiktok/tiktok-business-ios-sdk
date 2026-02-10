@@ -19,6 +19,8 @@
 #import "TikTokTypeUtility.h"
 #import "TikTokEDPConfig.h"
 #import "TikTokAppEventUtility.h"
+#import "TikTokDefaults.h"
+#import "TikTokDefaultsKeys.h"
 
 static NSMutableArray *g_pendingRequestors;
 
@@ -134,7 +136,7 @@ static NSMutableArray *g_pendingRequestors;
     self = [super init];
     if (self) {
         _transaction = transaction;
-        NSString *data = [[NSUserDefaults standardUserDefaults] stringForKey:@"com.tiktok.appevents.PaymentObserver.originalTransaction"];
+        NSString *data = [[TikTokDefaults storage] stringForKey:TikTokDefaultsKeyPaymentObserverOriginalTransaction];
         _eventsWithReceipt = [NSSet setWithArray:@[@"Purchase"]];
         
         if (data) {

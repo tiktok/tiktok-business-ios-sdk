@@ -12,6 +12,8 @@
 #import "TikTokAppEventUtility.h"
 #import <UIKit/UIKit.h>
 #import "TikTokBusinessSDKMacros.h"
+#import "TikTokDefaults.h"
+#import "TikTokDefaultsKeys.h"
 
 #define MAX_BT_ARRAY_SIZE 3
 
@@ -20,7 +22,7 @@
 + (NSDictionary *)debugInfo {
     NSMutableDictionary *debugInfo = [NSMutableDictionary dictionary];
     NSString *bootTime = [self tt_bootTime];
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *userDefaults = [TikTokDefaults storage];
     NSDictionary *btSDict = [userDefaults objectForKey:TTBTSDictKey];
     NSArray *bootTimeSArray = TTCheckValidDictionary(btSDict) ? btSDict.allKeys : @[];
     NSDictionary *btMsDict = [userDefaults objectForKey:TTBTMsDictKey];
@@ -69,7 +71,7 @@
 + (void)updateBootTimeWithValue:(long long)bootTime
                          forKey:(NSString *)key
                    maxArraySize:(NSInteger)maxArraySize {
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *userDefaults = [TikTokDefaults storage];
     NSMutableDictionary *dict = [userDefaults objectForKey:key];
     long long currentTimestamp = [TikTokAppEventUtility getCurrentTimestamp];
     if (TTCheckValidDictionary([userDefaults objectForKey:key])) {

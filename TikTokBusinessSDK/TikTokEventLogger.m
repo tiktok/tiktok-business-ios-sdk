@@ -16,6 +16,8 @@
 #import "TikTokTypeUtility.h"
 #import "TikTokBaseEventPersistence.h"
 #import "TikTokBusinessSDKMacros.h"
+#import "TikTokDefaults.h"
+#import "TikTokDefaultsKeys.h"
 
 #define EVENT_FLUSH_LIMIT 100
 #define API_LIMIT 50
@@ -53,10 +55,10 @@
         return nil;
     }
             
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *preferences = [TikTokDefaults storage];
     
     // flush timer logic
-    if(config.initialFlushDelay && ![[preferences objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
+    if(config.initialFlushDelay && ![[preferences objectForKey:TikTokDefaultsKeyHasFirstFlushOccurred]  isEqual: @"true"]) {
         [self initializeFlushTimerWithSeconds:config.initialFlushDelay];
     } else {
         [self initializeFlushTimer];
@@ -75,12 +77,12 @@
 
 - (void)initializeFlushTimerWithSeconds:(long)seconds
 {
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *preferences = [TikTokDefaults storage];
     tt_weakify(self)
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:seconds
         repeats:NO block:^(NSTimer *timer) {
         tt_strongify(self)
-        if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
+        if ([[preferences objectForKey:TikTokDefaultsKeyAreTimersOn]  isEqual: @"true"]) {
             [self flush:TikTokAppEventsFlushReasonTimer];
             [self flushMonitorEvents];
         }
@@ -95,12 +97,12 @@
 
 - (void)initializeFlushTimer
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *defaults = [TikTokDefaults storage];
     tt_weakify(self)
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
         repeats:YES block:^(NSTimer *timer) {
         tt_strongify(self)
-        if ([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
+        if ([[defaults objectForKey:TikTokDefaultsKeyAreTimersOn]  isEqual: @"true"]) {
             [self flush:TikTokAppEventsFlushReasonTimer];
             [self flushMonitorEvents];
         }
@@ -142,16 +144,16 @@
         return;
     }
     
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *preferences = [TikTokDefaults storage];
     
     // if there is initialFlushDelay, flush reason is not due to timer and first flush has not occurred, we don't flush
-    if(self.config.initialFlushDelay && flushReason != TikTokAppEventsFlushReasonTimer && ![[preferences objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
+    if(self.config.initialFlushDelay && flushReason != TikTokAppEventsFlushReasonTimer && ![[preferences objectForKey:TikTokDefaultsKeyHasFirstFlushOccurred]  isEqual: @"true"]) {
         [self.logger info:@"[TikTokAppEventQueue] Flush logic not invoked due to delay for ATT"];
         return;
     }
     NSNumber *flushStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
-    if(![[preferences objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
-        [preferences setObject:@"true" forKey:@"HasFirstFlushOccurred"];
+    if(![[preferences objectForKey:TikTokDefaultsKeyHasFirstFlushOccurred]  isEqual: @"true"]) {
+        [preferences setObject:@"true" forKey:TikTokDefaultsKeyHasFirstFlushOccurred];
     }
     __block NSInteger flushSize = 0;
     tt_weakify(self)

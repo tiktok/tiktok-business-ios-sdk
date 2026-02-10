@@ -27,9 +27,6 @@ FOUNDATION_EXPORT BOOL TT_isEmptyArray(id param);
 FOUNDATION_EXPORT BOOL TT_isEmptyDictionary(id param);
 #endif
 
-// - MARK: UserDefaults
-FOUNDATION_EXPORT NSString * const TTUserDefaultsKey_firstLaunchTime;
-
 #define TTSafeString(__string)                        ((__string && [__string isKindOfClass:[NSString class]]) ? __string :@"")
 
 #define TTSafeDictionary(__aDictionary)               ((__aDictionary && [__aDictionary isKindOfClass:[NSDictionary class]]) ? __aDictionary :@{})

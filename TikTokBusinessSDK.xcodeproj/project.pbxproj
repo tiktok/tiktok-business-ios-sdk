@@ -53,6 +53,9 @@
 		2B3D27D92D5745BB00ED25FB /* TikTokBaseEventPersistence.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3D27D62D5745BB00ED25FB /* TikTokBaseEventPersistence.h */; };
 		2B3D27E02D57462900ED25FB /* TikTokSKANEventPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3D27DF2D57462900ED25FB /* TikTokSKANEventPersistence.m */; };
 		2B3D27E12D57462900ED25FB /* TikTokSKANEventPersistence.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3D27DE2D57462900ED25FB /* TikTokSKANEventPersistence.h */; };
+		2B3D27E22D57463000ED25FB /* TikTokDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3D27E42D57463000ED25FB /* TikTokDefaults.h */; };
+		2B3D27E32D57463000ED25FB /* TikTokDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3D27E52D57463000ED25FB /* TikTokDefaults.m */; };
+		2B3D27E72D57463100ED25FB /* TikTokDefaultsKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3D27E62D57463100ED25FB /* TikTokDefaultsKeys.h */; };
 		2B42A0732CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FE72CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.m */; };
 		2B42A0742CBFAEF7004F7F5A /* TTSDKCrashInstallation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FCB2CBFAEF7004F7F5A /* TTSDKCrashInstallation.m */; };
 		2B42A0752CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05E2CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.m */; };
@@ -363,6 +366,9 @@
 		2B3D27D72D5745BB00ED25FB /* TikTokBaseEventPersistence.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokBaseEventPersistence.m; sourceTree = "<group>"; };
 		2B3D27DE2D57462900ED25FB /* TikTokSKANEventPersistence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TikTokSKANEventPersistence.h; sourceTree = "<group>"; };
 		2B3D27DF2D57462900ED25FB /* TikTokSKANEventPersistence.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokSKANEventPersistence.m; sourceTree = "<group>"; };
+		2B3D27E42D57463000ED25FB /* TikTokDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TikTokDefaults.h; sourceTree = "<group>"; };
+		2B3D27E52D57463000ED25FB /* TikTokDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokDefaults.m; sourceTree = "<group>"; };
+		2B3D27E62D57463100ED25FB /* TikTokDefaultsKeys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TikTokDefaultsKeys.h; sourceTree = "<group>"; };
 		2B429F672CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKCrashMonitor_BootTime.h; sourceTree = "<group>"; };
 		2B429F6B2CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTSDKCrashMonitor_BootTime.m; sourceTree = "<group>"; };
 		2B429F6D2CBFAEF7004F7F5A /* TTSDKNSErrorHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTSDKNSErrorHelper.h; sourceTree = "<group>"; };
@@ -681,6 +687,9 @@
 				2B3D27D72D5745BB00ED25FB /* TikTokBaseEventPersistence.m */,
 				2B3D27DE2D57462900ED25FB /* TikTokSKANEventPersistence.h */,
 				2B3D27DF2D57462900ED25FB /* TikTokSKANEventPersistence.m */,
+				2B3D27E42D57463000ED25FB /* TikTokDefaults.h */,
+				2B3D27E52D57463000ED25FB /* TikTokDefaults.m */,
+				2B3D27E62D57463100ED25FB /* TikTokDefaultsKeys.h */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -1317,6 +1326,8 @@
 				8B64FE042548C68D004AFC49 /* TikTokSKAdNetworkSupport.h in Headers */,
 				8B1811DB251EABF800CBBE2E /* TikTokPaymentObserver.h in Headers */,
 				2B3D27D92D5745BB00ED25FB /* TikTokBaseEventPersistence.h in Headers */,
+				2B3D27E22D57463000ED25FB /* TikTokDefaults.h in Headers */,
+				2B3D27E72D57463100ED25FB /* TikTokDefaultsKeys.h in Headers */,
 				2B66E0722BA824E00042D36B /* UIApplication+TikTokAdditions.h in Headers */,
 				8B89A23E251A677300B61811 /* TikTokDeviceInfo.h in Headers */,
 			);
@@ -1519,6 +1530,7 @@
 				2B3D27E02D57462900ED25FB /* TikTokSKANEventPersistence.m in Sources */,
 				2B7DBC002D114E1E002DF93C /* TikTokCypher.m in Sources */,
 				2B3D27D82D5745BB00ED25FB /* TikTokBaseEventPersistence.m in Sources */,
+				2B3D27E32D57463000ED25FB /* TikTokDefaults.m in Sources */,
 				2BE60B7D2B1F1D9700AB386C /* TikTokContentsEvent.m in Sources */,
 				0A1A065125095429001463B8 /* TikTokAppEvent.m in Sources */,
 				8B64FE052548C68D004AFC49 /* TikTokSKAdNetworkSupport.m in Sources */,

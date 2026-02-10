@@ -100,10 +100,6 @@ TTEventName const TTEventNameStartTrial               = @"StartTrial";
 TTEventName const TTEventNameSubscribe                = @"Subscribe";
 TTEventName const TTEventNameUnlockAchievement        = @"UnlockAchievement";
 
-NSString * const TTAccumulatedSKANValuesKey = @"accumulatedSKANValues";
-NSString * const TTLatestFineValueKey = @"latestFineValue";
-NSString * const TTLatestCoarseValueKey = @"latestCoarseValue";
-NSString * const TTSKANTimeWindowKey = @"SKANTimeWindow";
 @implementation TikTokConstants
 
 @end

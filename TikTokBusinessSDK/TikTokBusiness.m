@@ -37,6 +37,8 @@
 #import "TikTokBaseEventPersistence.h"
 #import "TikTokSKANEventPersistence.h"
 #import "TikTokDebugInfo.h"
+#import "TikTokDefaults.h"
+#import "TikTokDefaultsKeys.h"
 
 @interface TikTokBusiness()
 
@@ -172,6 +174,10 @@ static dispatch_once_t onceToken = 0;
 
 + (void)initializeSdk: (nullable TikTokConfig *)tiktokConfig completionHandler:(void (^)(BOOL success, NSError * _Nullable error))completionHandler {
     [[TikTokBusiness getInstance] initializeSdk: tiktokConfig completionHandler:completionHandler];
+}
+
++ (void)handleOpenUrl:(NSURL * _Nullable)url options:(NSDictionary * _Nullable)options API_UNAVAILABLE(macos) {
+    [[TikTokBusiness getInstance] handleOpenUrl:url options:options];
 }
 
 + (void)trackEvent:(NSString *)eventName
@@ -367,9 +373,9 @@ withType:(NSString *)type
     self.initialized = NO;
     [self startTimer];
     
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:@"true" forKey:@"AreTimersOn"];
-    [defaults setObject:initStartTimestamp forKey:@"monitorInitStartTime"];
+    NSUserDefaults *defaults = [TikTokDefaults storage];
+    [defaults setObject:@"true" forKey:TikTokDefaultsKeyAreTimersOn];
+    [defaults setObject:initStartTimestamp forKey:TikTokDefaultsKeyMonitorInitStartTime];
     [defaults synchronize];
     
     [self getGlobalConfig:tiktokConfig isFirstInitialization:YES];
@@ -531,8 +537,8 @@ withType:(NSString *)type
 // Internally used method for 2D-Retention
 - (void)track2DRetention
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSDate *installDate = (NSDate *)[defaults objectForKey:@"tiktokInstallDate"];
+    NSUserDefaults *defaults = [TikTokDefaults storage];
+    NSDate *installDate = (NSDate *)[defaults objectForKey:TikTokDefaultsKeyTikTokInstallDate];
     BOOL logged2DRetention = [defaults boolForKey:@"tiktokLogged2DRetention"];
     // Setting this variable to limit recomputations for 2DRetention past second day
     BOOL past2DLimit = [defaults boolForKey:@"tiktokPast2DLimit"];
@@ -543,15 +549,22 @@ withType:(NSString *)type
         int numberOfDays = secondsBetween / 86400;
         if ([[NSCalendar currentCalendar] isDate:oneDayAgo inSameDayAsDate:installDate] && !logged2DRetention) {
             [self trackEvent:@"2Dretention" withProperties:@{@"type":@"auto"} withId:@""];
-            [defaults setBool:YES forKey:@"tiktokLogged2DRetention"];
+            [defaults setBool:YES forKey:TikTokDefaultsKeyTikTokLogged2DRetention];
             [defaults synchronize];
         }
         
         if (numberOfDays > 2) {
-            [defaults setBool:YES forKey:@"tiktokPast2DLimit"];
+            [defaults setBool:YES forKey:TikTokDefaultsKeyTikTokPast2DLimit];
             [defaults synchronize];
         }
     }
+}
+
+- (void)handleOpenUrl:(NSURL * _Nullable)url options:(NSDictionary * _Nullable)options API_UNAVAILABLE(macos) {
+    NSUserDefaults *defaults = [TikTokDefaults storage];
+    [defaults setObject:TTSafeString(url.absoluteString) forKey:TikTokDefaultsKeySourceURL];
+    [defaults setObject:TTSafeString([options objectForKey:UIApplicationOpenURLOptionsSourceApplicationKey]) forKey:TikTokDefaultsKeyRefer];
+    [defaults synchronize];
 }
 
 - (void)trackEvent:(NSString *)eventName
@@ -637,13 +650,13 @@ withType:(NSString *)type
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     NSNumber *backgroundMonitorTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *preferences = [TikTokDefaults storage];
     
-    if(self.config.initialFlushDelay && ![[preferences objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
+    if(self.config.initialFlushDelay && ![[preferences objectForKey:TikTokDefaultsKeyHasFirstFlushOccurred]  isEqual: @"true"]) {
         // pause timer when entering background when first flush has not happened
-        [preferences setObject:@"false" forKey:@"AreTimersOn"];
+        [preferences setObject:@"false" forKey:TikTokDefaultsKeyAreTimersOn];
     }
-    [preferences setObject:backgroundMonitorTime forKey:@"backgroundMonitorTime"];
+    [preferences setObject:backgroundMonitorTime forKey:TikTokDefaultsKeyBackgroundMonitorTime];
     
 }
 
@@ -653,12 +666,12 @@ withType:(NSString *)type
     // Install Date: Available
     // 2D Limit has not been passed
     NSNumber *foregroundMonitorTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSDate *installDate = (NSDate *)[defaults objectForKey:@"tiktokInstallDate"];
+    NSUserDefaults *defaults = [TikTokDefaults storage];
+    NSDate *installDate = (NSDate *)[defaults objectForKey:TikTokDefaultsKeyTikTokInstallDate];
     
     [self checkAttStatus];
     
-    if ([[defaults objectForKey:@"HasBeenInitialized"] isEqual: @"true"]) {
+    if ([[defaults objectForKey:TikTokDefaultsKeyHasBeenInitialized] isEqual: @"true"]) {
         [self getGlobalConfig:self.config isFirstInitialization:NO];
     }
 
@@ -666,18 +679,18 @@ withType:(NSString *)type
         [self track2DRetention];
     }
     
-    if(self.config.initialFlushDelay && ![[defaults objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
+    if(self.config.initialFlushDelay && ![[defaults objectForKey:TikTokDefaultsKeyHasFirstFlushOccurred]  isEqual: @"true"]) {
         // if first flush has not occurred, resume timer without flushing
-        [defaults setObject:@"true" forKey:@"AreTimersOn"];
+        [defaults setObject:@"true" forKey:TikTokDefaultsKeyAreTimersOn];
         [defaults synchronize];
     } else {
         // else flush when entering foreground
         [self.eventLogger flush:TikTokAppEventsFlushReasonAppBecameActive];
     }
     
-    if([defaults objectForKey:@"backgroundMonitorTime"] != nil) {
-        NSNumber *backgroundMonitorTime = [defaults objectForKey:@"backgroundMonitorTime"];
-        NSNumber *lastForegroundMonitorTime = [defaults objectForKey:@"foregroundMonitorTime"];
+    if([defaults objectForKey:TikTokDefaultsKeyBackgroundMonitorTime] != nil) {
+        NSNumber *backgroundMonitorTime = [defaults objectForKey:TikTokDefaultsKeyBackgroundMonitorTime];
+        NSNumber *lastForegroundMonitorTime = [defaults objectForKey:TikTokDefaultsKeyForegroundMonitorTime];
         NSDictionary *meta = @{
             @"ts": foregroundMonitorTime,
             @"latency": [NSNumber numberWithLongLong:[backgroundMonitorTime longLongValue] - [lastForegroundMonitorTime longLongValue]],
@@ -719,7 +732,7 @@ withType:(NSString *)type
         }
         
     }
-    [defaults setObject:foregroundMonitorTime forKey:@"foregroundMonitorTime"];
+    [defaults setObject:foregroundMonitorTime forKey:TikTokDefaultsKeyForegroundMonitorTime];
     [defaults removeObjectForKey:@"backgroundMonitorTime"];
     [defaults synchronize];
 }
@@ -859,11 +872,11 @@ withType:(NSString *)type
         self.isRemoteSwitchOn = isRemoteSwitchOn;
         self.isGlobalConfigFetched = TTCheckValidDictionary(globalConfig);
         
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSUserDefaults *defaults = [TikTokDefaults storage];
 
         if(!self.isRemoteSwitchOn) {
             [self.logger info:@"Remote switch is off"];
-            [defaults setObject:@"false" forKey:@"AreTimersOn"];
+            [defaults setObject:@"false" forKey:TikTokDefaultsKeyAreTimersOn];
             [defaults synchronize];
             return;
         }
@@ -871,8 +884,8 @@ withType:(NSString *)type
         [self.logger info:@"Remote switch is on"];
         
         // restart timers if they are off
-        if ([[defaults objectForKey:@"AreTimersOn"]  isEqual: @"false"]) {
-            [defaults setObject:@"true" forKey:@"AreTimersOn"];
+        if ([[defaults objectForKey:TikTokDefaultsKeyAreTimersOn]  isEqual: @"false"]) {
+            [defaults setObject:@"true" forKey:TikTokDefaultsKeyAreTimersOn];
             [defaults synchronize];
         }
         if (self.isGlobalConfigFetched) {
@@ -913,8 +926,8 @@ withType:(NSString *)type
                     });
                 }
                 
-                NSString *sourceURLString = [defaults objectForKey:@"source_url"];
-                NSString *referString = [defaults objectForKey:@"refer"];
+                NSString *sourceURLString = [defaults objectForKey:TikTokDefaultsKeySourceURL];
+                NSString *referString = [defaults objectForKey:TikTokDefaultsKeyRefer];
                 if ((TTCheckValidString(referString) || isFirstInitialization) && [TikTokEDPConfig sharedConfig].enable_sdk && [TikTokEDPConfig sharedConfig].enable_from_ttconfig && [TikTokEDPConfig sharedConfig].enable_app_launch_track) {
                     NSDictionary *launchOptionProperties = @{
                         @"source_url": TTSafeString(sourceURLString),
@@ -927,18 +940,18 @@ withType:(NSString *)type
          }
         
         // if SDK has not been initialized, we initialize it
-        if(isFirstInitialization || ![[defaults objectForKey:@"HasBeenInitialized"]  isEqual: @"true"]) {
+        if(isFirstInitialization || ![[defaults objectForKey:TikTokDefaultsKeyHasBeenInitialized]  isEqual: @"true"]) {
             BOOL crashMonitorEnabled = [[globalConfig objectForKey:@"crash_monitor_enable"] boolValue];
             if (crashMonitorEnabled) {
                 [self setUpCrashMonitor];
             }
             
             [self.logger info:@"TikTok SDK Initialized Successfully!"];
-            [defaults setObject:@"true" forKey:@"HasBeenInitialized"];
+            [defaults setObject:@"true" forKey:TikTokDefaultsKeyHasBeenInitialized];
             [defaults setObject:@([TikTokAppEventUtility getCurrentTimestamp]) forKey:TTUserDefaultsKey_firstLaunchTime];
             [defaults synchronize];
             BOOL launchedBefore = [defaults boolForKey:@"tiktokLaunchedBefore"];
-            NSDate *installDate = (NSDate *)[defaults objectForKey:@"tiktokInstallDate"];
+            NSDate *installDate = (NSDate *)[defaults objectForKey:TikTokDefaultsKeyTikTokInstallDate];
             
             // SKAdNetwork 3.0 Support (works on iOS 14.0+)
             if(self.SKAdNetworkSupportEnabled) {
@@ -956,12 +969,12 @@ withType:(NSString *)type
                 if (self.installTrackingEnabled) {
                     [self trackEvent:@"InstallApp" withProperties:@{@"type":@"auto"} withId:@""];
                     if (self.isGlobalConfigFetched) {
-                        [defaults setBool:YES forKey:@"tiktokMatchedInstall"];
+                        [defaults setBool:YES forKey:TikTokDefaultsKeyTikTokMatchedInstall];
                     }
                 }
                 NSDate *currentLaunch = [NSDate date];
-                [defaults setBool:YES forKey:@"tiktokLaunchedBefore"];
-                [defaults setObject:currentLaunch forKey:@"tiktokInstallDate"];
+                [defaults setBool:YES forKey:TikTokDefaultsKeyTikTokLaunchedBefore];
+                [defaults setObject:currentLaunch forKey:TikTokDefaultsKeyTikTokInstallDate];
                 [defaults synchronize];
             }
 
@@ -995,7 +1008,7 @@ withType:(NSString *)type
                 [TikTokPaymentObserver stopObservingTransactions];
             }
             
-            NSNumber *initStartTimestamp = [defaults objectForKey:@"monitorInitStartTime"];
+            NSNumber *initStartTimestamp = [defaults objectForKey:TikTokDefaultsKeyMonitorInitStartTime];
             NSNumber *initEndTimestamp = [TikTokAppEventUtility getCurrentTimestampAsNumber];
             [self monitorInitialization:initStartTimestamp andEndTime:initEndTimestamp];
         }
@@ -1003,7 +1016,7 @@ withType:(NSString *)type
             BOOL matchedInstall = [defaults boolForKey:@"tiktokMatchedInstall"];
             if (!matchedInstall) {
                 [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:@"InstallApp" withValue:@"0" currency:@""];
-                [defaults setBool:YES forKey:@"tiktokMatchedInstall"];
+                [defaults setBool:YES forKey:TikTokDefaultsKeyTikTokMatchedInstall];
                 [defaults synchronize];
             }
         }

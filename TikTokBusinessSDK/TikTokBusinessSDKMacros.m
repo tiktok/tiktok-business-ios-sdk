@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "TikTokBusinessSDKMacros.h"
 
-NSString * const TTUserDefaultsKey_firstLaunchTime = @"firstLaunchTime";
-
 BOOL TT_isEmptyString(id param)
 {
     if (!param) {

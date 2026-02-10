@@ -103,11 +103,6 @@ FOUNDATION_EXTERN TTEventName const TTEventNameStartTrial;
 FOUNDATION_EXTERN TTEventName const TTEventNameSubscribe;
 FOUNDATION_EXTERN TTEventName const TTEventNameUnlockAchievement;
 
-FOUNDATION_EXPORT NSString * const TTAccumulatedSKANValuesKey;
-FOUNDATION_EXPORT NSString * const TTLatestFineValueKey;
-FOUNDATION_EXPORT NSString * const TTLatestCoarseValueKey;
-FOUNDATION_EXPORT NSString * const TTSKANTimeWindowKey;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TikTokConstants : NSObject

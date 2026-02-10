@@ -10,6 +10,8 @@
 #import "TikTokBusinessSDKMacros.h"
 #import "TikTokEDPConfig.h"
 #import "TikTokTypeUtility.h"
+#import "TikTokDefaults.h"
+#import "TikTokDefaultsKeys.h"
 
 NSString * const defaultPattern = @"([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-9._-]+)|(\\+?0?86-?)?1[3-9]\\d{9}|(\\+\\d{1,2}\\s?)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}";
 
@@ -114,17 +116,17 @@ NSString * const defaultPattern = @"([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-
 + (NSString *)getSensigPattern {
     NSString *regexPattern = [TikTokEDPConfig sharedConfig].sensig_filtering_regex_list.firstObject;
     NSNumber *regexVersion = [TikTokEDPConfig sharedConfig].sensig_filtering_regex_version;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *defaults = [TikTokDefaults storage];
     NSString *resultPattern = defaultPattern;
     if (TTCheckValidString(regexPattern)) { // use the pattern from config
-        NSNumber *prevRegexVersion = [defaults objectForKey:@"sensig_filtering_regex_version"];
+        NSNumber *prevRegexVersion = [defaults objectForKey:TikTokDefaultsKeySensigFilteringRegexVersion];
         if ([regexVersion doubleValue] > [prevRegexVersion doubleValue]) { // update if needed
-            [defaults setObject:regexPattern forKey:@"sensig_filtering_regex_pattern"];
-            [defaults setObject:regexVersion forKey:@"sensig_filtering_regex_version"];
+            [defaults setObject:regexPattern forKey:TikTokDefaultsKeySensigFilteringRegexPattern];
+            [defaults setObject:regexVersion forKey:TikTokDefaultsKeySensigFilteringRegexVersion];
         }
         resultPattern = regexPattern;
     } else {
-        NSString *prevRegexPattern = [defaults objectForKey:@"sensig_filtering_regex_pattern"];
+        NSString *prevRegexPattern = [defaults objectForKey:TikTokDefaultsKeySensigFilteringRegexPattern];
         if (TTCheckValidString(prevRegexPattern)) { // use stored pattern if exist
             resultPattern = prevRegexPattern;
         }
