@@ -16,7 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *phoneNumber;
 @property (nonatomic, strong, nullable) NSString *email;
 @property (nonatomic, assign) BOOL isIdentified;
-@property (nonatomic, strong, nullable) NSString *app_session_id;
+@property (nonatomic, strong, nullable) NSString *appSessionID;
+@property (nonatomic, strong, nullable) NSString *lastAppSessionID;
+@property (nonatomic, strong, nullable) NSString *lastSessionStartTime;
 
 + (instancetype)sharedInstance;
 

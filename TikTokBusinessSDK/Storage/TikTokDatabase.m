@@ -117,6 +117,17 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
     if (!result) {
         NSLog(@"Failed to create table %@: %s",tableName, errorMessage);
         sqlite3_free(errorMessage);
+    } else {
+        for (NSString *fieldName in fields.allKeys) {
+            NSString *fieldType = fields[fieldName];
+            if (TTCheckValidString(fieldName) && TTCheckValidString(fieldType)) {
+                NSString *defaultValue = @"";
+                if ([fieldType isEqualToString:@"INTEGER"] || [fieldType isEqualToString:@"REAL"]) {
+                    defaultValue = @"0";
+                    [self _checkAndInsertColumnWithField:fieldName type:fieldType defaultValue:defaultValue inTableNamed:tableName];
+                }
+            }
+        }
     }
     
     pthread_mutex_unlock(&_databaseMutex);
@@ -258,6 +269,44 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
     return result;
 }
 
+- (BOOL)updateTable:(NSString *)tableName setField:(NSString *)fieldName value:(id)fieldValue withWhere:(nullable NSString *)where {
+    pthread_mutex_lock(&_databaseMutex);
+    if (![self openDatabase]) {
+        pthread_mutex_unlock(&_databaseMutex);
+        return NO;
+    }
+    
+    NSString *condition = [self _whereString:where];
+    NSMutableString *updateQuery = [NSMutableString stringWithFormat:@"UPDATE %@ SET ", tableName];
+    
+    NSString *formattedValue = nil;
+    if ([fieldValue isKindOfClass:[NSString class]]) {
+        formattedValue = fieldValue;
+    } else if ([fieldValue isKindOfClass:[NSNumber class]]) {
+        formattedValue = [fieldValue stringValue];
+    } else {
+        pthread_mutex_unlock(&_databaseMutex);
+        return NO;
+    }
+    
+    [updateQuery appendString:[NSString stringWithFormat:@"%@ = %@", fieldName, formattedValue]];
+    
+    if (condition.length > 0) {
+        [updateQuery appendFormat:@" %@", condition];
+    }
+    [updateQuery appendString:@";"];
+    
+    char *errorMessage;
+    BOOL result = (sqlite3_exec(_handler, [updateQuery UTF8String], NULL, 0, &errorMessage) == SQLITE_OK);
+    if (!result) {
+        NSLog(@"Failed to update: %s", errorMessage);
+        sqlite3_free(errorMessage);
+    }
+    
+    pthread_mutex_unlock(&_databaseMutex);
+    return result;
+}
+
 - (BOOL)updateTable:(NSString *)tableName incrementField:(NSString *)incrementField value:(NSNumber *)incrementValue withWhere:(nullable NSString *)where {
     pthread_mutex_lock(&_databaseMutex);
     if (![self openDatabase]) {
@@ -271,7 +320,7 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
     [updateQuery appendString:[NSString stringWithFormat:@"%@ = %@ + %@", incrementField, incrementField, [incrementValue stringValue]]];
     
     if (condition.length > 0) {
-        [updateQuery appendFormat:@"%@", condition];
+        [updateQuery appendFormat:@" %@", condition];
     }
     [updateQuery appendString:@";"];
     
@@ -326,4 +375,35 @@ static NSString *TTDBDefaultTableName = @"TikTokBusiness.default.sqlite";
     if (limit.count <= 0) return @"";
     return [NSString stringWithFormat:@" LIMIT %d OFFSET %d", limit.count, limit.offset];
 }
+
+- (BOOL)_checkAndInsertColumnWithField:(NSString *)field type:(NSString *)type defaultValue:(nullable NSString *)defaultValue inTableNamed:(NSString *)name {
+    BOOL res;
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE name = '%@' AND sql like '%%%@%%';", name, field];
+    const char *tmp = sql.UTF8String;
+    
+    sqlite3_stmt *stmt = NULL;
+    res = sqlite3_prepare_v2(_handler, tmp, -1, &stmt, NULL) == SQLITE_OK;
+    if (!res) {
+        if (stmt) sqlite3_finalize(stmt);
+        return NO;
+    }
+    res = sqlite3_step(stmt) == SQLITE_ROW;
+    sqlite3_finalize(stmt);
+    
+    if (!res) {
+        sql = [NSString stringWithFormat:@"ALTER TABLE %@ ADD COLUMN %@ %@", name, field, type];
+        if (TTCheckValidString(defaultValue)) {
+            sql = [NSString stringWithFormat:@"%@ DEFAULT %@", sql, defaultValue];
+        }
+        sql = [NSString stringWithFormat:@"%@;", sql];
+        tmp = sql.UTF8String;
+        sqlite3_stmt *stmt = NULL;
+        if (sqlite3_prepare_v2(_handler, tmp, -1, &stmt, NULL) == SQLITE_OK) {
+            return sqlite3_step(stmt) == SQLITE_ROW;
+        }
+        return NO;
+    }
+    return YES;
+}
+
 @end

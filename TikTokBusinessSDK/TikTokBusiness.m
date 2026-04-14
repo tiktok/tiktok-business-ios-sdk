@@ -492,6 +492,7 @@ withType:(NSString *)type
     }
     NSDictionary *meta = @{
         @"ts": [NSNumber numberWithLongLong:[TikTokErrorHandler getCrashTimetampFromReport:report]],
+        @"ex_sdk_version": TTSafeString([TikTokErrorHandler getCrashSDKVersionFromReport:report]),
         @"ex_stack": report,
     };
     NSDictionary *monitorCrashLogProperties = @{
@@ -726,7 +727,7 @@ withType:(NSString *)type
 
 - (nullable NSString *)idfa
 {
-    return [[TikTokDeviceInfo alloc] deviceIdForAdvertisers];
+    return [[TikTokDeviceInfo deviceInfo] deviceIdForAdvertisers];
 }
 
 - (BOOL)appInForeground

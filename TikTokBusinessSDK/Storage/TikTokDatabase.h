@@ -50,7 +50,7 @@ static inline TTDBLimit TTDBLimitMake(int offset, int count) {
 
 - (BOOL)deleteTable:(NSString *)tableName withWhere:(nullable NSString *)where orderBy:(TTDBOrderBy)orderBy limit:(TTDBLimit)limit;
 
-- (BOOL)updateTable:(NSString *)tableName incrementField:(NSString *)incrementField value:(NSNumber *)incrementValue withWhere:(nullable NSString *)where;
+- (BOOL)updateTable:(NSString *)tableName setField:(NSString *)fieldName value:(id)fieldValue withWhere:(nullable NSString *)where;
 
 - (NSInteger)getCount:(NSString *)tableName;
 

@@ -34,6 +34,7 @@ static NSMutableArray *g_pendingRequestors;
 @interface TikTokPaymentObserver () <SKPaymentTransactionObserver>
 
 @property (nonatomic, strong) TikTokLogger *logger;
+@property (nonatomic, strong) NSMutableSet<NSString *> *processedPurchaseTransactionIDs;
 
 @end
 
@@ -68,12 +69,13 @@ static NSMutableArray *g_pendingRequestors;
 
 - (instancetype)init
 {
-  self = [super init];
-  if (self) {
-    _observingTransactions = NO;
-      self.logger = [TikTokFactory getLogger];
-  }
-  return self;
+    self = [super init];
+    if (self) {
+        _observingTransactions = NO;
+        self.logger = [TikTokFactory getLogger];
+        self.processedPurchaseTransactionIDs = [NSMutableSet set];
+    }
+    return self;
 }
 
 -(void)startObservingTransactions
@@ -106,6 +108,18 @@ static NSMutableArray *g_pendingRequestors;
 
 -(void)handleTransaction: (SKPaymentTransaction *)transaction
 {
+    if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
+        NSString *transactionID = transaction.transactionIdentifier;
+        if (transactionID) {
+            @synchronized (self) {
+                if ([self.processedPurchaseTransactionIDs containsObject:transactionID]) {
+                    return;
+                } else {
+                    [self.processedPurchaseTransactionIDs addObject:transactionID];
+                }
+            }
+        }
+    }
     TikTokPaymentProductRequestor *productRequest = [[TikTokPaymentProductRequestor alloc] initWithTransaction:transaction];
     [productRequest resolveProducts];
 }
@@ -175,8 +189,8 @@ static NSMutableArray *g_pendingRequestors;
 
 - (NSMutableDictionary<NSString *, id> *)getEventParametersOfProduct: (SKProduct *)product withTransaction: (SKPaymentTransaction *)transaction
 {
-    NSString *transactionId = TTSafeString(transaction.transactionIdentifier);
-    
+    NSString *transactionId = transaction.transactionIdentifier;
+    NSString *originalTransactionId = transaction.originalTransaction.transactionIdentifier;
     SKPayment *payment = transaction.payment;
     
     NSMutableDictionary *eventParameters = [[NSMutableDictionary alloc] initWithDictionary:@{
@@ -186,6 +200,7 @@ static NSMutableArray *g_pendingRequestors;
         // order info
         NSDictionary *orderInfo = @{
             @"order_id": TTSafeString(transactionId),
+            @"original_transaction_id": TTSafeString(originalTransactionId),
             @"order_time": TTSafeString([TikTokAppEventUtility getCurrentTimestampAsString])
         };
         [TikTokTypeUtility dictionary:eventParameters setObject:orderInfo forKey:@"order"];
@@ -215,35 +230,34 @@ static NSMutableArray *g_pendingRequestors;
             [TikTokTypeUtility dictionary:productDict setObject:@(product.subscriptionPeriod.numberOfUnits) forKey:@"subscription_period_number"];
             [TikTokTypeUtility dictionary:productDict setObject:product.price.stringValue forKey:@"recurring_price"];
             
-            if (@available(iOS 12.2,*)) {
-                if (TTCheckValidArray(product.discounts)) {
-                    SKProductDiscount *discount = product.discounts.firstObject;
-                    if (discount && discount.paymentMode == SKProductDiscountPaymentModeFreeTrial) {
-                        [TikTokTypeUtility dictionary:productDict setObject:@([self daysFromPeriodUnit:discount.subscriptionPeriod.unit]) forKey:@"free_trial_period"];
-                    }
+            if (product.introductoryPrice) {
+                SKProductDiscount *discount = product.introductoryPrice;
+                if (discount && discount.paymentMode == SKProductDiscountPaymentModeFreeTrial) {
+                    [TikTokTypeUtility dictionary:productDict setObject:@([self subscriptionPeriodInDays:discount.subscriptionPeriod]) forKey:@"free_trial_period"];
                 }
             }
         }
         
         // discount info
         if (@available(iOS 12.2,*)) {
-            if (TTCheckValidArray(product.discounts)) {
-                NSMutableArray *discounts = [NSMutableArray array];
-                for (SKProductDiscount *discount in product.discounts) {
-                    if (discount) {
-                        NSMutableDictionary *discountInfo = [NSMutableDictionary dictionary];
-                        [TikTokTypeUtility dictionary:discountInfo setObject:TTSafeString(discount.identifier) forKey:@"offer_id"];
-                        NSString *discountType = discount.type == SKProductDiscountTypeIntroductory ? @"Introductory" : @"Subscription";
-                        [TikTokTypeUtility dictionary:discountInfo setObject:TTSafeString(discountType) forKey:@"type"];
-                        [TikTokTypeUtility dictionary:discountInfo setObject:discount.price.stringValue forKey:@"price"];
-                        [TikTokTypeUtility dictionary:discountInfo setObject:[self stringOfPaymentMode:discount.paymentMode] forKey:@"payment_mode"];
-                        [TikTokTypeUtility dictionary:discountInfo setObject:@([self subscriptionPeriodInDays:discount.subscriptionPeriod]) forKey:@"discount_period"];
-                        [TikTokTypeUtility dictionary:discountInfo setObject:@(discount.subscriptionPeriod.numberOfUnits) forKey:@"discount_period_number"];
-                        [discounts addObject:discountInfo.copy];
+            NSMutableArray *productDiscounts = [NSMutableArray array];
+            if (product.introductoryPrice) {
+                NSDictionary *discountDict = [self discountInfo:product.introductoryPrice];
+                if (TTCheckValidDictionary(discountDict)) {
+                    [productDiscounts addObject:discountDict];
+                }
+            }
+            
+            NSString *paymentDiscountIdentifier = payment.paymentDiscount.identifier;
+            for (SKProductDiscount *discount in product.discounts) {
+                if (discount && TTCheckValidString(paymentDiscountIdentifier) && [discount.identifier isEqualToString:paymentDiscountIdentifier]) {
+                    NSDictionary *discountInfo = [self discountInfo:discount];
+                    if (TTCheckValidDictionary(discountInfo)) {
+                        [productDiscounts addObject:discountInfo];
                     }
                 }
-                [TikTokTypeUtility dictionary:productDict setObject:discounts.copy forKey:@"offers"];
             }
+            [TikTokTypeUtility dictionary:productDict setObject:productDiscounts forKey:@"offers"];
         }
         
         [TikTokTypeUtility dictionary:productDict setObject:product.productIdentifier forKey:@"content_id"];
@@ -252,6 +266,23 @@ static NSMutableArray *g_pendingRequestors;
         [TikTokTypeUtility dictionary:eventParameters setObject:contents forKey:@"contents"];
     }
     return eventParameters;
+}
+
+- (NSDictionary *)discountInfo:(SKProductDiscount *)discount {
+    if (!discount) {
+        return @{};
+    }
+    NSMutableDictionary *discountInfo = [NSMutableDictionary dictionary];
+    if (@available(iOS 12.2,*)) {
+        [TikTokTypeUtility dictionary:discountInfo setObject:TTSafeString(discount.identifier) forKey:@"offer_id"];
+        NSString *discountType = discount.type == SKProductDiscountTypeIntroductory ? @"Introductory" : @"Subscription";
+        [TikTokTypeUtility dictionary:discountInfo setObject:TTSafeString(discountType) forKey:@"type"];
+    }
+    [TikTokTypeUtility dictionary:discountInfo setObject:discount.price.stringValue forKey:@"price"];
+    [TikTokTypeUtility dictionary:discountInfo setObject:[self stringOfPaymentMode:discount.paymentMode] forKey:@"payment_mode"];
+    [TikTokTypeUtility dictionary:discountInfo setObject:@([self subscriptionPeriodInDays:discount.subscriptionPeriod]) forKey:@"discount_period"];
+    [TikTokTypeUtility dictionary:discountInfo setObject:@(discount.subscriptionPeriod.numberOfUnits) forKey:@"discount_period_number"];
+    return discountInfo.copy;
 }
 
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response

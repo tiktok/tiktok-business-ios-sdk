@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TikTokFactory : NSObject
 
 + (TikTokLogger *)getLogger;
-+ (void)setLogger:(TikTokLogger *)logger;
 + (TikTokRequestHandler*)getRequestHandler;
 
 @end

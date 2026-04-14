@@ -234,6 +234,18 @@ NSString *const kTTSDKVersion = @"TikTok SDK Version";
     return timeInterval;
 }
 
++ (NSString *)getCrashSDKVersionFromReport:(NSString*)report {
+    //     [str appendFormat:@"SDK Version:         %@\n",SDK_VERSION];
+    NSString *prefix = @"SDK Version:";
+    NSString *sdkVersion = [TikTokErrorHandler getLineBeginWith:prefix fromReport:report];
+    if (TTCheckValidString(sdkVersion)) {
+        sdkVersion = [sdkVersion stringByReplacingOccurrencesOfString:prefix withString:@""];
+        sdkVersion = [sdkVersion stringByReplacingOccurrencesOfString:@" " withString:@""];
+        return sdkVersion;
+    }
+    return @"";
+}
+
 + (BOOL)getCrashThreadIndex:(int *)thread fromReport:(NSString*)report {
     NSString *triggerString = [TikTokErrorHandler getLineBeginWith:@"Triggered by Thread" fromReport:report];
     if (TTCheckValidString(triggerString)) {

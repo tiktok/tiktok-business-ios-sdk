@@ -14,22 +14,23 @@ static TikTokRequestHandler *requestHandler = nil;
 
 + (TikTokLogger *)getLogger
 {
-    if (internalLogger == nil) {
-        internalLogger = [[TikTokLogger alloc] init];
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if (internalLogger == nil) {
+            internalLogger = [[TikTokLogger alloc] init];
+        }
+    });
     return internalLogger;
-}
-
-+ (void)setLogger:(TikTokLogger *)logger
-{
-    internalLogger = logger;
 }
 
 + (TikTokRequestHandler*)getRequestHandler
 {
-    if (requestHandler == nil) {
-        requestHandler = [[TikTokRequestHandler alloc] init];
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if (requestHandler == nil) {
+            requestHandler = [[TikTokRequestHandler alloc] init];
+        }
+    });
     return requestHandler;
 }
 

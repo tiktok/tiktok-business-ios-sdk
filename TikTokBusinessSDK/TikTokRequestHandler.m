@@ -33,19 +33,20 @@
 
 @implementation TikTokRequestHandler
 
-- (id)init:(TikTokConfig *)config
+- (id)init
 {
-    if (self == nil) {
-        return nil;
+    self = [super init];
+    if (self) {
+        _logger = [TikTokFactory getLogger];
+        // Default API version
+        _apiVersion = @"v1.2";
+        // Default API domain
+        _apiDomain = @"analytics.us.tiktok.com";
+        _configTimeoutInterval = 2;
+        _eventTimeoutInterval = 10;
+        _session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     }
     
-    self.logger = [TikTokFactory getLogger];
-    // Default API version
-    self.apiVersion = @"v1.2";
-    // Default API domain
-    self.apiDomain = @"analytics.us.tiktok.com";
-    self.configTimeoutInterval = 2;
-    self.eventTimeoutInterval = 10;
     return self;
 }
 
@@ -98,13 +99,6 @@
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setHTTPBody:dataToPost];
     [request setTimeoutInterval:self.configTimeoutInterval?:2];
-    
-    if(self.logger == nil) {
-        self.logger = [TikTokFactory getLogger];
-    }
-    if(self.session == nil) {
-        self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    }
 
     __block NSNumber *networkStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     tt_weakify(self)
@@ -291,13 +285,6 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setHTTPBody:dataToPost];
     [request setTimeoutInterval:self.configTimeoutInterval?:2];
-    
-    if(self.logger == nil) {
-        self.logger = [TikTokFactory getLogger];
-    }
-    if(self.session == nil) {
-        self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    }
 
     tt_weakify(self)
     [[self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -356,7 +343,6 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
 - (void)sendBatchRequest:(NSArray *)eventsToBeFlushed
               withConfig:(TikTokConfig *)config
 {
-    
     TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfo];
 
     // APP Info
@@ -371,7 +357,6 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
     
     // format events into object[]
     NSMutableArray *batch = [[NSMutableArray alloc] init];
-    NSMutableArray *appEventsToBeFlushed = [[NSMutableArray alloc] init];
     for (TikTokAppEvent* event in eventsToBeFlushed) {
         if(![event.type isEqual:@"monitor"]){
             NSMutableDictionary *user = [NSMutableDictionary new];
@@ -409,12 +394,7 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
                 [eventDict setObject:event.screenshot forKey:@"screenshot"];
             }
             [batch addObject:eventDict];
-            [appEventsToBeFlushed addObject:event];
         }
-    }
-    
-    if(self.logger == nil) {
-        self.logger = [TikTokFactory getLogger];
     }
     
     if(batch.count > 0){
@@ -473,10 +453,6 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
         [request setValue:TTSafeString(signature) forHTTPHeaderField:@"X-TT-Signature"];
         [request setHTTPBody:dataToPost];
         [request setTimeoutInterval:self.eventTimeoutInterval ?: 10];
-        
-        if(self.session == nil) {
-            self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-        }
         
         __block NSNumber *networkStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
         tt_weakify(self)
@@ -578,7 +554,6 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
 - (void)sendMonitorRequest:(NSArray *)eventsToBeFlushed
               withConfig:(TikTokConfig *)config {
     TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfo];
-
     // APP Info
     NSDictionary *app = [self getAPPWithDeviceInfo:deviceInfo config:config];
 
@@ -590,7 +565,6 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
     
     // format events into object[]
     NSMutableArray *monitorBatch = [[NSMutableArray alloc] init];
-    NSMutableArray *monitorEventsToBeFlushed = [[NSMutableArray alloc] init];
     for (TikTokAppEvent* event in eventsToBeFlushed) {
         [self.logger verbose:@"Event is of type: %@", event.type];
         if([event.type isEqualToString:@"monitor"]) {
@@ -623,12 +597,7 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
             }
             
             [monitorBatch addObject:monitorDict];
-            [monitorEventsToBeFlushed addObject:event];
         }
-    }
-    
-    if(self.logger == nil) {
-        self.logger = [TikTokFactory getLogger];
     }
     
     if(monitorBatch.count > 0){
@@ -688,9 +657,6 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
         [request setHTTPBody:dataToPost];
         [request setTimeoutInterval:self.eventTimeoutInterval ?: 10];
         
-        if(self.session == nil) {
-            self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-        }
         tt_weakify(self)
         [[self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             tt_strongify(self)
@@ -790,9 +756,6 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
     [request setHTTPBody:paramData];
     [request setTimeoutInterval:self.configTimeoutInterval ?: 2];
     
-    if(self.session == nil) {
-        self.session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    }
     __block NSNumber *networkStartTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     tt_weakify(self)
     [[self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -902,7 +865,9 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
         @"namespace": TTSafeString(deviceInfo.appNamespace),
         @"version": TTSafeString(deviceInfo.appVersion),
         @"build": TTSafeString(deviceInfo.appBuild),
-        @"app_session_id":TTSafeString([[TikTokIdentifyUtility sharedInstance] app_session_id]) 
+        @"app_session_id":TTSafeString([[TikTokIdentifyUtility sharedInstance] appSessionID]),
+        @"last_app_session_id":TTSafeString([[TikTokIdentifyUtility sharedInstance] lastAppSessionID]),
+        @"last_app_session_start_time":TTSafeString([[TikTokIdentifyUtility sharedInstance] lastSessionStartTime]),
     };
 
     NSMutableDictionary *app = [[NSMutableDictionary alloc] initWithDictionary:tempApp];
@@ -967,6 +932,9 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
     NSString *libraryName = @"tiktok/tiktok-business-ios-sdk";
     if (NSClassFromString(@"UnityViewControllerBase") || NSClassFromString(@"UnityView")) {
         libraryName = @"tiktok/tiktok-business-unity-ios-sdk";
+    }
+    if (!NSClassFromString(@"TTSDKCrashInstallationConsole")) {
+        libraryName = [NSString stringWithFormat:@"%@-merged-bundle",libraryName];
     }
     NSDictionary *library = @{
         @"name": libraryName,

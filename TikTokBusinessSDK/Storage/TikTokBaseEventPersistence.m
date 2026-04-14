@@ -38,7 +38,8 @@
         @"id": @"INTEGER PRIMARY KEY AUTOINCREMENT",
         @"event_data": @"BLOB",
         @"ts": @"TEXT",
-        @"retry_times": @"INTEGER"
+        @"retry_times": @"INTEGER",
+        @"sending": @"INTEGER"
     };
     return fields;
 }
@@ -85,7 +86,8 @@
             if (![self.db insertIntoTable:[[self class] tableName] fields:@{
                 @"event_data":eventData,
                 @"ts": TTSafeString(event.timestamp),
-                @"retry_times": @(event.retryTimes)
+                @"retry_times": @(event.retryTimes),
+                @"sending": @(0)
             }]) {
                 [self.db closeDatabase];
                 return NO;
@@ -99,7 +101,9 @@
 - (NSArray *)retrievePersistedEvents {
     NSMutableArray *allEvents = [NSMutableArray array];
     if ([self.db openDatabase]) {
-        NSArray *res = [self.db queryTable:[[self class] tableName] withWhere:nil orderBy:TTDBOrderByNone limit:TTDBLimitNone];
+        NSString *whereCondition = @"sending = 0";
+        NSArray *res = [self.db queryTable:[[self class] tableName] withWhere:whereCondition orderBy:TTDBOrderByNone limit:TTDBLimitNone];
+        NSMutableArray *dbIDs = [NSMutableArray array];
         for (NSDictionary *row in res) {
             if (!TTCheckValidDictionary(row)) {
                 continue;
@@ -114,10 +118,18 @@
                 event = (TikTokAppEvent *)obj;
                 event.dbID = [NSString stringWithFormat:@"%ld",(long)eID];
                 event.retryTimes = retry_times;
+                
+                [dbIDs addObject:TTSafeString(event.dbID)];
             }
             if (!error && event) {
                 [allEvents addObject:event];
             }
+        }
+        if (dbIDs.count > 0) {
+            NSString *dbIDList = [dbIDs componentsJoinedByString:@", "];
+            NSString *sendingWhereCondition = [NSString stringWithFormat:@"id IN (%@)",dbIDList];
+            
+            [self.db updateTable:[[self class] tableName] setField:@"sending" value:@(1) withWhere:sendingWhereCondition];
         }
     }
     return allEvents.copy;
@@ -151,7 +163,8 @@
         if (success) {
             [self.db deleteTable:[[self class] tableName] withWhere:whereCondition orderBy:TTDBOrderByNone limit:TTDBLimitNone];
         } else {
-            [self.db updateTable:[[self class] tableName] incrementField:@"retry_times" value:@(1) withWhere:whereCondition];
+            [self.db updateTable:[[self class] tableName] setField:@"sending" value:@(0) withWhere:whereCondition];
+            [self.db updateTable:[[self class] tableName] setField:@"retry_times" value:@"retry_times + 1" withWhere:whereCondition];
         }
     }
     return YES;
@@ -172,6 +185,15 @@
     return device;
 }
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [self.db updateTable:[[self class] tableName] setField:@"sending" value:@(0) withWhere:nil];
+    }
+    return self;
+}
+
 + (NSString *)tableName {
     return @"app_event_table";
 }
@@ -189,6 +211,15 @@
     });
 
     return device;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [self.db updateTable:[[self class] tableName] setField:@"sending" value:@(0) withWhere:nil];
+    }
+    return self;
 }
 
 + (NSString *)tableName {

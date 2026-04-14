@@ -153,41 +153,39 @@
     if(![[preferences objectForKey:@"HasFirstFlushOccurred"]  isEqual: @"true"]) {
         [preferences setObject:@"true" forKey:@"HasFirstFlushOccurred"];
     }
-    __block NSInteger flushSize = 0;
     tt_weakify(self)
-    dispatch_sync(self.loggerQueue, ^{
+    dispatch_async(self.loggerQueue, ^{
         tt_strongify(self)
         @try {
+            NSInteger flushSize = 0;
             [self.logger info:@"[TikTokAppEventQueue] Start flush, with flush reason: %lu", flushReason];
             NSArray *eventsFromDisk = [[TikTokAppEventPersistence persistence] retrievePersistedEvents];
             [self.logger info:@"[TikTokAppEventQueue] Number events from disk: %lu", eventsFromDisk.count];
             NSMutableArray *eventsToBeFlushed = [NSMutableArray arrayWithArray:eventsFromDisk];
             flushSize = eventsToBeFlushed.count;
-            dispatch_async(self.loggerQueue, ^{
-                tt_strongify(self)
-                [self realFlushEvents:eventsToBeFlushed forReason:flushReason isMonitor:NO];
-            });
+            [self realFlushEvents:eventsToBeFlushed forReason:flushReason isMonitor:NO];
+            
+            if (flushSize > 0) {
+                NSNumber *flushEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+                NSDictionary *flushMeta = @{
+                    @"ts": flushEndTime,
+                    @"latency": [NSNumber numberWithLongLong:[flushEndTime longLongValue] - [flushStartTime longLongValue]],
+                    @"type": [self stringForReason:flushReason],
+                    @"interval": @(self.config.initialFlushDelay ?: FLUSH_PERIOD_IN_SECONDS),
+                    @"size":@(flushSize)
+                };
+                NSDictionary *monitorFlushProperties = @{
+                    @"monitor_type": @"metric",
+                    @"monitor_name": @"flush",
+                    @"meta": flushMeta
+                };
+                TikTokAppEvent *monitorFlushEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorFlushProperties withType:@"monitor"];
+                [self addEvent:monitorFlushEvent];
+            }
         } @catch (NSException *exception) {
             [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flush" exception:exception];
         }
     });
-    if (flushSize > 0) {
-        NSNumber *flushEndTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
-        NSDictionary *flushMeta = @{
-            @"ts": flushEndTime,
-            @"latency": [NSNumber numberWithLongLong:[flushEndTime longLongValue] - [flushStartTime longLongValue]],
-            @"type": [self stringForReason:flushReason],
-            @"interval": @(self.config.initialFlushDelay ?: FLUSH_PERIOD_IN_SECONDS),
-            @"size":@(flushSize)
-        };
-        NSDictionary *monitorFlushProperties = @{
-            @"monitor_type": @"metric",
-            @"monitor_name": @"flush",
-            @"meta": flushMeta
-        };
-        TikTokAppEvent *monitorFlushEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorFlushProperties withType:@"monitor"];
-        [self addEvent:monitorFlushEvent];
-    }
 }
 
 

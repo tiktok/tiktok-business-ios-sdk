@@ -7,6 +7,15 @@
 
 #import "TikTokIdentifyUtility.h"
 #import "TikTokTypeUtility.h"
+#import "TikTokAppEventUtility.h"
+
+#define TT_last_session_id_key        @"last_session_id_key"
+#define TT_last_session_time_key      @"last_session_time_key"
+
+@interface TikTokIdentifyUtility ()
+@property (nonatomic, strong, nullable) NSString *currentAppSessionID;
+@property (nonatomic, strong, nullable) NSString *currentSessionStartTime;
+@end
 
 @implementation TikTokIdentifyUtility
 
@@ -28,6 +37,7 @@
         _externalID = nil;
         _isIdentified = NO;
         _externalUserName = nil;
+        [self _createSessionInfo];
     }
     return self;
 }
@@ -61,15 +71,30 @@
                             email:(nullable NSString *)email
                            origin:(nullable NSString *)origin
 {
-    NSString* hashedExternalID = [TikTokTypeUtility toSha256:externalID origin:origin];
-    NSString* hashedExternalUserName = [TikTokTypeUtility toSha256:externalUserName origin:origin];
-    NSString* hashedPhoneNumber = [TikTokTypeUtility toSha256:phoneNumber origin:origin];
-    NSString* hashedEmail = [TikTokTypeUtility toSha256:email origin:origin];
+    if ([self _isSHA256HashedString:externalID]) {
+        self.externalID = externalID;
+    } else {
+        self.externalID = [TikTokTypeUtility toSha256:externalID origin:origin];
+    }
     
-    self.externalID = hashedExternalID;
-    self.externalUserName = hashedExternalUserName;
-    self.email = hashedEmail;
-    self.phoneNumber = hashedPhoneNumber;
+    if ([self _isSHA256HashedString:externalUserName]) {
+        self.externalUserName = externalUserName;
+    } else {
+        self.externalUserName = [TikTokTypeUtility toSha256:externalUserName origin:origin];
+    }
+    
+    if ([self _isSHA256HashedString:phoneNumber]) {
+        self.phoneNumber = phoneNumber;
+    } else {
+        self.phoneNumber = [TikTokTypeUtility toSha256:phoneNumber origin:origin];
+    }
+    
+    if ([self _isSHA256HashedString:email]) {
+        self.email = email;
+    } else {
+        self.email = [TikTokTypeUtility toSha256:email origin:origin];
+    }
+    
     self.isIdentified = YES;
 }
 
@@ -98,11 +123,35 @@
     _externalUserName = nil;
 }
 
-- (NSString *)app_session_id {
-    if (!_app_session_id) {
-        _app_session_id = [[NSUUID UUID] UUIDString];
+- (void)_createSessionInfo {
+    self.currentAppSessionID = [[NSUUID UUID] UUIDString];
+    self.currentSessionStartTime = [TikTokAppEventUtility getCurrentTimestampInISO8601];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *sessionIdFromDisk = [defaults objectForKey:TT_last_session_id_key];
+    if (TTCheckValidString(sessionIdFromDisk)) {
+        self.lastAppSessionID = sessionIdFromDisk;
     }
-    return _app_session_id;
+    NSString *sessionTimeFromDisk = [defaults objectForKey:TT_last_session_time_key];
+    if (TTCheckValidString(sessionTimeFromDisk)) {
+        self.lastSessionStartTime = sessionTimeFromDisk;
+    }
+    
+    [defaults setObject:self.currentAppSessionID forKey:TT_last_session_id_key];
+    [defaults setObject:self.currentSessionStartTime forKey:TT_last_session_time_key];
+}
+
+- (NSString *)appSessionID {
+    return self.currentAppSessionID;
+}
+
+- (BOOL)_isSHA256HashedString:(NSString *)string {
+    if (!TTCheckValidString(string)) {
+        return NO;
+    }
+    
+    NSString *pattern = @"^[0-9a-fA-F]{64}$";
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
+    return [predicate evaluateWithObject:string];
 }
 
 

@@ -28,6 +28,8 @@
 #import "TTSDKCrashReport.h"
 #import "TTSDKSystemCapabilities.h"
 
+#import "TikTokBusinessSDKMacros.h"
+
 #import <inttypes.h>
 #include <mach-o/arch.h>
 #import <mach/machine.h>
@@ -451,6 +453,7 @@ static NSDictionary *g_registerOrders;
     [str appendFormat:@"OS Version:          %@ %@ (%@)\n", [system objectForKey:TTSDKCrashField_SystemName],
                       [system objectForKey:TTSDKCrashField_SystemVersion], [system objectForKey:TTSDKCrashField_OSVersion]];
     [str appendFormat:@"Report Version:      104\n"];
+    [str appendFormat:@"SDK Version:         %@\n",SDK_VERSION];
     [str appendFormat:@"Address Range:       **%@**%@**\n", [system objectForKey:TTSDKCrashField_BeginAddress], [system objectForKey:TTSDKCrashField_EndAddress]];
 
     return str;
