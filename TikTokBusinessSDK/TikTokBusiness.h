@@ -55,6 +55,19 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)initializeSdk: (nullable TikTokConfig *)tiktokConfig completionHandler:(void (^)(BOOL success, NSError * _Nullable error))completionHandler;
 
 /**
+ * @brief Handles the opening of a URL with associated options.
+ *
+ * @note This method should be called when your application is opened via a URL scheme.
+ *       Use this to forward URL open events to the TikTokBusinessSDK for proper attribution handling.
+ *
+ * @param url The URL that was used to open your application.
+ * @param options A dictionary of launch options associated with the opening of the URL.
+ *
+ * @warning This method is not available on macOS.
+ */
++ (void)handleOpenUrl:(NSURL * _Nullable)url options:(NSDictionary * _Nullable)options API_UNAVAILABLE(macos);
+
+/**
  * @brief This method should be called whenever an event needs to be tracked
  *
  * @note See TikTokBaseEvent.h for more event options.

@@ -174,6 +174,10 @@ static dispatch_once_t onceToken = 0;
     [[TikTokBusiness getInstance] initializeSdk: tiktokConfig completionHandler:completionHandler];
 }
 
++ (void)handleOpenUrl:(NSURL * _Nullable)url options:(NSDictionary * _Nullable)options API_UNAVAILABLE(macos) {
+    [[TikTokBusiness getInstance] handleOpenUrl:url options:options];
+}
+
 + (void)trackEvent:(NSString *)eventName
 {
     [[TikTokBusiness getInstance] trackEvent:eventName];
@@ -553,6 +557,13 @@ withType:(NSString *)type
             [defaults synchronize];
         }
     }
+}
+
+- (void)handleOpenUrl:(NSURL * _Nullable)url options:(NSDictionary * _Nullable)options API_UNAVAILABLE(macos) {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:TTSafeString(url.absoluteString) forKey:@"source_url"];
+    [defaults setObject:TTSafeString([options objectForKey:UIApplicationOpenURLOptionsSourceApplicationKey]) forKey:@"refer"];
+    [defaults synchronize];
 }
 
 - (void)trackEvent:(NSString *)eventName
