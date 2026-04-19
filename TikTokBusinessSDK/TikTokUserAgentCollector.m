@@ -13,7 +13,9 @@ static NSString *TT_UserAgent = @"TT_UserAgent";
 
 @interface TikTokUserAgentCollector()
 
+#if !TARGET_OS_TV
 @property (nonatomic, strong, readwrite) WKWebView *webView;
+#endif
 @property (nonatomic, assign) BOOL updatedUa;
 
 @end
@@ -42,6 +44,7 @@ static NSString *TT_UserAgent = @"TT_UserAgent";
 
 - (void)loadUserAgentWithCompletion:(void (^)(NSString * _Nullable))completion
 {
+#if !TARGET_OS_TV
     if (!self.updatedUa && !TTCheckValidString(self.userAgent)) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!self.webView) {
@@ -54,12 +57,14 @@ static NSString *TT_UserAgent = @"TT_UserAgent";
             [self _update];
         });
     }
+#endif
     if (completion) {
         completion(self.userAgent);
     }
 }
 
 - (void)_update {
+#if !TARGET_OS_TV
     if (!self.webView) {
         return;
     }
@@ -80,6 +85,7 @@ static NSString *TT_UserAgent = @"TT_UserAgent";
             });
         }
     }];
+#endif
 }
 
 - (void)setCustomUserAgent:(NSString *)userAgent

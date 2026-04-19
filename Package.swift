@@ -6,6 +6,7 @@ let package = Package(
     name: "TikTokBusinessSDK",
     platforms: [
         .iOS(.v12),
+        .tvOS(.v12),
     ],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
@@ -45,10 +46,9 @@ let package = Package(
             ],
             linkerSettings: [
                 .linkedFramework("UIKit"),
-                .linkedFramework("CoreTelephony"),
                 .linkedFramework("AdSupport"),
                 .linkedFramework("AppTrackingTransparency"),
-                .linkedFramework("WebKit"),
+                .linkedFramework("WebKit", .when(platforms: [.iOS])),
                 .linkedFramework("CoreGraphics"),
                 .linkedFramework("StoreKit")
             ]

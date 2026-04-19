@@ -20,9 +20,11 @@ The TikTok Business SDK is the easiest way to log events (e.g. app install, purc
   s.author           = 'TikTok'
   s.source           = { :git => 'https://github.com/tiktok/tiktok-business-ios-sdk.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '12.0'
+  s.platforms = { :ios => '12.0', :tvos => '12.0' }
 
-  s.frameworks = 'CoreGraphics','AdSupport','StoreKit','UIKit','WebKit'
+  shared_frameworks = ['CoreGraphics', 'AdSupport', 'StoreKit', 'UIKit']
+  s.ios.frameworks  = shared_frameworks + ['WebKit']
+  s.tvos.frameworks = shared_frameworks
   s.weak_frameworks = 'AppTrackingTransparency'
 
   s.source_files = 'TikTokBusinessSDK/**/*'
