@@ -52,11 +52,21 @@ static NSString * const kLogTag = @"TikTok";
     [self logLevel: @"v" format: message parameters: parameters];
 }
 
+- (void)verboseMessage:(NSString *)message {
+    if(self.logLevel > TikTokLogLevelVerbose) return;
+    [self logMessage:message level:@"v"];
+}
+
 - (void)debug:(NSString *)message, ...
 {
     if(self.logLevel > TikTokLogLevelDebug) return;
     va_list parameters; va_start(parameters, message);
     [self logLevel: @"d" format: message parameters: parameters];
+}
+
+- (void)debugMessage:(NSString *)message {
+    if(self.logLevel > TikTokLogLevelDebug) return;
+    [self logMessage:message level:@"d"];
 }
 
 - (void)info:(NSString *)message, ...
@@ -66,11 +76,21 @@ static NSString * const kLogTag = @"TikTok";
     [self logLevel: @"i" format: message parameters: parameters];
 }
 
+- (void)infoMessage:(NSString *)message {
+    if(self.logLevel > TikTokLogLevelInfo) return;
+    [self logMessage:message level:@"i"];
+}
+
 - (void)warn:(NSString *)message, ...
 {
     if(self.logLevel > TikTokLogLevelWarn) return;
     va_list parameters; va_start(parameters, message);
     [self logLevel: @"w" format: message parameters: parameters];
+}
+
+- (void)warnMessage:(NSString *)message {
+    if(self.logLevel > TikTokLogLevelWarn) return;
+    [self logMessage:message level:@"w"];
 }
 
 - (void)warnInProduction:(NSString *)message, ...
@@ -87,11 +107,21 @@ static NSString * const kLogTag = @"TikTok";
     [self logLevel: @"e" format: message parameters: parameters];
 }
 
+- (void)errorMessage:(NSString *)message {
+    if(self.logLevel > TikTokLogLevelError) return;
+    [self logMessage:message level:@"e"];
+}
+
 - (void)assert:(NSString *)message, ...
 {
     if(self.logLevel > TikTokLogLevelAssert) return;
     va_list parameters; va_start(parameters, message);
     [self logLevel: @"a" format: message parameters: parameters];
+}
+
+- (void)assertMessage:(NSString *)message {
+    if(self.logLevel > TikTokLogLevelAssert) return;
+    [self logMessage:message level:@"a"];
 }
 
 - (void)logLevel: (NSString *)logLevel format: (NSString *)format parameters:(va_list)parameters
@@ -100,6 +130,14 @@ static NSString * const kLogTag = @"TikTok";
     va_end(parameters);
     
     NSArray *lines = [string componentsSeparatedByString:@"\n"];
+    for(NSString *line in lines)
+    {
+        NSLog(@"\t[%@]%@: %@", kLogTag, logLevel, line);
+    }
+}
+
+- (void)logMessage:(NSString *)message level:(NSString *)logLevel {
+    NSArray *lines = [message componentsSeparatedByString:@"\n"];
     for(NSString *line in lines)
     {
         NSLog(@"\t[%@]%@: %@", kLogTag, logLevel, line);

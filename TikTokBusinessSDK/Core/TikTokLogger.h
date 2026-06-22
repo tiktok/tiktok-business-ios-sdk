@@ -30,12 +30,18 @@ typedef enum {
 - (void)setLogLevel: (TikTokLogLevel)logLevel;
 - (void)lockLogLevel;
 - (void)verbose: (nonnull NSString *)message, ...;
+- (void)verboseMessage:(NSString *)message;
 - (void)debug: (nonnull NSString *)message, ...;
+- (void)debugMessage:(nonnull NSString *)message;
 - (void)info: (nonnull NSString *)message, ...;
+- (void)infoMessage:(nonnull NSString *)message;
 - (void)warn: (nonnull NSString *)message, ...;
+- (void)warnMessage:(nonnull NSString *)message;
 - (void)warnInProduction: (nonnull NSString *)message, ...;
 - (void)error: (nonnull NSString *)message, ...;
+- (void)errorMessage:(nonnull NSString *)message;
 - (void)assert: (nonnull NSString *)message, ...;
+- (void)assertMessage:(nonnull NSString *)message;
 
 @end
 

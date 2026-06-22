@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @brief Method to obtain remote debug mode switch with completion handler
  */
 - (void)getDebugMode:(TikTokConfig *)config
-withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))completionHandler;
+withCompletionHandler:(void (^)(NSDictionary * _Nullable businessSDKConfig, NSError *error))completionHandler;
 
 /**
  * @brief Method to interact with '/batch' endpoint

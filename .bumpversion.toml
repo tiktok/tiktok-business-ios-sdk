@@ -1,0 +1,20 @@
+# brew install bump-my-version
+# bump-my-version bump major/minor/patch
+[tool.bumpversion]
+current_version = "1.6.1"
+commit = true
+tag = false
+tag_name = "{new_version}"
+message = "Version bumped to {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "TikTokBusinessSDK.podspec"
+
+[[tool.bumpversion.files]]
+filename = "TikTokBusinessSDK-Event.podspec"
+
+[[tool.bumpversion.files]]
+filename = "./TikTokBusinessSDK/TikTokBusinessSDKMacros.h"
+
+[[tool.bumpversion.files]]
+filename = "./Examples/TikTokBusinessSDK-Pod/Podfile"

@@ -58,6 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)initializeFlushTimer;
 
+/// Clear the events from EDP
+- (void)clearEDPEvents;
+
 @end
 
 NS_ASSUME_NONNULL_END

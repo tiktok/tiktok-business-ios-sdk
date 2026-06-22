@@ -39,7 +39,7 @@
         @"key_2":@"value_2"
     };
     
-    TikTokAppEvent *event = [[TikTokAppEvent alloc] initWithEventName:eventName withProperties:properties];
+    TikTokAppEvent *event = [[TikTokAppEvent alloc] initWithEventName:eventName withProperties:properties withEventID:@""];
     
     XCTAssertTrue(eventName == event.eventName, @"Event should initialize correctly with event name");
     

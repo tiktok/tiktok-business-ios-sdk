@@ -28,8 +28,13 @@ The TikTok Business SDK is the easiest way to log events (e.g. app install, purc
   s.source_files = 'TikTokBusinessSDK/**/*'
   s.exclude_files = [
       "TikTokBusinessSDK/*.plist",
-      "TikTokBusinessSDK/Public/TikTokBusinessSDK/*.h"
+      "TikTokBusinessSDK/Core/Public/TikTokBusinessSDK/*.h"
   ]
+
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES'
+  }
+  
   s.resource_bundles = {
     "#{s.module_name}_Privacy" => 'PrivacyInfo.xcprivacy'
   }

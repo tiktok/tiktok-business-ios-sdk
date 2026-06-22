@@ -11,7 +11,7 @@ let package = Package(
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
             name: "TikTokBusinessSDK",
-            targets: ["TikTokBusinessSDK"]),
+            targets: ["TikTokBusinessSDK", "TikTokBusinessSDKCore"]),
     ],
     dependencies: [
     ],
@@ -19,11 +19,12 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
-            name: "TikTokBusinessSDK",
+            name: "TikTokBusinessSDKCore",
             dependencies: [],
-            path: "TikTokBusinessSDK",
+            path: "TikTokBusinessSDK/Core",
             publicHeadersPath: "Public",
             cSettings: [
+                .define("TikTokBusinessSDK_SPM"),
                 .headerSearchPath("./"),
                 .headerSearchPath("AppEvents"),
                 .headerSearchPath("TiktokSKAdNetwork"),
@@ -53,10 +54,21 @@ let package = Package(
                 .linkedFramework("StoreKit")
             ]
         ),
+        .target(
+            name: "TikTokBusinessSDK",
+            dependencies: ["TikTokBusinessSDKCore"],
+            path: "TikTokBusinessSDK/Swift",
+            swiftSettings: [.define("TikTokBusinessSDK_SPM")]
+        ),
         .testTarget(
-            name: "TikTokBusinessSDKTests",
-            dependencies: ["TikTokBusinessSDK"],
-            path: "TikTokBusinessSDKTests"
+            name: "TikTokBusinessSDKTestsAppEvents",
+            dependencies: ["TikTokBusinessSDKCore", "TikTokBusinessSDK"],
+            path: "TikTokBusinessSDKTests/AppEvents"
+        ),
+        .testTarget(
+            name: "TikTokBusinessSDKTestsIAP",
+            dependencies: ["TikTokBusinessSDKCore", "TikTokBusinessSDK"],
+            path: "TikTokBusinessSDKTests/IAP"
         ),
     ]
 )

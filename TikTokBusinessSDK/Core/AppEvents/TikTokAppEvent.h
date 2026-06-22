@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, nonnull) NSString *type;
 
+/// Whether the event is from EDP.
+@property (nonatomic, assign) BOOL isEDPEvent;
+
 /**
  * @brief AnonymousID at the time event is tracked.
  */

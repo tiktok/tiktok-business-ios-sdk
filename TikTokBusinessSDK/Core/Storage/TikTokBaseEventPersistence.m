@@ -39,7 +39,8 @@
         @"event_data": @"BLOB",
         @"ts": @"TEXT",
         @"retry_times": @"INTEGER",
-        @"sending": @"INTEGER"
+        @"sending": @"INTEGER",
+        @"is_edp_event": @"INTEGER"
     };
     return fields;
 }
@@ -80,6 +81,7 @@
             NSData *eventData = [NSKeyedArchiver archivedDataWithRootObject:event requiringSecureCoding:YES error:&errorArchiving];
             if (errorArchiving) {
                 NSLog(@"Failed to serialize event to data: %@", errorArchiving.localizedDescription);
+                NSAssert(NO, @"Failed to serialize event to data: %@", errorArchiving.localizedDescription);
                 [self.db closeDatabase];
                 return NO;
             }
@@ -87,7 +89,8 @@
                 @"event_data":eventData,
                 @"ts": TTSafeString(event.timestamp),
                 @"retry_times": @(event.retryTimes),
-                @"sending": @(0)
+                @"sending": @(0),
+                @"is_edp_event": @(event.isEDPEvent)
             }]) {
                 [self.db closeDatabase];
                 return NO;
@@ -196,6 +199,17 @@
 
 + (NSString *)tableName {
     return @"app_event_table";
+}
+
+- (BOOL)clearEDPEvents {
+    NSString *edpCondition = @"is_edp_event = 1";
+    if ([self.db openDatabase]) {
+        if (![self.db deleteTable:[[self class] tableName] withWhere:edpCondition orderBy:TTDBOrderByNone limit:TTDBLimitNone]) {
+            [self.db closeDatabase];
+            return NO;
+        }
+    }
+    return YES;
 }
 
 @end

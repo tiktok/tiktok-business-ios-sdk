@@ -24,13 +24,13 @@
 }
 
 - (void)testInit {
-    TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfoWithSdkPrefix:@""];
+    TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfo];
     XCTAssertNotNil(deviceInfo);
 }
 
 
 - (void)testFallbackUserAgent {
-    TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfoWithSdkPrefix:@""];
+    TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfo];
     XCTAssertNotNil([deviceInfo fallbackUserAgent]);
 }
 

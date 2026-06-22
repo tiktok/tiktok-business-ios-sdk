@@ -254,7 +254,7 @@
 
 
 - (void)getDebugMode:(TikTokConfig *)config
-withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))completionHandler
+withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error))completionHandler
 {
     NSDictionary *parametersDict = [self paramDictForConfig:config];
     
@@ -292,7 +292,7 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
         // handle basic connectivity issues
         if(error) {
             [self.logger error:@"[TikTokRequestHandler] error in connection: %@", error];
-            completionHandler(NO, error);
+            completionHandler(nil, error);
             return;
         }
         id dataDictionary = [TikTokTypeUtility JSONObjectWithData:data options:0 error:nil origin:NSStringFromClass([self class])];
@@ -302,7 +302,7 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
             
             if (statusCode != 200) {
                 [self.logger error:@"[TikTokRequestHandler] HTTP error status code: %lu", statusCode];
-                completionHandler(NO, [NSError errorWithDomain:@"com.TikTokBusinessSDK.error" code:statusCode userInfo:nil]);
+                completionHandler(nil, [NSError errorWithDomain:@"com.TikTokBusinessSDK.error" code:statusCode userInfo:nil]);
                 return;
             }
             
@@ -317,15 +317,14 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
                 NSError *error = [NSError errorWithDomain:@"com.TikTokBusinessSDK.error" code:[code integerValue] userInfo:@{
                     NSLocalizedDescriptionKey: TTSafeString(message)
                 }];
-                completionHandler(NO, error);
+                completionHandler(nil, error);
                 return;
             }
             NSDictionary *dataValue = [dataDictionary objectForKey:@"data"];
             if (TTCheckValidDictionary(dataValue)) {
                 NSDictionary *businessSDKConfig = [dataValue objectForKey:@"business_sdk_config"];
                 if (TTCheckValidDictionary(businessSDKConfig)) {
-                    BOOL remoteDebugModeEnabled = [[businessSDKConfig objectForKey:@"enable_debug_mode"] boolValue];
-                    completionHandler(remoteDebugModeEnabled, nil);
+                    completionHandler(businessSDKConfig, nil);
                 }
             }
             
@@ -334,7 +333,7 @@ withCompletionHandler:(void (^)(BOOL remoteDebugModeEnabled, NSError *error))com
             return;
         }
 
-        completionHandler(NO, nil);
+        completionHandler(nil, nil);
     }] resume];
    
 }

@@ -354,7 +354,7 @@ static NSMutableArray *g_pendingRequestors;
     [TikTokTypeUtility dictionary:eventParameters setObject:[[NSNumber numberWithDouble:valueToSum] stringValue] forKey:@"value"];
     [TikTokBusiness trackEvent:eventName withProperties:eventParameters];
     
-    if ([TikTokEDPConfig sharedConfig].enable_sdk && [TikTokEDPConfig sharedConfig].enable_from_ttconfig && [TikTokEDPConfig sharedConfig].enable_pay_show_track) {
+    if ([TikTokBusiness isPayShowTrackEnabled]) {
         [eventParameters setObject:@"enhanced_data_postback" forKey:@"monitor_type"];
         [TikTokBusiness trackEvent:@"pay_show" withProperties:eventParameters.copy];
     }

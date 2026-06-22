@@ -125,6 +125,14 @@
     
 }
 
+- (void)clearEDPEvents {
+    dispatch_async(self.loggerQueue, ^{
+        if (![[TikTokAppEventPersistence persistence] clearEDPEvents]) {
+            [self.logger info:@"[TikTokAppEventQueue] clearEDPEvents failed."];
+        }
+    });
+}
+
 - (void)flush:(TikTokAppEventsFlushReason)flushReason
 {
     if (!TTCheckValidString(self.config.appId)) {

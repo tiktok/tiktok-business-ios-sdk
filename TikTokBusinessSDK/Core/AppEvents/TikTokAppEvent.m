@@ -23,6 +23,7 @@
 #define TIKTOKSDK_DBID_KEY @"dbID"
 #define TIKTOKSDK_RETRYTIMES_KEY @"retryTimes"
 #define TIKTOKSDK_SCREENSHOT_KEY @"screenshot"
+#define TIKTOKSDK_ISEDPEVENT_KEY @"isEDPEvent"
 
 @implementation TikTokAppEvent
 
@@ -80,8 +81,10 @@
         if (TTCheckValidString(monitorType) && [monitorType isEqualToString:@"enhanced_data_postback"]) {
             [realProperties setObject:tmpProperty forKey:@"meta"];
             [realProperties setObject:@"edp" forKey:@"track_source"];
+            self.isEDPEvent = YES;
         } else {
             [realProperties addEntriesFromDictionary:tmpProperty];
+            self.isEDPEvent = NO;
         }
     }
     [realProperties setValue:TTSafeString(eventID) forKey:@"tt_event_id"];
@@ -113,6 +116,7 @@
         copy.type = [self.type copyWithZone:zone];
         copy.dbID = [self.dbID copyWithZone:zone];
         copy.retryTimes = self.retryTimes;
+        copy.isEDPEvent = self.isEDPEvent;
     }
     
     return copy;
@@ -136,6 +140,7 @@
     [encoder encodeObject:self.dbID forKey:TIKTOKSDK_DBID_KEY];
     [encoder encodeInteger:self.retryTimes forKey:TIKTOKSDK_RETRYTIMES_KEY];
     [encoder encodeObject:self.screenshot forKey:TIKTOKSDK_SCREENSHOT_KEY];
+    [encoder encodeBool:self.isEDPEvent forKey:TIKTOKSDK_ISEDPEVENT_KEY];
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)decoder
@@ -153,6 +158,7 @@
         self.dbID = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_DBID_KEY];
         self.retryTimes = [decoder decodeIntegerForKey:TIKTOKSDK_RETRYTIMES_KEY];
         self.screenshot = [decoder decodeObjectOfClass:[NSString class] forKey:TIKTOKSDK_SCREENSHOT_KEY];
+        self.isEDPEvent = [decoder decodeBoolForKey:TIKTOKSDK_ISEDPEVENT_KEY];
     }
     return self;
 }

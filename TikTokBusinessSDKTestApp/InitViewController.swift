@@ -10,6 +10,10 @@ import Foundation
 import UIKit
 import TikTokBusinessSDK
 
+fileprivate let APP_ID_CACHE_KEY: String = "APP_ID_CACHE_KEY"
+fileprivate let TIKTOK_APP_ID_CACHE_KEY: String = "TIKTOK_APP_ID_CACHE_KEY"
+fileprivate let ACCESS_TOKEN_CACHE_KEY: String = "ACCESS_TOKEN_CACHE_KEY"
+
 class InitViewController: UIViewController {
 
     var appIdTextField: UITextField!
@@ -26,24 +30,33 @@ class InitViewController: UIViewController {
     var SKAdNetworkSupportEnabledSwitch: UISwitch!
     var LDUModeEnabledSwitch: UISwitch!
     var statusLabel: UILabel!
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        view.endEditing(true)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+        view.backgroundColor = .black
 
         appIdTextField = UITextField(frame: CGRect(x: 20, y: 100, width: 200, height: 40))
+        appIdTextField.text = UserDefaults.standard.string(forKey: APP_ID_CACHE_KEY)
         appIdTextField.placeholder = "Enter App ID"
         appIdTextField.borderStyle = .roundedRect
         view.addSubview(appIdTextField)
 
         ttAppIdTextField = UITextField(frame: CGRect(x: 20, y: 150, width: 200, height: 40))
+        ttAppIdTextField.text = UserDefaults.standard.string(forKey: TIKTOK_APP_ID_CACHE_KEY)
         ttAppIdTextField.placeholder = "Enter TikTokAppID"
         ttAppIdTextField.borderStyle = .roundedRect
         view.addSubview(ttAppIdTextField)
         
         tokenTextField = UITextField(frame: CGRect(x: 20, y: 200, width: 200, height: 40))
+        tokenTextField.text = UserDefaults.standard.string(forKey: ACCESS_TOKEN_CACHE_KEY)
         tokenTextField.placeholder = "Enter access token"
         tokenTextField.borderStyle = .roundedRect
         view.addSubview(tokenTextField)
@@ -218,6 +231,9 @@ class InitViewController: UIViewController {
                 }
             }
             
+            UserDefaults.standard.set(appId, forKey: APP_ID_CACHE_KEY)
+            UserDefaults.standard.set(ttAppId, forKey: TIKTOK_APP_ID_CACHE_KEY)
+            UserDefaults.standard.set(accessToken, forKey: ACCESS_TOKEN_CACHE_KEY)
             /* UNCOMMENT TO CUSTOMIZE AFTER INITIALIZING SDK
      
             TikTokBusiness.setTrackingEnabled(/* value */)

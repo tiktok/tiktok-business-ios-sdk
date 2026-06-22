@@ -9,6 +9,7 @@
 #import "TikTokLogger.h"
 #import "TikTokBaseEvent.h"
 #import "TikTokConstants.h"
+#import "TikTokAppEvent.h"
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *accessToken;
 @property (nonatomic) NSString *anonymousID;
 @property (nonatomic, assign, readonly) BOOL isDebugMode;
+@property (nonatomic, assign, readonly, class) BOOL isPayShowTrackEnabled;
+@property (nonatomic, assign, readonly) UInt64 storeKit2ObserveInterval;
+@property (nonatomic, assign, readonly) BOOL isStoreKit2ReportConsumableStateEnabled;
 
 /**
  * @brief This method should be called in the didFinishLaunching method of your AppDelegate
@@ -248,6 +252,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)fetchDeferredDeeplinkWithCompletion:(void (^)(NSURL * _Nullable, NSError * _Nullable))completion;
 
 + (void)paramForApmConfig:(NSNotification *)noti;
+
+- (void)reportTikTokAppEvent:(TikTokAppEvent *)event;
 
 @end
 

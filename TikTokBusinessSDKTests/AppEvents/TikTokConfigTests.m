@@ -40,7 +40,7 @@
     [config disableAppTrackingDialog];
     XCTAssertTrue(config.appTrackingDialogSuppressed);
     [config disablePaymentTracking];
-    XCTAssertFalse(config.paymentTrackingEnabled);
+    XCTAssertFalse(config.paymentTrackingStatus == TikTokPaymentTrackStatus_enabled);
     [config disableRetentionTracking];
     XCTAssertFalse(config.retentionTrackingEnabled);
     [config enableLDUMode];

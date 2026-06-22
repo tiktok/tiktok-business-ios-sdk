@@ -38,6 +38,16 @@
 #import "TikTokSKANEventPersistence.h"
 #import "TikTokDebugInfo.h"
 
+// This header file is missing when integrating in Swift Package Manager.
+#ifndef TikTokBusinessSDK_SPM
+#if __has_include( <TikTokBusinessSDK/TikTokBusinessSDK-Swift.h>)
+        #import  <TikTokBusinessSDK/TikTokBusinessSDK-Swift.h>
+#else
+        #import "TikTokBusinessSDK-Swift.h"
+#endif
+#endif
+
+
 @interface TikTokBusiness()
 
 @property (nonatomic, strong) TikTokLogger *logger;
@@ -57,7 +67,11 @@
 @property (nonatomic, assign, readwrite) BOOL isLDUMode;
 @property (nonatomic, strong, nullable) TikTokConfig *config;
 @property (nonatomic, assign) BOOL remoteDebugEnabled;
+@property (nonatomic, assign) BOOL screenshotEnabled;
 @property (nonatomic, strong, nullable) NSTimer *sessionActivityTimer;
+@property (nonatomic, assign) BOOL isStoreKit2ObserveEnabled;
+@property (nonatomic, assign, readwrite) UInt64 storeKit2ObserveInterval;
+@property (nonatomic, assign, readwrite) BOOL isStoreKit2ReportConsumableStateEnabled;
 
 @end
 
@@ -155,6 +169,7 @@ static dispatch_once_t onceToken = 0;
     self.exchangeErrReportRate = 0.01;
     self.isRemoteSwitchOn = YES;
     self.remoteDebugEnabled = NO;
+    self.screenshotEnabled = NO;
     
     [self checkAttStatus];
 
@@ -579,7 +594,7 @@ withType:(NSString *)type
     }
     
     TikTokAppEvent *appEvent = [[TikTokAppEvent alloc] initWithEventName:eventName withProperties:properties withEventID:eventId];
-    if (self.remoteDebugEnabled) {
+    if (self.screenshotEnabled) {
         dispatch_async(dispatch_get_main_queue(), ^{
             NSString *screenshot = [self screenShot];
             appEvent.screenshot = screenshot;
@@ -862,7 +877,7 @@ withType:(NSString *)type
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
-        if(!self.isRemoteSwitchOn) {
+        if (!self.isRemoteSwitchOn) {
             [self.logger info:@"Remote switch is off"];
             [defaults setObject:@"false" forKey:@"AreTimersOn"];
             [defaults synchronize];
@@ -912,6 +927,8 @@ withType:(NSString *)type
                         [UIViewController TT_StartUIViewControllerEDPMonitoring];
                         [UIApplication TT_StartUIApplicationEDPMonitoring];
                     });
+                } else {
+                    [self.eventLogger clearEDPEvents];
                 }
                 
                 NSString *sourceURLString = [defaults objectForKey:@"source_url"];
@@ -928,7 +945,7 @@ withType:(NSString *)type
          }
         
         // if SDK has not been initialized, we initialize it
-        if(isFirstInitialization || ![[defaults objectForKey:@"HasBeenInitialized"]  isEqual: @"true"]) {
+        if (isFirstInitialization || ![[defaults objectForKey:@"HasBeenInitialized"]  isEqual: @"true"]) {
             BOOL crashMonitorEnabled = [[globalConfig objectForKey:@"crash_monitor_enable"] boolValue];
             if (crashMonitorEnabled) {
                 [self setUpCrashMonitor];
@@ -942,7 +959,7 @@ withType:(NSString *)type
             NSDate *installDate = (NSDate *)[defaults objectForKey:@"tiktokInstallDate"];
             
             // SKAdNetwork 3.0 Support (works on iOS 14.0+)
-            if(self.SKAdNetworkSupportEnabled) {
+            if (self.SKAdNetworkSupportEnabled) {
                 [[TikTokSKAdNetworkSupport sharedInstance] registerAppForAdNetworkAttribution];
             }
             
@@ -950,9 +967,27 @@ withType:(NSString *)type
             self.retentionTrackingEnabled = self.retentionTrackingEnabled && globalConfigRetentionTrackingEnabled;
             BOOL globalConfigPaymentTrackingEnabled = [globalConfig objectForKey:@"auto_track_Payment_enable"]!=nil ? [[globalConfig objectForKey:@"auto_track_Payment_enable"] boolValue] : YES;
             self.paymentTrackingEnabled = globalConfigPaymentTrackingEnabled;
+            NSNumber *isStoreKit2ObserveEnabled = [globalConfig objectForKey:@"enable_ios_sk2_observe"];
+            if (isStoreKit2ObserveEnabled && [isStoreKit2ObserveEnabled isKindOfClass:NSNumber.class]) {
+                self.isStoreKit2ObserveEnabled = [isStoreKit2ObserveEnabled boolValue];
+            } else {
+                self.isStoreKit2ObserveEnabled = YES;
+            }
+            NSNumber *storeKit2ObserveInterval = [globalConfig objectForKey:@"ios_sk2_observe_timeinterval"];
+            if (storeKit2ObserveInterval && [storeKit2ObserveInterval isKindOfClass:NSNumber.class]) {
+                self.storeKit2ObserveInterval = storeKit2ObserveInterval.unsignedLongLongValue;
+            } else {
+                self.storeKit2ObserveInterval = 0;
+            }
+            NSNumber *isStoreKit2ReportConsumableStateEnabled = [globalConfig objectForKey:@"enable_ios_report_consumable_include_state"];
+            if (isStoreKit2ReportConsumableStateEnabled && [isStoreKit2ReportConsumableStateEnabled isKindOfClass:NSNumber.class]) {
+                self.isStoreKit2ReportConsumableStateEnabled = [isStoreKit2ReportConsumableStateEnabled boolValue];
+            } else {
+                self.isStoreKit2ReportConsumableStateEnabled = YES;
+            }
             // Enabled: Tracking, Auto Tracking, Install Tracking
             // Launched Before: False
-            if(self.automaticTrackingEnabled && !launchedBefore){
+            if (self.automaticTrackingEnabled && !launchedBefore){
                 
                 if (self.installTrackingEnabled) {
                     [self trackEvent:@"InstallApp" withProperties:@{@"type":@"auto"} withId:@""];
@@ -967,7 +1002,7 @@ withType:(NSString *)type
             }
 
             // Enabled: Tracking, Auto Tracking, Launch Logging
-            if(self.automaticTrackingEnabled && self.launchTrackingEnabled){
+            if (self.automaticTrackingEnabled && self.launchTrackingEnabled){
                 [self trackEvent:@"LaunchAPP" withProperties:@{@"type":@"auto"} withId:@""];
             }
             
@@ -986,14 +1021,14 @@ withType:(NSString *)type
             // Enabled: Auto Tracking, 2DRetention Tracking
             // Install Date: Available
             // 2D Limit has not been passed
-            if(self.automaticTrackingEnabled && installDate && self.retentionTrackingEnabled) {
+            if (self.automaticTrackingEnabled && installDate && self.retentionTrackingEnabled) {
                 [self track2DRetention];
             }
 
-            if(self.automaticTrackingEnabled && self.paymentTrackingEnabled) {
-                [TikTokPaymentObserver startObservingTransactions];
+            if (self.automaticTrackingEnabled && self.paymentTrackingEnabled) {
+                [self startStoreKitObserve];
             } else {
-                [TikTokPaymentObserver stopObservingTransactions];
+                [self stopStoreKitObserve];
             }
             
             NSNumber *initStartTimestamp = [defaults objectForKey:@"monitorInitStartTime"];
@@ -1010,9 +1045,10 @@ withType:(NSString *)type
         }
     }];
     
-    [self.requestHandler getDebugMode:tiktokConfig withCompletionHandler:^(BOOL remoteDebugModeEnabled, NSError * _Nonnull error) {
-        if (!error) {
-            self.remoteDebugEnabled = remoteDebugModeEnabled;
+    [self.requestHandler getDebugMode:tiktokConfig withCompletionHandler:^(NSDictionary *businessSDKConfig, NSError * _Nonnull error) {
+        if (!error && TTCheckValidDictionary(businessSDKConfig)) {
+            self.remoteDebugEnabled = [[businessSDKConfig objectForKey:@"enable_debug_mode"] boolValue];
+            self.screenshotEnabled = [[businessSDKConfig objectForKey:@"enable_screenshot"] boolValue];
         }
     }];
 }
@@ -1160,6 +1196,38 @@ withType:(NSString *)type
         @"sdk_adid":@"10000004"
     };
     paramBlock(apmConfigParams);
+}
+
++ (BOOL)isPayShowTrackEnabled {
+    return [TikTokEDPConfig sharedConfig].enable_sdk && [TikTokEDPConfig sharedConfig].enable_from_ttconfig && [TikTokEDPConfig sharedConfig].enable_pay_show_track;
+}
+
+- (void)startStoreKitObserve {
+    if (@available(iOS 15.0, *)) {
+        if (self.isStoreKit2ObserveEnabled) {
+            Class TikTokStoreKitObserver = NSClassFromString(@"TikTokStoreKitObserver");
+            if ([TikTokStoreKitObserver respondsToSelector:@selector(start)]) {
+                [TikTokStoreKitObserver performSelector:@selector(start)];
+                return;
+            }
+        }
+    }
+    [TikTokPaymentObserver startObservingTransactions];
+}
+
+- (void)stopStoreKitObserve {
+    if (@available(iOS 15.0, *)) {
+        Class TikTokStoreKitObserver = NSClassFromString(@"TikTokStoreKitObserver");
+        if ([TikTokStoreKitObserver respondsToSelector:@selector(stop)]) {
+            [TikTokStoreKitObserver performSelector:@selector(stop)];
+            return;
+        }
+    }
+    [TikTokPaymentObserver stopObservingTransactions];
+}
+
+- (void)reportTikTokAppEvent:(TikTokAppEvent *)event {
+    [self.eventLogger addEvent:event];
 }
 
 @end

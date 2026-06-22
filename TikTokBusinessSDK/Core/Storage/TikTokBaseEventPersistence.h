@@ -34,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TikTokAppEventPersistence : TikTokBaseEventPersistence
 
+/// clear edp events from database. This method **only** clear **edp** events.
+- (BOOL)clearEDPEvents;
+
 @end
 
 @interface TikTokMonitorEventPersistence : TikTokBaseEventPersistence
