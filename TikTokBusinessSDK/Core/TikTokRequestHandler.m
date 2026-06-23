@@ -938,6 +938,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
     NSDictionary *library = @{
         @"name": libraryName,
         @"version": SDK_VERSION,
+        @"integration_type": TikTokBusinessSDKIntegrationTypeString(),
         @"smart_sdk_client_flag": @(config.autoEDPEventEnabled),
         @"auto_iap_track_config":@(config.paymentTrackingStatus)
     };

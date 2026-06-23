@@ -38,6 +38,270 @@
 		0ADCF552253A212A00D7B57C /* TikTokTypeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADCF550253A212A00D7B57C /* TikTokTypeUtility.m */; };
 		2B1138542B9EEDC200215812 /* InitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1138532B9EEDC200215812 /* InitViewController.swift */; };
 		2B1138562B9EF2A900215812 /* IdentifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1138552B9EF2A900215812 /* IdentifyViewController.swift */; };
+		2B13EE752FEA9E54005D45D1 /* NSObject+TikTokAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3369632C08687500E8D51C /* NSObject+TikTokAdditions.h */; };
+		2B13EE762FEA9E54005D45D1 /* TikTokUnityBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B8FD7662CCA113100F35415 /* TikTokUnityBridge.h */; };
+		2B13EE772FEA9E54005D45D1 /* TikTokCurrencyUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3368C92BFCBF1E00E8D51C /* TikTokCurrencyUtility.h */; };
+		2B13EE782FEA9E54005D45D1 /* TikTokEDPConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B931B382CC63C5E008133D0 /* TikTokEDPConfig.h */; };
+		2B13EE792FEA9E54005D45D1 /* UIDevice+TikTokAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B89A238251A64E700B61811 /* UIDevice+TikTokAdditions.h */; };
+		2B13EE7A2FEA9E54005D45D1 /* TikTokSKAdNetworkConversionConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B7512BB2642996D009DE653 /* TikTokSKAdNetworkConversionConfiguration.h */; };
+		2B13EE7B2FEA9E54005D45D1 /* TikTokSKAdNetworkWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BCE07DB2AFE2B9D00816335 /* TikTokSKAdNetworkWindow.h */; };
+		2B13EE7C2FEA9E54005D45D1 /* TikTokBusinessSDKAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A1592CBFB814004F7F5A /* TikTokBusinessSDKAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EE7D2FEA9E54005D45D1 /* TikTokBusiness.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B23DFBD25080872008351FA /* TikTokBusiness.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EE7E2FEA9E54005D45D1 /* TTSDKCrashReportStoreC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDF2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.h */; };
+		2B13EE7F2FEA9E54005D45D1 /* TikTokErrorHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ADCF5392538CF1C00D7B57C /* TikTokErrorHandler.h */; };
+		2B13EE802FEA9E54005D45D1 /* TTSDKCrashReportFilterAppleFmt.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FAF2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.h */; };
+		2B13EE812FEA9E54005D45D1 /* TTSDKGZipHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0512CBFAEF7004F7F5A /* TTSDKGZipHelper.h */; };
+		2B13EE822FEA9E54005D45D1 /* TTSDKCrashAppMemoryTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD32CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.h */; };
+		2B13EE832FEA9E54005D45D1 /* TTSDKCrashReportFilterDoctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB12CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.h */; };
+		2B13EE842FEA9E54005D45D1 /* TikTokDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3D27D22D57325700ED25FB /* TikTokDatabase.h */; };
+		2B13EE852FEA9E54005D45D1 /* TTSDKCrashReportFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDD2CBFAEF7004F7F5A /* TTSDKCrashReportFilter.h */; };
+		2B13EE862FEA9E54005D45D1 /* TTSDKCrashMonitor_DiscSpace.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FA82CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.h */; };
+		2B13EE872FEA9E54005D45D1 /* TTSDKCrashReportFilterSets.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB42CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.h */; };
+		2B13EE882FEA9E54005D45D1 /* TTSDKCrashReportFilterAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FAE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.h */; };
+		2B13EE892FEA9E54005D45D1 /* TTSDKDate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0162CBFAEF7004F7F5A /* TTSDKDate.h */; };
+		2B13EE8A2FEA9E54005D45D1 /* TTSDKCrashReportFixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0082CBFAEF7004F7F5A /* TTSDKCrashReportFixer.h */; };
+		2B13EE8B2FEA9E54005D45D1 /* TTSDKMachineContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0202CBFAEF7004F7F5A /* TTSDKMachineContext.h */; };
+		2B13EE8C2FEA9E54005D45D1 /* TTSDKMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0222CBFAEF7004F7F5A /* TTSDKMemory.h */; };
+		2B13EE8D2FEA9E54005D45D1 /* TTSDKSystemCapabilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429F6E2CBFAEF7004F7F5A /* TTSDKSystemCapabilities.h */; };
+		2B13EE8E2FEA9E54005D45D1 /* TTSDKSysCtl.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A02C2CBFAEF7004F7F5A /* TTSDKSysCtl.h */; };
+		2B13EE8F2FEA9E54005D45D1 /* TTSDKCrashMonitor_BootTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429F672CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.h */; };
+		2B13EE902FEA9E54005D45D1 /* TTSDKDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0172CBFAEF7004F7F5A /* TTSDKDebug.h */; };
+		2B13EE912FEA9E54005D45D1 /* TTSDKCrashAppMemory+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FFD2CBFAEF7004F7F5A /* TTSDKCrashAppMemory+Private.h */; };
+		2B13EE922FEA9E54005D45D1 /* TikTokDebugInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BEC2CDC2E20E7130086C546 /* TikTokDebugInfo.h */; };
+		2B13EE932FEA9E54005D45D1 /* TTSDKCrashMonitor_Memory.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FEA2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.h */; };
+		2B13EE942FEA9E54005D45D1 /* TTSDKCrashInstallation+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FCC2CBFAEF7004F7F5A /* TTSDKCrashInstallation+Private.h */; };
+		2B13EE952FEA9E54005D45D1 /* TTSDKCPU_Apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0102CBFAEF7004F7F5A /* TTSDKCPU_Apple.h */; };
+		2B13EE962FEA9E54005D45D1 /* TikTokCypher.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B7DBBFD2D114E1E002DF93C /* TikTokCypher.h */; };
+		2B13EE972FEA9E54005D45D1 /* TTSDKCrashReportC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0062CBFAEF7004F7F5A /* TTSDKCrashReportC.h */; };
+		2B13EE982FEA9E54005D45D1 /* TTSDKHTTPMultipartPostBody.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0522CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.h */; };
+		2B13EE992FEA9E54005D45D1 /* TTSDKCrashMonitorHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0142CBFAEF7004F7F5A /* TTSDKCrashMonitorHelper.h */; };
+		2B13EE9A2FEA9E54005D45D1 /* TTSDKMach-O.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01F2CBFAEF7004F7F5A /* TTSDKMach-O.h */; };
+		2B13EE9B2FEA9E54005D45D1 /* TTSDKStackCursor_SelfThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0292CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.h */; };
+		2B13EE9C2FEA9E54005D45D1 /* TTSDKCrashReportStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDE2CBFAEF7004F7F5A /* TTSDKCrashReportStore.h */; };
+		2B13EE9D2FEA9E54005D45D1 /* TTSDKCrashInstallationStandard.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FC72CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.h */; };
+		2B13EE9E2FEA9E54005D45D1 /* TTSDKCrashCConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD72CBFAEF7004F7F5A /* TTSDKCrashCConfiguration.h */; };
+		2B13EE9F2FEA9E54005D45D1 /* TTSDKCrashMonitor_Signal.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FEE2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.h */; };
+		2B13EEA02FEA9E54005D45D1 /* TTSDKCrashConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD82CBFAEF7004F7F5A /* TTSDKCrashConfiguration.h */; };
+		2B13EEA12FEA9E54005D45D1 /* TTSDKCrashCachedData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0012CBFAEF7004F7F5A /* TTSDKCrashCachedData.h */; };
+		2B13EEA22FEA9E54005D45D1 /* TTSDKCrashInstallationConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FC52CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.h */; };
+		2B13EEA32FEA9E54005D45D1 /* TTSDKCrashMonitor_NSException.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FEC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.h */; };
+		2B13EEA42FEA9E54005D45D1 /* TTSDKStackCursor_MachineContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0282CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.h */; };
+		2B13EEA52FEA9E54005D45D1 /* TTSDKCrashReportSinkEMail.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0622CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.h */; };
+		2B13EEA62FEA9E54005D45D1 /* TTSDKStackCursor_Backtrace.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0272CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.h */; };
+		2B13EEA72FEA9E54005D45D1 /* TTSDKCrashC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD62CBFAEF7004F7F5A /* TTSDKCrashC.h */; };
+		2B13EEA82FEA9E54005D45D1 /* TTSDKNSDictionaryHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0542CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.h */; };
+		2B13EEA92FEA9E54005D45D1 /* TTSDKJSONCodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01B2CBFAEF7004F7F5A /* TTSDKJSONCodec.h */; };
+		2B13EEAA2FEA9E54005D45D1 /* TTSDKCrashDoctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB92CBFAEF7004F7F5A /* TTSDKCrashDoctor.h */; };
+		2B13EEAB2FEA9E54005D45D1 /* TTSDKCxaThrowSwapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0152CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.h */; };
+		2B13EEAC2FEA9E54005D45D1 /* TTSDKCrashMonitorFlag.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0132CBFAEF7004F7F5A /* TTSDKCrashMonitorFlag.h */; };
+		2B13EEAD2FEA9E54005D45D1 /* TTSDKThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A02D2CBFAEF7004F7F5A /* TTSDKThread.h */; };
+		2B13EEAE2FEA9E54005D45D1 /* TTSDKCrashMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0112CBFAEF7004F7F5A /* TTSDKCrashMonitor.h */; };
+		2B13EEAF2FEA9E54005D45D1 /* TTSDKID.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01A2CBFAEF7004F7F5A /* TTSDKID.h */; };
+		2B13EEB02FEA9E54005D45D1 /* TTSDKMach.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01E2CBFAEF7004F7F5A /* TTSDKMach.h */; };
+		2B13EEB12FEA9E54005D45D1 /* TTSDKCrashReportFields.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDC2CBFAEF7004F7F5A /* TTSDKCrashReportFields.h */; };
+		2B13EEB22FEA9E54005D45D1 /* TTSDKObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0232CBFAEF7004F7F5A /* TTSDKObjC.h */; };
+		2B13EEB32FEA9E54005D45D1 /* TTSDKCrashInstallationEmail.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FC62CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.h */; };
+		2B13EEB42FEA9E54005D45D1 /* TTSDKCrash.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD12CBFAEF7004F7F5A /* TTSDKCrash.h */; };
+		2B13EEB52FEA9E54005D45D1 /* TTSDKCrashMonitor_Deadlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE62CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.h */; };
+		2B13EEB62FEA9E54005D45D1 /* TTSDKCrashInstallation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FC42CBFAEF7004F7F5A /* TTSDKCrashInstallation.h */; };
+		2B13EEB72FEA9E54005D45D1 /* TTSDKCrashMonitor_MachException.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE82CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.h */; };
+		2B13EEB82FEA9E54005D45D1 /* TTSDKCrashError.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD92CBFAEF7004F7F5A /* TTSDKCrashError.h */; };
+		2B13EEB92FEA9E54005D45D1 /* TTSDKCrashConfiguration+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0042CBFAEF7004F7F5A /* TTSDKCrashConfiguration+Private.h */; };
+		2B13EEBA2FEA9E54005D45D1 /* TTSDKMachineContext_Apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0212CBFAEF7004F7F5A /* TTSDKMachineContext_Apple.h */; };
+		2B13EEBB2FEA9E54005D45D1 /* TTSDKCrashMonitorContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0122CBFAEF7004F7F5A /* TTSDKCrashMonitorContext.h */; };
+		2B13EEBC2FEA9E54005D45D1 /* TTSDKCString.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0502CBFAEF7004F7F5A /* TTSDKCString.h */; };
+		2B13EEBD2FEA9E54005D45D1 /* TTSDKCrashMonitor_Zombie.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FF42CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.h */; };
+		2B13EEBE2FEA9E54005D45D1 /* TTSDKCrashAppMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD22CBFAEF7004F7F5A /* TTSDKCrashAppMemory.h */; };
+		2B13EEBF2FEA9E54005D45D1 /* TTSDKCrashReportWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE02CBFAEF7004F7F5A /* TTSDKCrashReportWriter.h */; };
+		2B13EEC02FEA9E54005D45D1 /* TTSDKSymbolicator.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A02B2CBFAEF7004F7F5A /* TTSDKSymbolicator.h */; };
+		2B13EEC12FEA9E54005D45D1 /* TTSDKHTTPRequestSender.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0532CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.h */; };
+		2B13EEC22FEA9E54005D45D1 /* TTSDKCrashReportFilterBasic.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB02CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.h */; };
+		2B13EEC32FEA9E54005D45D1 /* TTSDKFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0192CBFAEF7004F7F5A /* TTSDKFileUtils.h */; };
+		2B13EEC42FEA9E54005D45D1 /* TTSDKCrashMonitorContextHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FF62CBFAEF7004F7F5A /* TTSDKCrashMonitorContextHelper.h */; };
+		2B13EEC52FEA9E54005D45D1 /* TTSDKNSErrorHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429F6D2CBFAEF7004F7F5A /* TTSDKNSErrorHelper.h */; };
+		2B13EEC62FEA9E54005D45D1 /* TTSDKCrashMonitor_User.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FF22CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.h */; };
+		2B13EEC72FEA9E54005D45D1 /* TTSDKCrashMonitor_System.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FF02CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.h */; };
+		2B13EEC82FEA9E54005D45D1 /* TTSDKSignalInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0252CBFAEF7004F7F5A /* TTSDKSignalInfo.h */; };
+		2B13EEC92FEA9E54005D45D1 /* TTSDKCrash+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FFB2CBFAEF7004F7F5A /* TTSDKCrash+Private.h */; };
+		2B13EECA2FEA9E54005D45D1 /* TTSDKJSONCodecObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01C2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.h */; };
+		2B13EECB2FEA9E54005D45D1 /* TTSDKCrashReportFilterStringify.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB52CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.h */; };
+		2B13EECC2FEA9E54005D45D1 /* TikTokEventLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B83F2EB2D59F75100D26D14 /* TikTokEventLogger.h */; };
+		2B13EECD2FEA9E54005D45D1 /* TTSDKCrashReportSinkStandard.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0632CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.h */; };
+		2B13EECE2FEA9E54005D45D1 /* TTSDKObjCApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0452CBFAEF7004F7F5A /* TTSDKObjCApple.h */; };
+		2B13EECF2FEA9E54005D45D1 /* TTSDKVarArgs.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0562CBFAEF7004F7F5A /* TTSDKVarArgs.h */; };
+		2B13EED02FEA9E54005D45D1 /* TTSDKCrashReportStoreC+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A00C2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC+Private.h */; };
+		2B13EED12FEA9E54005D45D1 /* TTSDKStackCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0262CBFAEF7004F7F5A /* TTSDKStackCursor.h */; };
+		2B13EED22FEA9E54005D45D1 /* TTSDKCPU.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A00F2CBFAEF7004F7F5A /* TTSDKCPU.h */; };
+		2B13EED32FEA9E54005D45D1 /* TTSDKCrashReport.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDB2CBFAEF7004F7F5A /* TTSDKCrashReport.h */; };
+		2B13EED42FEA9E54005D45D1 /* TTSDKCrashMonitor_CPPException.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE42CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.h */; };
+		2B13EED52FEA9E54005D45D1 /* TTSDKCrashReportFilterJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB32CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.h */; };
+		2B13EED62FEA9E54005D45D1 /* TTSDKLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A01D2CBFAEF7004F7F5A /* TTSDKLogger.h */; };
+		2B13EED72FEA9E54005D45D1 /* TTSDKCrashReportVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A00D2CBFAEF7004F7F5A /* TTSDKCrashReportVersion.h */; };
+		2B13EED82FEA9E54005D45D1 /* TTSDKReachabilityTTSDKCrash.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0552CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.h */; };
+		2B13EED92FEA9E54005D45D1 /* TTSDKString.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A02A2CBFAEF7004F7F5A /* TTSDKString.h */; };
+		2B13EEDA2FEA9E54005D45D1 /* TikTokSKANEventPersistence.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3D27DE2D57462900ED25FB /* TikTokSKANEventPersistence.h */; };
+		2B13EEDB2FEA9E54005D45D1 /* TTSDKCrashAppTransitionState.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD52CBFAEF7004F7F5A /* TTSDKCrashAppTransitionState.h */; };
+		2B13EEDC2FEA9E54005D45D1 /* TTSDKPlatformSpecificDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0242CBFAEF7004F7F5A /* TTSDKPlatformSpecificDefines.h */; };
+		2B13EEDD2FEA9E54005D45D1 /* TTSDKCrashAppStateTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FD42CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.h */; };
+		2B13EEDE2FEA9E54005D45D1 /* TTSDKCrashMonitorType.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FDA2CBFAEF7004F7F5A /* TTSDKCrashMonitorType.h */; };
+		2B13EEDF2FEA9E54005D45D1 /* TTSDKCrashReportFilterGZip.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FB22CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.h */; };
+		2B13EEE02FEA9E54005D45D1 /* TTSDKDynamicLinker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0182CBFAEF7004F7F5A /* TTSDKDynamicLinker.h */; };
+		2B13EEE12FEA9E54005D45D1 /* TTSDKCrashReportSinkConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B42A0612CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.h */; };
+		2B13EEE22FEA9E54005D45D1 /* TTSDKCrashMonitor_AppState.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B429FE22CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.h */; };
+		2B13EEE32FEA9E54005D45D1 /* TikTokSKAdNetworkRule.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B7512C126429A05009DE653 /* TikTokSKAdNetworkRule.h */; };
+		2B13EEE42FEA9E54005D45D1 /* TikTokLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B23DFB52505DE7F008351FA /* TikTokLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EEE52FEA9E54005D45D1 /* UIViewController+TikTokAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B24A8072B3AD04200CF2548 /* UIViewController+TikTokAdditions.h */; };
+		2B13EEE62FEA9E54005D45D1 /* TikTokBusinessSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B23DF8D2502BA73008351FA /* TikTokBusinessSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EEE72FEA9E54005D45D1 /* TikTokViewUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BA191AB2B90568100579DC8 /* TikTokViewUtility.h */; };
+		2B13EEE82FEA9E54005D45D1 /* TikTokTypeUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ADCF54F253A212A00D7B57C /* TikTokTypeUtility.h */; };
+		2B13EEE92FEA9E54005D45D1 /* TikTokContentsEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BE60B7A2B1F1D9700AB386C /* TikTokContentsEvent.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EEEA2FEA9E54005D45D1 /* TikTokSKAdNetworkRuleEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3368F72BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.h */; };
+		2B13EEEB2FEA9E54005D45D1 /* TikTokFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B93D3022530668600EDAAA1 /* TikTokFactory.h */; };
+		2B13EEEC2FEA9E54005D45D1 /* TikTokAppEventUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A29066C250B232B00CF3B73 /* TikTokAppEventUtility.h */; };
+		2B13EEED2FEA9E54005D45D1 /* TikTokConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B23DFB925080821008351FA /* TikTokConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EEEE2FEA9E54005D45D1 /* TikTokBaseEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BC7650C2B1F0B2D00E7C698 /* TikTokBaseEvent.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EEEF2FEA9E54005D45D1 /* TikTokRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ADCF53F2538D16900D7B57C /* TikTokRequestHandler.h */; };
+		2B13EEF02FEA9E54005D45D1 /* TikTokAppEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A1A064E25095428001463B8 /* TikTokAppEvent.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EEF12FEA9E54005D45D1 /* TikTokBusiness+private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B870C2B2BF2367B009CB42C /* TikTokBusiness+private.h */; };
+		2B13EEF22FEA9E54005D45D1 /* TikTokConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BE60B9E2B1F2A2100AB386C /* TikTokConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EEF32FEA9E54005D45D1 /* TikTokUserAgentCollector.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B64FDEA2548BA82004AFC49 /* TikTokUserAgentCollector.h */; };
+		2B13EEF42FEA9E54005D45D1 /* TikTokIdentifyUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A41C64225BF52B900245575 /* TikTokIdentifyUtility.h */; };
+		2B13EEF52FEA9E54005D45D1 /* TikTokBusinessSDKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B97DE5F29710AAB00D3C974 /* TikTokBusinessSDKMacros.h */; };
+		2B13EEF62FEA9E54005D45D1 /* TikTokSKAdNetworkSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B64FE022548C68D004AFC49 /* TikTokSKAdNetworkSupport.h */; };
+		2B13EEF72FEA9E54005D45D1 /* TikTokPaymentObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B1811D9251EABF800CBBE2E /* TikTokPaymentObserver.h */; };
+		2B13EEF82FEA9E54005D45D1 /* TikTokBaseEventPersistence.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B3D27D62D5745BB00ED25FB /* TikTokBaseEventPersistence.h */; };
+		2B13EEF92FEA9E54005D45D1 /* UIApplication+TikTokAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B66E0702BA824E00042D36B /* UIApplication+TikTokAdditions.h */; };
+		2B13EEFA2FEA9E54005D45D1 /* TikTokDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B89A23C251A677300B61811 /* TikTokDeviceInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B13EEFC2FEA9E54005D45D1 /* TikTokaaaaBusinessSDKBegin.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A1582CBFB814004F7F5A /* TikTokaaaaBusinessSDKBegin.m */; };
+		2B13EEFD2FEA9E54005D45D1 /* TikTokUserAgentCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B64FDEB2548BA82004AFC49 /* TikTokUserAgentCollector.m */; };
+		2B13EEFE2FEA9E54005D45D1 /* TikTokBusiness.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23DFBE25080872008351FA /* TikTokBusiness.m */; };
+		2B13EEFF2FEA9E54005D45D1 /* TikTokSKAdNetworkRuleEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3368F82BFF1AE700E8D51C /* TikTokSKAdNetworkRuleEvent.m */; };
+		2B13EF002FEA9E54005D45D1 /* TikTokDebugInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BEC2CDD2E20E7130086C546 /* TikTokDebugInfo.m */; };
+		2B13EF012FEA9E54005D45D1 /* TikTokLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23DFB62505DE7F008351FA /* TikTokLogger.m */; };
+		2B13EF022FEA9E54005D45D1 /* TikTokRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADCF5402538D16900D7B57C /* TikTokRequestHandler.m */; };
+		2B13EF032FEA9E54005D45D1 /* TikTokSKAdNetworkWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE07DC2AFE2B9D00816335 /* TikTokSKAdNetworkWindow.m */; };
+		2B13EF042FEA9E54005D45D1 /* TikTokSKAdNetworkConversionConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7512BC2642996D009DE653 /* TikTokSKAdNetworkConversionConfiguration.m */; };
+		2B13EF052FEA9E54005D45D1 /* TikTokConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B23DFBA25080821008351FA /* TikTokConfig.m */; };
+		2B13EF062FEA9E54005D45D1 /* TikTokPaymentObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B1811DA251EABF800CBBE2E /* TikTokPaymentObserver.m */; };
+		2B13EF072FEA9E54005D45D1 /* UIDevice+TikTokAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B89A239251A64E700B61811 /* UIDevice+TikTokAdditions.m */; };
+		2B13EF082FEA9E54005D45D1 /* TikTokUnityBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FD7672CCA113100F35415 /* TikTokUnityBridge.m */; };
+		2B13EF092FEA9E54005D45D1 /* TikTokViewUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BA191AC2B90568100579DC8 /* TikTokViewUtility.m */; };
+		2B13EF0A2FEA9E54005D45D1 /* TikTokBaseEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BC7650D2B1F0B2D00E7C698 /* TikTokBaseEvent.m */; };
+		2B13EF0B2FEA9E54005D45D1 /* NSObject+TikTokAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3369642C08687500E8D51C /* NSObject+TikTokAdditions.m */; };
+		2B13EF0C2FEA9E54005D45D1 /* TikTokIdentifyUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A41C64325BF52B900245575 /* TikTokIdentifyUtility.m */; };
+		2B13EF0D2FEA9E54005D45D1 /* UIApplication+TikTokAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B66E0712BA824E00042D36B /* UIApplication+TikTokAdditions.m */; };
+		2B13EF0E2FEA9E54005D45D1 /* TikTokTypeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADCF550253A212A00D7B57C /* TikTokTypeUtility.m */; };
+		2B13EF0F2FEA9E54005D45D1 /* TikTokSKAdNetworkRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7512C226429A05009DE653 /* TikTokSKAdNetworkRule.m */; };
+		2B13EF102FEA9E54005D45D1 /* TikTokDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3D27D32D57325700ED25FB /* TikTokDatabase.m */; };
+		2B13EF112FEA9E54005D45D1 /* TikTokBusinessSDKAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A15A2CBFB814004F7F5A /* TikTokBusinessSDKAddress.m */; };
+		2B13EF122FEA9E54005D45D1 /* TikTokSKANEventPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3D27DF2D57462900ED25FB /* TikTokSKANEventPersistence.m */; };
+		2B13EF132FEA9E54005D45D1 /* TikTokCypher.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B7DBBFE2D114E1E002DF93C /* TikTokCypher.m */; };
+		2B13EF142FEA9E54005D45D1 /* TTStoreKitObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD8E40C2FD02E94006FD4BB /* TTStoreKitObserver.swift */; };
+		2B13EF152FEA9E54005D45D1 /* TTStoreKitObserver+Public.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD8E40D2FD02E94006FD4BB /* TTStoreKitObserver+Public.swift */; };
+		2B13EF162FEA9E54005D45D1 /* TTStoreKitObserver+SK1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD8E40E2FD02E94006FD4BB /* TTStoreKitObserver+SK1.swift */; };
+		2B13EF172FEA9E54005D45D1 /* TTStoreKitObserver+SK2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD8E40F2FD02E94006FD4BB /* TTStoreKitObserver+SK2.swift */; };
+		2B13EF182FEA9E54005D45D1 /* TikTokBaseEventPersistence.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3D27D72D5745BB00ED25FB /* TikTokBaseEventPersistence.m */; };
+		2B13EF192FEA9E54005D45D1 /* TikTokContentsEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BE60B7B2B1F1D9700AB386C /* TikTokContentsEvent.m */; };
+		2B13EF1A2FEA9E54005D45D1 /* TikTokAppEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A064F25095428001463B8 /* TikTokAppEvent.m */; };
+		2B13EF1B2FEA9E54005D45D1 /* TikTokSKAdNetworkSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B64FE032548C68D004AFC49 /* TikTokSKAdNetworkSupport.m */; };
+		2B13EF1C2FEA9E54005D45D1 /* TikTokConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BE60B9F2B1F2A2100AB386C /* TikTokConstants.m */; };
+		2B13EF1D2FEA9E54005D45D1 /* TikTokFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B93D3032530668600EDAAA1 /* TikTokFactory.m */; };
+		2B13EF1E2FEA9E54005D45D1 /* TikTokDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B89A23D251A677300B61811 /* TikTokDeviceInfo.m */; };
+		2B13EF1F2FEA9E54005D45D1 /* TikTokErrorHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADCF53A2538CF1C00D7B57C /* TikTokErrorHandler.m */; };
+		2B13EF202FEA9E54005D45D1 /* Exports.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B29AD892FD0206700A0EFEA /* Exports.swift */; };
+		2B13EF212FEA9E54005D45D1 /* UIViewController+TikTokAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B24A8082B3AD04200CF2548 /* UIViewController+TikTokAdditions.m */; };
+		2B13EF222FEA9E54005D45D1 /* TikTokBusinessSDKMacros.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B97DE6029710AAB00D3C974 /* TikTokBusinessSDKMacros.m */; };
+		2B13EF232FEA9E54005D45D1 /* TikTokCurrencyUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3368CA2BFCBF1E00E8D51C /* TikTokCurrencyUtility.m */; };
+		2B13EF242FEA9E54005D45D1 /* TikTokAppEventUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A29066D250B232B00CF3B73 /* TikTokAppEventUtility.m */; };
+		2B13EF252FEA9E54005D45D1 /* TikTokEDPConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B931B392CC63C5E008133D0 /* TikTokEDPConfig.m */; };
+		2B13EF262FEA9E54005D45D1 /* TikTokEventLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B83F2EC2D59F75100D26D14 /* TikTokEventLogger.m */; };
+		2B13EF272FEA9E54005D45D1 /* UserDefaults+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4743DB2FC46DA900BC8F0A /* UserDefaults+Extension.swift */; };
+		2B13EF282FEA9E54005D45D1 /* Swift+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4743DD2FC4716000BC8F0A /* Swift+Extension.swift */; };
+		2B13EF292FEA9E54005D45D1 /* StoreKit+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4742DB2FBF285300BC8F0A /* StoreKit+Extension.swift */; };
+		2B13EF2A2FEA9E54005D45D1 /* TTIAPTransactionEventRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD8E4082FD026C5006FD4BB /* TTIAPTransactionEventRouter.swift */; };
+		2B13EF2B2FEA9E54005D45D1 /* TTIAPTransactionEventRouter+SK1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD8E4042FD02580006FD4BB /* TTIAPTransactionEventRouter+SK1.swift */; };
+		2B13EF2C2FEA9E54005D45D1 /* TTIAPTransactionEventRouter+SK2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD8E4152FD0614E006FD4BB /* TTIAPTransactionEventRouter+SK2.swift */; };
+		2B13EF2D2FEA9E54005D45D1 /* TTSK1ProductFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD8E40A2FD02E8B006FD4BB /* TTSK1ProductFetcher.swift */; };
+		2B13EF2E2FEA9E54005D45D1 /* TTIAPTransactionCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD8E4172FD19CF1006FD4BB /* TTIAPTransactionCacheManager.swift */; };
+		2B13EF2F2FEA9E54005D45D1 /* TikTokZZZZBusinessSDKEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A15B2CBFB814004F7F5A /* TikTokZZZZBusinessSDKEnd.m */; };
+		2B13EF302FEA9E54005D45D1 /* TTSDKCrashMonitor_Deadlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FE72CBFAEF7004F7F5A /* TTSDKCrashMonitor_Deadlock.m */; };
+		2B13EF312FEA9E54005D45D1 /* TTSDKCrashInstallation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FCB2CBFAEF7004F7F5A /* TTSDKCrashInstallation.m */; };
+		2B13EF322FEA9E54005D45D1 /* TTSDKNSDictionaryHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05E2CBFAEF7004F7F5A /* TTSDKNSDictionaryHelper.m */; };
+		2B13EF332FEA9E54005D45D1 /* TTSDKCrashMonitor_System.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FF12CBFAEF7004F7F5A /* TTSDKCrashMonitor_System.m */; };
+		2B13EF342FEA9E54005D45D1 /* TTSDKCrashInstallationStandard.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FCF2CBFAEF7004F7F5A /* TTSDKCrashInstallationStandard.m */; };
+		2B13EF352FEA9E54005D45D1 /* TTSDKMachineContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0422CBFAEF7004F7F5A /* TTSDKMachineContext.c */; };
+		2B13EF362FEA9E54005D45D1 /* TTSDKCrashReportC.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0072CBFAEF7004F7F5A /* TTSDKCrashReportC.c */; };
+		2B13EF372FEA9E54005D45D1 /* TTSDKCrashReportFilterStringify.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FC22CBFAEF7004F7F5A /* TTSDKCrashReportFilterStringify.m */; };
+		2B13EF382FEA9E54005D45D1 /* TTSDKCrashMonitor_NSException.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FED2CBFAEF7004F7F5A /* TTSDKCrashMonitor_NSException.m */; };
+		2B13EF392FEA9E54005D45D1 /* TTSDKCrashMonitor_MachException.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FE92CBFAEF7004F7F5A /* TTSDKCrashMonitor_MachException.c */; };
+		2B13EF3A2FEA9E54005D45D1 /* TTSDKCrashAppStateTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FFF2CBFAEF7004F7F5A /* TTSDKCrashAppStateTracker.m */; };
+		2B13EF3B2FEA9E54005D45D1 /* TTSDKDebug.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0392CBFAEF7004F7F5A /* TTSDKDebug.c */; };
+		2B13EF3C2FEA9E54005D45D1 /* TTSDKStackCursor_Backtrace.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0482CBFAEF7004F7F5A /* TTSDKStackCursor_Backtrace.c */; };
+		2B13EF3D2FEA9E54005D45D1 /* TTSDKReachabilityTTSDKCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05F2CBFAEF7004F7F5A /* TTSDKReachabilityTTSDKCrash.m */; };
+		2B13EF3E2FEA9E54005D45D1 /* TTSDKCrashInstallationEmail.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FCE2CBFAEF7004F7F5A /* TTSDKCrashInstallationEmail.m */; };
+		2B13EF3F2FEA9E54005D45D1 /* TTSDKCrashMonitor_DiscSpace.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FAC2CBFAEF7004F7F5A /* TTSDKCrashMonitor_DiscSpace.m */; };
+		2B13EF402FEA9E54005D45D1 /* TTSDKDate.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0382CBFAEF7004F7F5A /* TTSDKDate.c */; };
+		2B13EF412FEA9E54005D45D1 /* TTSDKCrashReportFixer.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0092CBFAEF7004F7F5A /* TTSDKCrashReportFixer.c */; };
+		2B13EF422FEA9E54005D45D1 /* TTSDKCrashReportFilterJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FC02CBFAEF7004F7F5A /* TTSDKCrashReportFilterJSON.m */; };
+		2B13EF432FEA9E54005D45D1 /* TTSDKCrashReportSinkConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0672CBFAEF7004F7F5A /* TTSDKCrashReportSinkConsole.m */; };
+		2B13EF442FEA9E54005D45D1 /* TTSDKLogger.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03F2CBFAEF7004F7F5A /* TTSDKLogger.c */; };
+		2B13EF452FEA9E54005D45D1 /* TTSDKCrashReportStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A00A2CBFAEF7004F7F5A /* TTSDKCrashReportStore.m */; };
+		2B13EF462FEA9E54005D45D1 /* TTSDKHTTPMultipartPostBody.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05C2CBFAEF7004F7F5A /* TTSDKHTTPMultipartPostBody.m */; };
+		2B13EF472FEA9E54005D45D1 /* TTSDKFileUtils.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03B2CBFAEF7004F7F5A /* TTSDKFileUtils.c */; };
+		2B13EF482FEA9E54005D45D1 /* TTSDKCPU_x86_64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0352CBFAEF7004F7F5A /* TTSDKCPU_x86_64.c */; };
+		2B13EF492FEA9E54005D45D1 /* TTSDKCPU_arm64.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0332CBFAEF7004F7F5A /* TTSDKCPU_arm64.c */; };
+		2B13EF4A2FEA9E54005D45D1 /* TTSDKSymbolicator.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04C2CBFAEF7004F7F5A /* TTSDKSymbolicator.c */; };
+		2B13EF4B2FEA9E54005D45D1 /* TTSDKCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FFA2CBFAEF7004F7F5A /* TTSDKCrash.m */; };
+		2B13EF4C2FEA9E54005D45D1 /* TTSDKCrashMonitor_CPPException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FE52CBFAEF7004F7F5A /* TTSDKCrashMonitor_CPPException.cpp */; };
+		2B13EF4D2FEA9E54005D45D1 /* TTSDKCrashReportSinkEMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0682CBFAEF7004F7F5A /* TTSDKCrashReportSinkEMail.m */; };
+		2B13EF4E2FEA9E54005D45D1 /* TTSDKCxaThrowSwapper.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0372CBFAEF7004F7F5A /* TTSDKCxaThrowSwapper.c */; };
+		2B13EF4F2FEA9E54005D45D1 /* TTSDKMemory.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0432CBFAEF7004F7F5A /* TTSDKMemory.c */; };
+		2B13EF502FEA9E54005D45D1 /* TTSDKCrashCachedData.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0022CBFAEF7004F7F5A /* TTSDKCrashCachedData.c */; };
+		2B13EF512FEA9E54005D45D1 /* TTSDKCrashC.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0002CBFAEF7004F7F5A /* TTSDKCrashC.c */; };
+		2B13EF522FEA9E54005D45D1 /* TTSDKCrashReport.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0052CBFAEF7004F7F5A /* TTSDKCrashReport.m */; };
+		2B13EF532FEA9E54005D45D1 /* TTSDKNSErrorHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429F722CBFAEF7004F7F5A /* TTSDKNSErrorHelper.m */; };
+		2B13EF542FEA9E54005D45D1 /* TTSDKCrashMonitor_BootTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429F6B2CBFAEF7004F7F5A /* TTSDKCrashMonitor_BootTime.m */; };
+		2B13EF552FEA9E54005D45D1 /* TTSDKCString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05A2CBFAEF7004F7F5A /* TTSDKCString.m */; };
+		2B13EF562FEA9E54005D45D1 /* TTSDKCrashInstallationConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FCD2CBFAEF7004F7F5A /* TTSDKCrashInstallationConsole.m */; };
+		2B13EF572FEA9E54005D45D1 /* TTSDKCrashReportFilterGZip.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBF2CBFAEF7004F7F5A /* TTSDKCrashReportFilterGZip.m */; };
+		2B13EF582FEA9E54005D45D1 /* TTSDKJSONCodecObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03E2CBFAEF7004F7F5A /* TTSDKJSONCodecObjC.m */; };
+		2B13EF592FEA9E54005D45D1 /* TTSDKString.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04B2CBFAEF7004F7F5A /* TTSDKString.c */; };
+		2B13EF5A2FEA9E54005D45D1 /* TTSDKMach.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0402CBFAEF7004F7F5A /* TTSDKMach.c */; };
+		2B13EF5B2FEA9E54005D45D1 /* TTSDKCrashReportSinkStandard.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0692CBFAEF7004F7F5A /* TTSDKCrashReportSinkStandard.m */; };
+		2B13EF5C2FEA9E54005D45D1 /* TTSDKCrashReportFilterAppleFmt.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBC2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAppleFmt.m */; };
+		2B13EF5D2FEA9E54005D45D1 /* TTSDKCrashAppMemory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FFC2CBFAEF7004F7F5A /* TTSDKCrashAppMemory.m */; };
+		2B13EF5E2FEA9E54005D45D1 /* TTSDKCPU_x86_32.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0342CBFAEF7004F7F5A /* TTSDKCPU_x86_32.c */; };
+		2B13EF5F2FEA9E54005D45D1 /* TTSDKCrashMonitor_Memory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FEB2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Memory.m */; };
+		2B13EF602FEA9E54005D45D1 /* TTSDKCrashMonitor_Signal.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FEF2CBFAEF7004F7F5A /* TTSDKCrashMonitor_Signal.c */; };
+		2B13EF612FEA9E54005D45D1 /* TTSDKJSONCodec.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03D2CBFAEF7004F7F5A /* TTSDKJSONCodec.c */; };
+		2B13EF622FEA9E54005D45D1 /* TTSDKCrashReportFilterAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBB2CBFAEF7004F7F5A /* TTSDKCrashReportFilterAlert.m */; };
+		2B13EF632FEA9E54005D45D1 /* TTSDKHTTPRequestSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05D2CBFAEF7004F7F5A /* TTSDKHTTPRequestSender.m */; };
+		2B13EF642FEA9E54005D45D1 /* TTSDKCrashReportFilterDoctor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBE2CBFAEF7004F7F5A /* TTSDKCrashReportFilterDoctor.m */; };
+		2B13EF652FEA9E54005D45D1 /* TTSDKGZipHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A05B2CBFAEF7004F7F5A /* TTSDKGZipHelper.m */; };
+		2B13EF662FEA9E54005D45D1 /* TTSDKThread.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04E2CBFAEF7004F7F5A /* TTSDKThread.c */; };
+		2B13EF672FEA9E54005D45D1 /* TTSDKCrashAppMemoryTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FFE2CBFAEF7004F7F5A /* TTSDKCrashAppMemoryTracker.m */; };
+		2B13EF682FEA9E54005D45D1 /* TTSDKCrashReportStoreC.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A00B2CBFAEF7004F7F5A /* TTSDKCrashReportStoreC.c */; };
+		2B13EF692FEA9E54005D45D1 /* TTSDKCPU_arm.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0322CBFAEF7004F7F5A /* TTSDKCPU_arm.c */; };
+		2B13EF6A2FEA9E54005D45D1 /* TTSDKCrashReportFilterSets.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FC12CBFAEF7004F7F5A /* TTSDKCrashReportFilterSets.m */; };
+		2B13EF6B2FEA9E54005D45D1 /* TTSDKSignalInfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0462CBFAEF7004F7F5A /* TTSDKSignalInfo.c */; };
+		2B13EF6C2FEA9E54005D45D1 /* TTSDKMach-O.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0412CBFAEF7004F7F5A /* TTSDKMach-O.c */; };
+		2B13EF6D2FEA9E54005D45D1 /* TTSDKDynamicLinker.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03A2CBFAEF7004F7F5A /* TTSDKDynamicLinker.c */; };
+		2B13EF6E2FEA9E54005D45D1 /* TTSDKStackCursor_SelfThread.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04A2CBFAEF7004F7F5A /* TTSDKStackCursor_SelfThread.c */; };
+		2B13EF6F2FEA9E54005D45D1 /* TTSDKCrashDoctor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBA2CBFAEF7004F7F5A /* TTSDKCrashDoctor.m */; };
+		2B13EF702FEA9E54005D45D1 /* TTSDKCrashMonitor_Zombie.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FF52CBFAEF7004F7F5A /* TTSDKCrashMonitor_Zombie.c */; };
+		2B13EF712FEA9E54005D45D1 /* TTSDKCPU.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0312CBFAEF7004F7F5A /* TTSDKCPU.c */; };
+		2B13EF722FEA9E54005D45D1 /* TTSDKID.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A03C2CBFAEF7004F7F5A /* TTSDKID.c */; };
+		2B13EF732FEA9E54005D45D1 /* TTSDKCrashMonitor_AppState.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FE32CBFAEF7004F7F5A /* TTSDKCrashMonitor_AppState.c */; };
+		2B13EF742FEA9E54005D45D1 /* TTSDKSysCtl.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A04D2CBFAEF7004F7F5A /* TTSDKSysCtl.c */; };
+		2B13EF752FEA9E54005D45D1 /* TTSDKStackCursor.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0472CBFAEF7004F7F5A /* TTSDKStackCursor.c */; };
+		2B13EF762FEA9E54005D45D1 /* TTSDKObjC.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0442CBFAEF7004F7F5A /* TTSDKObjC.c */; };
+		2B13EF772FEA9E54005D45D1 /* TTSDKCrashMonitor_User.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FF32CBFAEF7004F7F5A /* TTSDKCrashMonitor_User.c */; };
+		2B13EF782FEA9E54005D45D1 /* TTSDKCrashReportFilterBasic.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B429FBD2CBFAEF7004F7F5A /* TTSDKCrashReportFilterBasic.m */; };
+		2B13EF792FEA9E54005D45D1 /* TTSDKStackCursor_MachineContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0492CBFAEF7004F7F5A /* TTSDKStackCursor_MachineContext.c */; };
+		2B13EF7A2FEA9E54005D45D1 /* TTSDKCrashMonitor.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0362CBFAEF7004F7F5A /* TTSDKCrashMonitor.c */; };
+		2B13EF7B2FEA9E54005D45D1 /* TTSDKCrashConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B42A0032CBFAEF7004F7F5A /* TTSDKCrashConfiguration.m */; };
+		2B13EF7F2FEA9E54005D45D1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2B6C2D992BBAAFFB00D6D9E8 /* PrivacyInfo.xcprivacy */; };
+		2B13EF802FEA9E54005D45D1 /* TikTokBusinessSDK.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 0AD2939D2550DED300790024 /* TikTokBusinessSDK.podspec */; };
 		2B1404B52C29919100CF56B2 /* TikTokRequestHandlerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1404B42C29919100CF56B2 /* TikTokRequestHandlerTests.m */; };
 		2B24A8092B3AD04200CF2548 /* UIViewController+TikTokAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B24A8072B3AD04200CF2548 /* UIViewController+TikTokAdditions.h */; };
 		2B24A80A2B3AD04200CF2548 /* UIViewController+TikTokAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B24A8082B3AD04200CF2548 /* UIViewController+TikTokAdditions.m */; };
@@ -369,6 +633,7 @@
 		0ADCF550253A212A00D7B57C /* TikTokTypeUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokTypeUtility.m; sourceTree = "<group>"; };
 		2B1138532B9EEDC200215812 /* InitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitViewController.swift; sourceTree = "<group>"; };
 		2B1138552B9EF2A900215812 /* IdentifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifyViewController.swift; sourceTree = "<group>"; };
+		2B13EF842FEA9E54005D45D1 /* TikTokBusinessSDKDynamic.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TikTokBusinessSDKDynamic.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B1404B42C29919100CF56B2 /* TikTokRequestHandlerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TikTokRequestHandlerTests.m; sourceTree = "<group>"; };
 		2B1812F42BCE96A10003FFDA /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/System/iOSSupport/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
 		2B24A8072B3AD04200CF2548 /* UIViewController+TikTokAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+TikTokAdditions.h"; sourceTree = "<group>"; };
@@ -652,6 +917,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A165DA2251E7877005889BD /* TikTokBusinessSDK.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2B13EF7C2FEA9E54005D45D1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1198,6 +1470,7 @@
 				8B23DF8A2502BA73008351FA /* TikTokBusinessSDK.framework */,
 				8BB88F1B250A96CA00EC9D74 /* TikTokBusinessSDKTestApp.app */,
 				0A165D9D251E7877005889BD /* TikTokBusinessSDKTests.xctest */,
+				2B13EF842FEA9E54005D45D1 /* TikTokBusinessSDKDynamic.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1273,6 +1546,147 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		2B13EE742FEA9E54005D45D1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B13EE752FEA9E54005D45D1 /* NSObject+TikTokAdditions.h in Headers */,
+				2B13EE762FEA9E54005D45D1 /* TikTokUnityBridge.h in Headers */,
+				2B13EE772FEA9E54005D45D1 /* TikTokCurrencyUtility.h in Headers */,
+				2B13EE782FEA9E54005D45D1 /* TikTokEDPConfig.h in Headers */,
+				2B13EE792FEA9E54005D45D1 /* UIDevice+TikTokAdditions.h in Headers */,
+				2B13EE7A2FEA9E54005D45D1 /* TikTokSKAdNetworkConversionConfiguration.h in Headers */,
+				2B13EE7B2FEA9E54005D45D1 /* TikTokSKAdNetworkWindow.h in Headers */,
+				2B13EE7C2FEA9E54005D45D1 /* TikTokBusinessSDKAddress.h in Headers */,
+				2B13EE7D2FEA9E54005D45D1 /* TikTokBusiness.h in Headers */,
+				2B13EE7E2FEA9E54005D45D1 /* TTSDKCrashReportStoreC.h in Headers */,
+				2B13EE7F2FEA9E54005D45D1 /* TikTokErrorHandler.h in Headers */,
+				2B13EE802FEA9E54005D45D1 /* TTSDKCrashReportFilterAppleFmt.h in Headers */,
+				2B13EE812FEA9E54005D45D1 /* TTSDKGZipHelper.h in Headers */,
+				2B13EE822FEA9E54005D45D1 /* TTSDKCrashAppMemoryTracker.h in Headers */,
+				2B13EE832FEA9E54005D45D1 /* TTSDKCrashReportFilterDoctor.h in Headers */,
+				2B13EE842FEA9E54005D45D1 /* TikTokDatabase.h in Headers */,
+				2B13EE852FEA9E54005D45D1 /* TTSDKCrashReportFilter.h in Headers */,
+				2B13EE862FEA9E54005D45D1 /* TTSDKCrashMonitor_DiscSpace.h in Headers */,
+				2B13EE872FEA9E54005D45D1 /* TTSDKCrashReportFilterSets.h in Headers */,
+				2B13EE882FEA9E54005D45D1 /* TTSDKCrashReportFilterAlert.h in Headers */,
+				2B13EE892FEA9E54005D45D1 /* TTSDKDate.h in Headers */,
+				2B13EE8A2FEA9E54005D45D1 /* TTSDKCrashReportFixer.h in Headers */,
+				2B13EE8B2FEA9E54005D45D1 /* TTSDKMachineContext.h in Headers */,
+				2B13EE8C2FEA9E54005D45D1 /* TTSDKMemory.h in Headers */,
+				2B13EE8D2FEA9E54005D45D1 /* TTSDKSystemCapabilities.h in Headers */,
+				2B13EE8E2FEA9E54005D45D1 /* TTSDKSysCtl.h in Headers */,
+				2B13EE8F2FEA9E54005D45D1 /* TTSDKCrashMonitor_BootTime.h in Headers */,
+				2B13EE902FEA9E54005D45D1 /* TTSDKDebug.h in Headers */,
+				2B13EE912FEA9E54005D45D1 /* TTSDKCrashAppMemory+Private.h in Headers */,
+				2B13EE922FEA9E54005D45D1 /* TikTokDebugInfo.h in Headers */,
+				2B13EE932FEA9E54005D45D1 /* TTSDKCrashMonitor_Memory.h in Headers */,
+				2B13EE942FEA9E54005D45D1 /* TTSDKCrashInstallation+Private.h in Headers */,
+				2B13EE952FEA9E54005D45D1 /* TTSDKCPU_Apple.h in Headers */,
+				2B13EE962FEA9E54005D45D1 /* TikTokCypher.h in Headers */,
+				2B13EE972FEA9E54005D45D1 /* TTSDKCrashReportC.h in Headers */,
+				2B13EE982FEA9E54005D45D1 /* TTSDKHTTPMultipartPostBody.h in Headers */,
+				2B13EE992FEA9E54005D45D1 /* TTSDKCrashMonitorHelper.h in Headers */,
+				2B13EE9A2FEA9E54005D45D1 /* TTSDKMach-O.h in Headers */,
+				2B13EE9B2FEA9E54005D45D1 /* TTSDKStackCursor_SelfThread.h in Headers */,
+				2B13EE9C2FEA9E54005D45D1 /* TTSDKCrashReportStore.h in Headers */,
+				2B13EE9D2FEA9E54005D45D1 /* TTSDKCrashInstallationStandard.h in Headers */,
+				2B13EE9E2FEA9E54005D45D1 /* TTSDKCrashCConfiguration.h in Headers */,
+				2B13EE9F2FEA9E54005D45D1 /* TTSDKCrashMonitor_Signal.h in Headers */,
+				2B13EEA02FEA9E54005D45D1 /* TTSDKCrashConfiguration.h in Headers */,
+				2B13EEA12FEA9E54005D45D1 /* TTSDKCrashCachedData.h in Headers */,
+				2B13EEA22FEA9E54005D45D1 /* TTSDKCrashInstallationConsole.h in Headers */,
+				2B13EEA32FEA9E54005D45D1 /* TTSDKCrashMonitor_NSException.h in Headers */,
+				2B13EEA42FEA9E54005D45D1 /* TTSDKStackCursor_MachineContext.h in Headers */,
+				2B13EEA52FEA9E54005D45D1 /* TTSDKCrashReportSinkEMail.h in Headers */,
+				2B13EEA62FEA9E54005D45D1 /* TTSDKStackCursor_Backtrace.h in Headers */,
+				2B13EEA72FEA9E54005D45D1 /* TTSDKCrashC.h in Headers */,
+				2B13EEA82FEA9E54005D45D1 /* TTSDKNSDictionaryHelper.h in Headers */,
+				2B13EEA92FEA9E54005D45D1 /* TTSDKJSONCodec.h in Headers */,
+				2B13EEAA2FEA9E54005D45D1 /* TTSDKCrashDoctor.h in Headers */,
+				2B13EEAB2FEA9E54005D45D1 /* TTSDKCxaThrowSwapper.h in Headers */,
+				2B13EEAC2FEA9E54005D45D1 /* TTSDKCrashMonitorFlag.h in Headers */,
+				2B13EEAD2FEA9E54005D45D1 /* TTSDKThread.h in Headers */,
+				2B13EEAE2FEA9E54005D45D1 /* TTSDKCrashMonitor.h in Headers */,
+				2B13EEAF2FEA9E54005D45D1 /* TTSDKID.h in Headers */,
+				2B13EEB02FEA9E54005D45D1 /* TTSDKMach.h in Headers */,
+				2B13EEB12FEA9E54005D45D1 /* TTSDKCrashReportFields.h in Headers */,
+				2B13EEB22FEA9E54005D45D1 /* TTSDKObjC.h in Headers */,
+				2B13EEB32FEA9E54005D45D1 /* TTSDKCrashInstallationEmail.h in Headers */,
+				2B13EEB42FEA9E54005D45D1 /* TTSDKCrash.h in Headers */,
+				2B13EEB52FEA9E54005D45D1 /* TTSDKCrashMonitor_Deadlock.h in Headers */,
+				2B13EEB62FEA9E54005D45D1 /* TTSDKCrashInstallation.h in Headers */,
+				2B13EEB72FEA9E54005D45D1 /* TTSDKCrashMonitor_MachException.h in Headers */,
+				2B13EEB82FEA9E54005D45D1 /* TTSDKCrashError.h in Headers */,
+				2B13EEB92FEA9E54005D45D1 /* TTSDKCrashConfiguration+Private.h in Headers */,
+				2B13EEBA2FEA9E54005D45D1 /* TTSDKMachineContext_Apple.h in Headers */,
+				2B13EEBB2FEA9E54005D45D1 /* TTSDKCrashMonitorContext.h in Headers */,
+				2B13EEBC2FEA9E54005D45D1 /* TTSDKCString.h in Headers */,
+				2B13EEBD2FEA9E54005D45D1 /* TTSDKCrashMonitor_Zombie.h in Headers */,
+				2B13EEBE2FEA9E54005D45D1 /* TTSDKCrashAppMemory.h in Headers */,
+				2B13EEBF2FEA9E54005D45D1 /* TTSDKCrashReportWriter.h in Headers */,
+				2B13EEC02FEA9E54005D45D1 /* TTSDKSymbolicator.h in Headers */,
+				2B13EEC12FEA9E54005D45D1 /* TTSDKHTTPRequestSender.h in Headers */,
+				2B13EEC22FEA9E54005D45D1 /* TTSDKCrashReportFilterBasic.h in Headers */,
+				2B13EEC32FEA9E54005D45D1 /* TTSDKFileUtils.h in Headers */,
+				2B13EEC42FEA9E54005D45D1 /* TTSDKCrashMonitorContextHelper.h in Headers */,
+				2B13EEC52FEA9E54005D45D1 /* TTSDKNSErrorHelper.h in Headers */,
+				2B13EEC62FEA9E54005D45D1 /* TTSDKCrashMonitor_User.h in Headers */,
+				2B13EEC72FEA9E54005D45D1 /* TTSDKCrashMonitor_System.h in Headers */,
+				2B13EEC82FEA9E54005D45D1 /* TTSDKSignalInfo.h in Headers */,
+				2B13EEC92FEA9E54005D45D1 /* TTSDKCrash+Private.h in Headers */,
+				2B13EECA2FEA9E54005D45D1 /* TTSDKJSONCodecObjC.h in Headers */,
+				2B13EECB2FEA9E54005D45D1 /* TTSDKCrashReportFilterStringify.h in Headers */,
+				2B13EECC2FEA9E54005D45D1 /* TikTokEventLogger.h in Headers */,
+				2B13EECD2FEA9E54005D45D1 /* TTSDKCrashReportSinkStandard.h in Headers */,
+				2B13EECE2FEA9E54005D45D1 /* TTSDKObjCApple.h in Headers */,
+				2B13EECF2FEA9E54005D45D1 /* TTSDKVarArgs.h in Headers */,
+				2B13EED02FEA9E54005D45D1 /* TTSDKCrashReportStoreC+Private.h in Headers */,
+				2B13EED12FEA9E54005D45D1 /* TTSDKStackCursor.h in Headers */,
+				2B13EED22FEA9E54005D45D1 /* TTSDKCPU.h in Headers */,
+				2B13EED32FEA9E54005D45D1 /* TTSDKCrashReport.h in Headers */,
+				2B13EED42FEA9E54005D45D1 /* TTSDKCrashMonitor_CPPException.h in Headers */,
+				2B13EED52FEA9E54005D45D1 /* TTSDKCrashReportFilterJSON.h in Headers */,
+				2B13EED62FEA9E54005D45D1 /* TTSDKLogger.h in Headers */,
+				2B13EED72FEA9E54005D45D1 /* TTSDKCrashReportVersion.h in Headers */,
+				2B13EED82FEA9E54005D45D1 /* TTSDKReachabilityTTSDKCrash.h in Headers */,
+				2B13EED92FEA9E54005D45D1 /* TTSDKString.h in Headers */,
+				2B13EEDA2FEA9E54005D45D1 /* TikTokSKANEventPersistence.h in Headers */,
+				2B13EEDB2FEA9E54005D45D1 /* TTSDKCrashAppTransitionState.h in Headers */,
+				2B13EEDC2FEA9E54005D45D1 /* TTSDKPlatformSpecificDefines.h in Headers */,
+				2B13EEDD2FEA9E54005D45D1 /* TTSDKCrashAppStateTracker.h in Headers */,
+				2B13EEDE2FEA9E54005D45D1 /* TTSDKCrashMonitorType.h in Headers */,
+				2B13EEDF2FEA9E54005D45D1 /* TTSDKCrashReportFilterGZip.h in Headers */,
+				2B13EEE02FEA9E54005D45D1 /* TTSDKDynamicLinker.h in Headers */,
+				2B13EEE12FEA9E54005D45D1 /* TTSDKCrashReportSinkConsole.h in Headers */,
+				2B13EEE22FEA9E54005D45D1 /* TTSDKCrashMonitor_AppState.h in Headers */,
+				2B13EEE32FEA9E54005D45D1 /* TikTokSKAdNetworkRule.h in Headers */,
+				2B13EEE42FEA9E54005D45D1 /* TikTokLogger.h in Headers */,
+				2B13EEE52FEA9E54005D45D1 /* UIViewController+TikTokAdditions.h in Headers */,
+				2B13EEE62FEA9E54005D45D1 /* TikTokBusinessSDK.h in Headers */,
+				2B13EEE72FEA9E54005D45D1 /* TikTokViewUtility.h in Headers */,
+				2B13EEE82FEA9E54005D45D1 /* TikTokTypeUtility.h in Headers */,
+				2B13EEE92FEA9E54005D45D1 /* TikTokContentsEvent.h in Headers */,
+				2B13EEEA2FEA9E54005D45D1 /* TikTokSKAdNetworkRuleEvent.h in Headers */,
+				2B13EEEB2FEA9E54005D45D1 /* TikTokFactory.h in Headers */,
+				2B13EEEC2FEA9E54005D45D1 /* TikTokAppEventUtility.h in Headers */,
+				2B13EEED2FEA9E54005D45D1 /* TikTokConfig.h in Headers */,
+				2B13EEEE2FEA9E54005D45D1 /* TikTokBaseEvent.h in Headers */,
+				2B13EEEF2FEA9E54005D45D1 /* TikTokRequestHandler.h in Headers */,
+				2B13EEF02FEA9E54005D45D1 /* TikTokAppEvent.h in Headers */,
+				2B13EEF12FEA9E54005D45D1 /* TikTokBusiness+private.h in Headers */,
+				2B13EEF22FEA9E54005D45D1 /* TikTokConstants.h in Headers */,
+				2B13EEF32FEA9E54005D45D1 /* TikTokUserAgentCollector.h in Headers */,
+				2B13EEF42FEA9E54005D45D1 /* TikTokIdentifyUtility.h in Headers */,
+				2B13EEF52FEA9E54005D45D1 /* TikTokBusinessSDKMacros.h in Headers */,
+				2B13EEF62FEA9E54005D45D1 /* TikTokSKAdNetworkSupport.h in Headers */,
+				2B13EEF72FEA9E54005D45D1 /* TikTokPaymentObserver.h in Headers */,
+				2B13EEF82FEA9E54005D45D1 /* TikTokBaseEventPersistence.h in Headers */,
+				2B13EEF92FEA9E54005D45D1 /* UIApplication+TikTokAdditions.h in Headers */,
+				2B13EEFA2FEA9E54005D45D1 /* TikTokDeviceInfo.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8B23DF852502BA73008351FA /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1436,6 +1850,24 @@
 			productReference = 0A165D9D251E7877005889BD /* TikTokBusinessSDKTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		2B13EE732FEA9E54005D45D1 /* TikTokBusinessSDKDynamic */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2B13EF812FEA9E54005D45D1 /* Build configuration list for PBXNativeTarget "TikTokBusinessSDKDynamic" */;
+			buildPhases = (
+				2B13EE742FEA9E54005D45D1 /* Headers */,
+				2B13EEFB2FEA9E54005D45D1 /* Sources */,
+				2B13EF7C2FEA9E54005D45D1 /* Frameworks */,
+				2B13EF7D2FEA9E54005D45D1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TikTokBusinessSDKDynamic;
+			productName = TikTokBusinessSDK;
+			productReference = 2B13EF842FEA9E54005D45D1 /* TikTokBusinessSDKDynamic.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		8B23DF892502BA73008351FA /* TikTokBusinessSDK */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8B23DF922502BA73008351FA /* Build configuration list for PBXNativeTarget "TikTokBusinessSDK" */;
@@ -1517,6 +1949,7 @@
 				8BB88F1A250A96CA00EC9D74 /* TikTokBusinessSDKTestApp */,
 				0A165D9C251E7877005889BD /* TikTokBusinessSDKTests */,
 				2B6C2D452BAC610600D6D9E8 /* TikTokBusinessSDKBuild */,
+				2B13EE732FEA9E54005D45D1 /* TikTokBusinessSDKDynamic */,
 			);
 		};
 /* End PBXProject section */
@@ -1526,6 +1959,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2B13EF7D2FEA9E54005D45D1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B13EF7F2FEA9E54005D45D1 /* PrivacyInfo.xcprivacy in Resources */,
+				2B13EF802FEA9E54005D45D1 /* TikTokBusinessSDK.podspec in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1583,6 +2025,141 @@
 				2B1404B52C29919100CF56B2 /* TikTokRequestHandlerTests.m in Sources */,
 				2B870CA22BF365BA009CB42C /* TikTokDeviceInfoTests.m in Sources */,
 				2BD66DE72C32D30B009AEE65 /* TikTokSKAdNetworkSupportTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2B13EEFB2FEA9E54005D45D1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B13EEFC2FEA9E54005D45D1 /* TikTokaaaaBusinessSDKBegin.m in Sources */,
+				2B13EEFD2FEA9E54005D45D1 /* TikTokUserAgentCollector.m in Sources */,
+				2B13EEFE2FEA9E54005D45D1 /* TikTokBusiness.m in Sources */,
+				2B13EEFF2FEA9E54005D45D1 /* TikTokSKAdNetworkRuleEvent.m in Sources */,
+				2B13EF002FEA9E54005D45D1 /* TikTokDebugInfo.m in Sources */,
+				2B13EF012FEA9E54005D45D1 /* TikTokLogger.m in Sources */,
+				2B13EF022FEA9E54005D45D1 /* TikTokRequestHandler.m in Sources */,
+				2B13EF032FEA9E54005D45D1 /* TikTokSKAdNetworkWindow.m in Sources */,
+				2B13EF042FEA9E54005D45D1 /* TikTokSKAdNetworkConversionConfiguration.m in Sources */,
+				2B13EF052FEA9E54005D45D1 /* TikTokConfig.m in Sources */,
+				2B13EF062FEA9E54005D45D1 /* TikTokPaymentObserver.m in Sources */,
+				2B13EF072FEA9E54005D45D1 /* UIDevice+TikTokAdditions.m in Sources */,
+				2B13EF082FEA9E54005D45D1 /* TikTokUnityBridge.m in Sources */,
+				2B13EF092FEA9E54005D45D1 /* TikTokViewUtility.m in Sources */,
+				2B13EF0A2FEA9E54005D45D1 /* TikTokBaseEvent.m in Sources */,
+				2B13EF0B2FEA9E54005D45D1 /* NSObject+TikTokAdditions.m in Sources */,
+				2B13EF0C2FEA9E54005D45D1 /* TikTokIdentifyUtility.m in Sources */,
+				2B13EF0D2FEA9E54005D45D1 /* UIApplication+TikTokAdditions.m in Sources */,
+				2B13EF0E2FEA9E54005D45D1 /* TikTokTypeUtility.m in Sources */,
+				2B13EF0F2FEA9E54005D45D1 /* TikTokSKAdNetworkRule.m in Sources */,
+				2B13EF102FEA9E54005D45D1 /* TikTokDatabase.m in Sources */,
+				2B13EF112FEA9E54005D45D1 /* TikTokBusinessSDKAddress.m in Sources */,
+				2B13EF122FEA9E54005D45D1 /* TikTokSKANEventPersistence.m in Sources */,
+				2B13EF132FEA9E54005D45D1 /* TikTokCypher.m in Sources */,
+				2B13EF142FEA9E54005D45D1 /* TTStoreKitObserver.swift in Sources */,
+				2B13EF152FEA9E54005D45D1 /* TTStoreKitObserver+Public.swift in Sources */,
+				2B13EF162FEA9E54005D45D1 /* TTStoreKitObserver+SK1.swift in Sources */,
+				2B13EF172FEA9E54005D45D1 /* TTStoreKitObserver+SK2.swift in Sources */,
+				2B13EF182FEA9E54005D45D1 /* TikTokBaseEventPersistence.m in Sources */,
+				2B13EF192FEA9E54005D45D1 /* TikTokContentsEvent.m in Sources */,
+				2B13EF1A2FEA9E54005D45D1 /* TikTokAppEvent.m in Sources */,
+				2B13EF1B2FEA9E54005D45D1 /* TikTokSKAdNetworkSupport.m in Sources */,
+				2B13EF1C2FEA9E54005D45D1 /* TikTokConstants.m in Sources */,
+				2B13EF1D2FEA9E54005D45D1 /* TikTokFactory.m in Sources */,
+				2B13EF1E2FEA9E54005D45D1 /* TikTokDeviceInfo.m in Sources */,
+				2B13EF1F2FEA9E54005D45D1 /* TikTokErrorHandler.m in Sources */,
+				2B13EF202FEA9E54005D45D1 /* Exports.swift in Sources */,
+				2B13EF212FEA9E54005D45D1 /* UIViewController+TikTokAdditions.m in Sources */,
+				2B13EF222FEA9E54005D45D1 /* TikTokBusinessSDKMacros.m in Sources */,
+				2B13EF232FEA9E54005D45D1 /* TikTokCurrencyUtility.m in Sources */,
+				2B13EF242FEA9E54005D45D1 /* TikTokAppEventUtility.m in Sources */,
+				2B13EF252FEA9E54005D45D1 /* TikTokEDPConfig.m in Sources */,
+				2B13EF262FEA9E54005D45D1 /* TikTokEventLogger.m in Sources */,
+				2B13EF272FEA9E54005D45D1 /* UserDefaults+Extension.swift in Sources */,
+				2B13EF282FEA9E54005D45D1 /* Swift+Extension.swift in Sources */,
+				2B13EF292FEA9E54005D45D1 /* StoreKit+Extension.swift in Sources */,
+				2B13EF2A2FEA9E54005D45D1 /* TTIAPTransactionEventRouter.swift in Sources */,
+				2B13EF2B2FEA9E54005D45D1 /* TTIAPTransactionEventRouter+SK1.swift in Sources */,
+				2B13EF2C2FEA9E54005D45D1 /* TTIAPTransactionEventRouter+SK2.swift in Sources */,
+				2B13EF2D2FEA9E54005D45D1 /* TTSK1ProductFetcher.swift in Sources */,
+				2B13EF2E2FEA9E54005D45D1 /* TTIAPTransactionCacheManager.swift in Sources */,
+				2B13EF2F2FEA9E54005D45D1 /* TikTokZZZZBusinessSDKEnd.m in Sources */,
+				2B13EF302FEA9E54005D45D1 /* TTSDKCrashMonitor_Deadlock.m in Sources */,
+				2B13EF312FEA9E54005D45D1 /* TTSDKCrashInstallation.m in Sources */,
+				2B13EF322FEA9E54005D45D1 /* TTSDKNSDictionaryHelper.m in Sources */,
+				2B13EF332FEA9E54005D45D1 /* TTSDKCrashMonitor_System.m in Sources */,
+				2B13EF342FEA9E54005D45D1 /* TTSDKCrashInstallationStandard.m in Sources */,
+				2B13EF352FEA9E54005D45D1 /* TTSDKMachineContext.c in Sources */,
+				2B13EF362FEA9E54005D45D1 /* TTSDKCrashReportC.c in Sources */,
+				2B13EF372FEA9E54005D45D1 /* TTSDKCrashReportFilterStringify.m in Sources */,
+				2B13EF382FEA9E54005D45D1 /* TTSDKCrashMonitor_NSException.m in Sources */,
+				2B13EF392FEA9E54005D45D1 /* TTSDKCrashMonitor_MachException.c in Sources */,
+				2B13EF3A2FEA9E54005D45D1 /* TTSDKCrashAppStateTracker.m in Sources */,
+				2B13EF3B2FEA9E54005D45D1 /* TTSDKDebug.c in Sources */,
+				2B13EF3C2FEA9E54005D45D1 /* TTSDKStackCursor_Backtrace.c in Sources */,
+				2B13EF3D2FEA9E54005D45D1 /* TTSDKReachabilityTTSDKCrash.m in Sources */,
+				2B13EF3E2FEA9E54005D45D1 /* TTSDKCrashInstallationEmail.m in Sources */,
+				2B13EF3F2FEA9E54005D45D1 /* TTSDKCrashMonitor_DiscSpace.m in Sources */,
+				2B13EF402FEA9E54005D45D1 /* TTSDKDate.c in Sources */,
+				2B13EF412FEA9E54005D45D1 /* TTSDKCrashReportFixer.c in Sources */,
+				2B13EF422FEA9E54005D45D1 /* TTSDKCrashReportFilterJSON.m in Sources */,
+				2B13EF432FEA9E54005D45D1 /* TTSDKCrashReportSinkConsole.m in Sources */,
+				2B13EF442FEA9E54005D45D1 /* TTSDKLogger.c in Sources */,
+				2B13EF452FEA9E54005D45D1 /* TTSDKCrashReportStore.m in Sources */,
+				2B13EF462FEA9E54005D45D1 /* TTSDKHTTPMultipartPostBody.m in Sources */,
+				2B13EF472FEA9E54005D45D1 /* TTSDKFileUtils.c in Sources */,
+				2B13EF482FEA9E54005D45D1 /* TTSDKCPU_x86_64.c in Sources */,
+				2B13EF492FEA9E54005D45D1 /* TTSDKCPU_arm64.c in Sources */,
+				2B13EF4A2FEA9E54005D45D1 /* TTSDKSymbolicator.c in Sources */,
+				2B13EF4B2FEA9E54005D45D1 /* TTSDKCrash.m in Sources */,
+				2B13EF4C2FEA9E54005D45D1 /* TTSDKCrashMonitor_CPPException.cpp in Sources */,
+				2B13EF4D2FEA9E54005D45D1 /* TTSDKCrashReportSinkEMail.m in Sources */,
+				2B13EF4E2FEA9E54005D45D1 /* TTSDKCxaThrowSwapper.c in Sources */,
+				2B13EF4F2FEA9E54005D45D1 /* TTSDKMemory.c in Sources */,
+				2B13EF502FEA9E54005D45D1 /* TTSDKCrashCachedData.c in Sources */,
+				2B13EF512FEA9E54005D45D1 /* TTSDKCrashC.c in Sources */,
+				2B13EF522FEA9E54005D45D1 /* TTSDKCrashReport.m in Sources */,
+				2B13EF532FEA9E54005D45D1 /* TTSDKNSErrorHelper.m in Sources */,
+				2B13EF542FEA9E54005D45D1 /* TTSDKCrashMonitor_BootTime.m in Sources */,
+				2B13EF552FEA9E54005D45D1 /* TTSDKCString.m in Sources */,
+				2B13EF562FEA9E54005D45D1 /* TTSDKCrashInstallationConsole.m in Sources */,
+				2B13EF572FEA9E54005D45D1 /* TTSDKCrashReportFilterGZip.m in Sources */,
+				2B13EF582FEA9E54005D45D1 /* TTSDKJSONCodecObjC.m in Sources */,
+				2B13EF592FEA9E54005D45D1 /* TTSDKString.c in Sources */,
+				2B13EF5A2FEA9E54005D45D1 /* TTSDKMach.c in Sources */,
+				2B13EF5B2FEA9E54005D45D1 /* TTSDKCrashReportSinkStandard.m in Sources */,
+				2B13EF5C2FEA9E54005D45D1 /* TTSDKCrashReportFilterAppleFmt.m in Sources */,
+				2B13EF5D2FEA9E54005D45D1 /* TTSDKCrashAppMemory.m in Sources */,
+				2B13EF5E2FEA9E54005D45D1 /* TTSDKCPU_x86_32.c in Sources */,
+				2B13EF5F2FEA9E54005D45D1 /* TTSDKCrashMonitor_Memory.m in Sources */,
+				2B13EF602FEA9E54005D45D1 /* TTSDKCrashMonitor_Signal.c in Sources */,
+				2B13EF612FEA9E54005D45D1 /* TTSDKJSONCodec.c in Sources */,
+				2B13EF622FEA9E54005D45D1 /* TTSDKCrashReportFilterAlert.m in Sources */,
+				2B13EF632FEA9E54005D45D1 /* TTSDKHTTPRequestSender.m in Sources */,
+				2B13EF642FEA9E54005D45D1 /* TTSDKCrashReportFilterDoctor.m in Sources */,
+				2B13EF652FEA9E54005D45D1 /* TTSDKGZipHelper.m in Sources */,
+				2B13EF662FEA9E54005D45D1 /* TTSDKThread.c in Sources */,
+				2B13EF672FEA9E54005D45D1 /* TTSDKCrashAppMemoryTracker.m in Sources */,
+				2B13EF682FEA9E54005D45D1 /* TTSDKCrashReportStoreC.c in Sources */,
+				2B13EF692FEA9E54005D45D1 /* TTSDKCPU_arm.c in Sources */,
+				2B13EF6A2FEA9E54005D45D1 /* TTSDKCrashReportFilterSets.m in Sources */,
+				2B13EF6B2FEA9E54005D45D1 /* TTSDKSignalInfo.c in Sources */,
+				2B13EF6C2FEA9E54005D45D1 /* TTSDKMach-O.c in Sources */,
+				2B13EF6D2FEA9E54005D45D1 /* TTSDKDynamicLinker.c in Sources */,
+				2B13EF6E2FEA9E54005D45D1 /* TTSDKStackCursor_SelfThread.c in Sources */,
+				2B13EF6F2FEA9E54005D45D1 /* TTSDKCrashDoctor.m in Sources */,
+				2B13EF702FEA9E54005D45D1 /* TTSDKCrashMonitor_Zombie.c in Sources */,
+				2B13EF712FEA9E54005D45D1 /* TTSDKCPU.c in Sources */,
+				2B13EF722FEA9E54005D45D1 /* TTSDKID.c in Sources */,
+				2B13EF732FEA9E54005D45D1 /* TTSDKCrashMonitor_AppState.c in Sources */,
+				2B13EF742FEA9E54005D45D1 /* TTSDKSysCtl.c in Sources */,
+				2B13EF752FEA9E54005D45D1 /* TTSDKStackCursor.c in Sources */,
+				2B13EF762FEA9E54005D45D1 /* TTSDKObjC.c in Sources */,
+				2B13EF772FEA9E54005D45D1 /* TTSDKCrashMonitor_User.c in Sources */,
+				2B13EF782FEA9E54005D45D1 /* TTSDKCrashReportFilterBasic.m in Sources */,
+				2B13EF792FEA9E54005D45D1 /* TTSDKStackCursor_MachineContext.c in Sources */,
+				2B13EF7A2FEA9E54005D45D1 /* TTSDKCrashMonitor.c in Sources */,
+				2B13EF7B2FEA9E54005D45D1 /* TTSDKCrashConfiguration.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1848,6 +2425,93 @@
 			};
 			name = Release;
 		};
+		2B13EF822FEA9E54005D45D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"TikTokBusinessSDK_DYNAMIC=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/TikTokSKAdNetwork",
+					"$(PROJECT_DIR)/AppEvents",
+					"$(PROJECT_DIR)/TikTokAdditions",
+					"$(PROJECT_DIR)/**",
+				);
+				INFOPLIST_FILE = TikTokBusinessSDK/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = btd.TikTokBusinessSDK;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG TikTokBusinessSDK_DYNAMIC";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2B13EF832FEA9E54005D45D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"TikTokBusinessSDK_DYNAMIC=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/TikTokSKAdNetwork",
+					"$(PROJECT_DIR)/AppEvents",
+					"$(PROJECT_DIR)/TikTokAdditions",
+					"$(PROJECT_DIR)/**",
+				);
+				INFOPLIST_FILE = TikTokBusinessSDK/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = btd.TikTokBusinessSDK;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) TikTokBusinessSDK_DYNAMIC";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		2B6C2D472BAC610600D6D9E8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2000,6 +2664,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"TikTokBusinessSDK_STATIC=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/TikTokSKAdNetwork",
 					"$(PROJECT_DIR)/AppEvents",
@@ -2021,6 +2689,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = btd.TikTokBusinessSDK;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG TikTokBusinessSDK_STATIC";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2039,6 +2708,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"TikTokBusinessSDK_STATIC=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/TikTokSKAdNetwork",
 					"$(PROJECT_DIR)/AppEvents",
@@ -2060,6 +2733,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = btd.TikTokBusinessSDK;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) TikTokBusinessSDK_STATIC";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2127,6 +2801,15 @@
 			buildConfigurations = (
 				0A165DA5251E7877005889BD /* Debug */,
 				0A165DA6251E7877005889BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2B13EF812FEA9E54005D45D1 /* Build configuration list for PBXNativeTarget "TikTokBusinessSDKDynamic" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B13EF822FEA9E54005D45D1 /* Debug */,
+				2B13EF832FEA9E54005D45D1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

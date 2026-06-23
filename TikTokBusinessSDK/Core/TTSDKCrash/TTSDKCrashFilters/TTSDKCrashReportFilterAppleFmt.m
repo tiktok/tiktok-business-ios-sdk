@@ -454,6 +454,7 @@ static NSDictionary *g_registerOrders;
                       [system objectForKey:TTSDKCrashField_SystemVersion], [system objectForKey:TTSDKCrashField_OSVersion]];
     [str appendFormat:@"Report Version:      104\n"];
     [str appendFormat:@"SDK Version:         %@\n",SDK_VERSION];
+    [str appendFormat:@"Integration Type:    %@\n", TikTokBusinessSDKIntegrationTypeString()];
     [str appendFormat:@"Address Range:       **%@**%@**\n", [system objectForKey:TTSDKCrashField_BeginAddress], [system objectForKey:TTSDKCrashField_EndAddress]];
 
     return str;

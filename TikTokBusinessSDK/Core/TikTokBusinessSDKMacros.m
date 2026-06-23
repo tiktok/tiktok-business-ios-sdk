@@ -11,6 +11,38 @@
 
 NSString * const TTUserDefaultsKey_firstLaunchTime = @"firstLaunchTime";
 
+TikTokBusinessSDKIntegrationType TikTokBusinessSDKGetIntegrationType(void)
+{
+#if defined(TikTokBusinessSDK_SPM)
+    return TikTokBusinessSDKIntegrationTypeSwiftPackageManager;
+#elif defined(TikTokBusinessSDK_COCOAPODS)
+    return TikTokBusinessSDKIntegrationTypeCocoaPods;
+#elif defined(TikTokBusinessSDK_DYNAMIC)
+    return TikTokBusinessSDKIntegrationTypeDynamic;
+#elif defined(TikTokBusinessSDK_STATIC)
+    return TikTokBusinessSDKIntegrationTypeStatic;
+#else
+    return TikTokBusinessSDKIntegrationTypeUnknown;
+#endif
+}
+
+NSString *TikTokBusinessSDKIntegrationTypeString(void)
+{
+    switch (TikTokBusinessSDKGetIntegrationType()) {
+        case TikTokBusinessSDKIntegrationTypeStatic:
+            return @"static";
+        case TikTokBusinessSDKIntegrationTypeDynamic:
+            return @"dynamic";
+        case TikTokBusinessSDKIntegrationTypeCocoaPods:
+            return @"cocoapods";
+        case TikTokBusinessSDKIntegrationTypeSwiftPackageManager:
+            return @"spm";
+        case TikTokBusinessSDKIntegrationTypeUnknown:
+        default:
+            return @"unknown";
+    }
+}
+
 BOOL TT_isEmptyString(id param)
 {
     if (!param) {

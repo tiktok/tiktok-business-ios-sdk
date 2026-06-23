@@ -32,7 +32,9 @@ The TikTok Business SDK is the easiest way to log events (e.g. app install, purc
   ]
 
   s.pod_target_xcconfig = {
-    'DEFINES_MODULE' => 'YES'
+    'DEFINES_MODULE' => 'YES',
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) TikTokBusinessSDK_COCOAPODS=1',
+    'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => '$(inherited) TikTokBusinessSDK_COCOAPODS'
   }
   
   s.resource_bundles = {

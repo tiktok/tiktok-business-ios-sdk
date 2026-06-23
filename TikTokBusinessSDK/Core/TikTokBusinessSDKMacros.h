@@ -9,6 +9,17 @@
 
 #define SDK_VERSION @"1.6.1"
 
+typedef NS_ENUM(NSInteger, TikTokBusinessSDKIntegrationType) {
+    TikTokBusinessSDKIntegrationTypeUnknown = 0,
+    TikTokBusinessSDKIntegrationTypeStatic,
+    TikTokBusinessSDKIntegrationTypeDynamic,
+    TikTokBusinessSDKIntegrationTypeCocoaPods,
+    TikTokBusinessSDKIntegrationTypeSwiftPackageManager,
+};
+
+FOUNDATION_EXPORT TikTokBusinessSDKIntegrationType TikTokBusinessSDKGetIntegrationType(void);
+FOUNDATION_EXPORT NSString *TikTokBusinessSDKIntegrationTypeString(void);
+
 #define TT_CONFIG_PATH @"/api/v1/app_sdk/config"
 #define TT_CACHE_CONFIG_PATH @"/api/v1/app_sdk/cache/config"
 #define TT_BATCH_EVENT_PATH @"/api/v1/app_sdk/batch"

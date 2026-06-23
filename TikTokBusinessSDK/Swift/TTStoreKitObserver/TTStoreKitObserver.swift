@@ -38,7 +38,11 @@ public final actor TTStoreKitObserver: NSObject {
             let includeConsumableState = Bundle.main.object(forInfoDictionaryKey: SKIncludeConsumableInAppPurchaseHistory) as? Bool {
             extraParams["skIncludeConsumableInAppPurchaseHistory"] = includeConsumableState
         }
+        #if DEBUG
         logger.setLogLevel(TikTokLogLevelDebug)
+        #else
+        logger.setLogLevel(TikTokLogLevelSuppress)
+        #endif
     }
 
     func startObserving() {
