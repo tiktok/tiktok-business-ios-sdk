@@ -49,7 +49,7 @@ final actor TTIAPTransactionCacheManager {
         } else {
             cachedTransactions = []
         }
-        lastCheckedDate = UserDefaults.tiktokBusiness.value(forKey: TTIAP_TRANSACTION_CHECK_DATE_KEY) as? Date ?? .init(timeIntervalSince1970: 0)
+        lastCheckedDate = UserDefaults.tiktokBusiness.value(forKey: TTIAP_TRANSACTION_CHECK_DATE_KEY) as? Date ?? Date()
     }
     
     private func save() {
