@@ -19,3 +19,4 @@ build
 *.lock
 Products/
 /TikTokBusinessSDK.xcodeproj/project.xcworkspace/xcuserdata/bytedance.xcuserdatad/UserInterfaceState.xcuserstate
+*.xcbkptlist
