@@ -127,7 +127,7 @@ extension TTStoreKitObserver {
     fileprivate func handle(transaction: Transaction, isRestored: Bool) async {
         debugMessage("SK2 handle transaction id: \(transaction.id), isRestored: \(isRestored)")
         let router = TTIAPTransactionEventRouter(extraParams: extraParams)
-        await router.routeSK2(transaction, productId: transaction.productID)
+        await router.routeSK2(transaction, productId: transaction.productID, isRestored: isRestored)
     }
     
     func handleFailed(_ productId: String) async {

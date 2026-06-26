@@ -141,9 +141,9 @@
             {
               "billingPlanType" : "BILLED_UPFRONT",
               "eligibility" : [
+                "new",
                 "existing",
-                "expired",
-                "new"
+                "expired"
               ],
               "internalID" : "24846FF1",
               "isStackable" : true,
