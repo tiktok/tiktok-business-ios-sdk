@@ -41,7 +41,6 @@ extension TTStoreKitObserver {
         guard isObserving else { return }
         
         let lastCheckDate = await TTIAPTransactionCacheManager.shared.lastCheckedDate
-        var latestTransactionDate: Date = lastCheckDate
         debugMessage("handleInitialTransactions.")
         for await result in Transaction.currentEntitlements {
             guard
@@ -49,9 +48,6 @@ extension TTStoreKitObserver {
                 transaction.purchaseDate >= lastCheckDate
             else {
                 continue
-            }
-            if transaction.purchaseDate > latestTransactionDate {
-                latestTransactionDate = transaction.purchaseDate
             }
             await handle(transaction: transaction, isRestored: true)
         }
@@ -62,14 +58,7 @@ extension TTStoreKitObserver {
             else {
                 continue
             }
-            if transaction.purchaseDate > latestTransactionDate {
-                latestTransactionDate = transaction.purchaseDate
-            }
             await handle(transaction: transaction, isRestored: false)
-        }
-        
-        if latestTransactionDate > lastCheckDate {
-            await TTIAPTransactionCacheManager.shared.updateCheckedDate(latestTransactionDate)
         }
     }
     
