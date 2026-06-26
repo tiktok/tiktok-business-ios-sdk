@@ -39,6 +39,8 @@ typedef NS_ENUM(NSUInteger, TikTokAppEventsFlushReason)
  */
 + (NSString *)getCurrentTimestampAsString;
 
++ (NSString *)timestampAsStringFromDate:(NSDate *)date;
+
 + (NSNumber *)getCurrentTimestampAsNumber;
 
 @end

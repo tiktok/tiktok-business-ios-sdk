@@ -31,6 +31,11 @@
     return [NSString stringWithFormat:@"%lld", currentTime];
 }
 
++ (NSString *)timestampAsStringFromDate:(NSDate *)date {
+    long long time = (long long)([date timeIntervalSince1970] * 1000);
+    return [NSString stringWithFormat:@"%lld", time];
+}
+
 
 +(NSNumber *)getCurrentTimestampAsNumber
 {

@@ -64,9 +64,13 @@ extension TTIAPTransactionEventRouter {
         let payment = transaction.payment
         
         // order
+        var orderTime = ""
+        if let date = transaction.transactionDate {
+            orderTime = date.convertToTimeStampString()
+        }
         let orderInfo = ["order_id": transactionId ?? "",
                          "original_transaction_id": originalTransactionId ?? "",
-                         "order_time": Date.currentTimeStampString()]
+                         "order_time": orderTime]
         eventParameters.updateValue(orderInfo, forKey: "order")
         
         eventParameters.updateValue(product.priceLocale.currencyCode ?? "", forKey: "currency")

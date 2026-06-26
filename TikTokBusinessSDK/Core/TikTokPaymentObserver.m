@@ -198,10 +198,14 @@ static NSMutableArray *g_pendingRequestors;
 
     if(product && payment) {
         // order info
+        NSString *order_time = @"";
+        if (transaction.transactionDate) {
+            order_time = [TikTokAppEventUtility timestampAsStringFromDate:transaction.transactionDate];
+        }
         NSDictionary *orderInfo = @{
             @"order_id": TTSafeString(transactionId),
             @"original_transaction_id": TTSafeString(originalTransactionId),
-            @"order_time": TTSafeString([TikTokAppEventUtility getCurrentTimestampAsString])
+            @"order_time": TTSafeString(order_time)
         };
         [TikTokTypeUtility dictionary:eventParameters setObject:orderInfo forKey:@"order"];
 

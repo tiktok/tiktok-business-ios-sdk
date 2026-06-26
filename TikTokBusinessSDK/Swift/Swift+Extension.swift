@@ -15,8 +15,7 @@ extension AsyncSequence {
 }
 
 extension Date {
-    static func currentTimeStampString() -> String {
-        let currentTime = Int64(Date().timeIntervalSince1970 * 1000)
-        return String(currentTime)
+    func convertToTimeStampString() -> String {
+        return String(Int64(self.timeIntervalSince1970 * 1000))
     }
 }

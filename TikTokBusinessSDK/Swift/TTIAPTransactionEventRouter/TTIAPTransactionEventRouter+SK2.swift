@@ -37,7 +37,7 @@ extension TTIAPTransactionEventRouter {
         eventParams.updateValue(code, forKey: "code")
         eventParams.updateValue("", forKey: "query")
         eventParams.updateValue("auto", forKey: "type")
-        eventParams.updateValue(Self.eventOrderInfo(transactionId, originalID: originalTransactionId), forKey: "order")
+        eventParams.updateValue(Self.eventOrderInfo(transactionId, originalID: originalTransactionId, transactionDate: transaction?.purchaseDate), forKey: "order")
         
         eventParams["contents"] = Self.eventContents(transaction, product: product)
         eventParams["storekit_version"] = 2
@@ -93,11 +93,15 @@ extension TTIAPTransactionEventRouter {
         return 1
     }
     
-    static func eventOrderInfo(_ transactionId: String, originalID: String) -> [String: Any] {
+    static func eventOrderInfo(_ transactionId: String, originalID: String, transactionDate: Date?) -> [String: Any] {
         var orderInfo = [String: Any]()
         orderInfo["order_id"] = transactionId
         orderInfo["original_transaction_id"] = originalID
-        orderInfo["order_time"] = Date.currentTimeStampString()
+        if let transactionDate {
+            orderInfo["order_time"] = transactionDate.convertToTimeStampString()
+        } else {
+            orderInfo["order_time"] = ""
+        }
         return orderInfo
     }
     
