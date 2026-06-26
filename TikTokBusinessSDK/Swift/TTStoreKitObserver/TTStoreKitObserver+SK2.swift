@@ -98,7 +98,7 @@ extension TTStoreKitObserver {
                     continue
                 }
                 
-                if let expirationDate = transaction.expirationDate, expirationDate >= Date() {
+                if let expirationDate = transaction.expirationDate, expirationDate < Date() {
                     continue
                 }
                 

@@ -20,3 +20,4 @@ build
 Products/
 /TikTokBusinessSDK.xcodeproj/project.xcworkspace/xcuserdata/bytedance.xcuserdatad/UserInterfaceState.xcuserstate
 *.xcbkptlist
+/TikTokBusinessSDK.xcodeproj/xcuserdata/bytedance.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
