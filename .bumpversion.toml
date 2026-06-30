@@ -3,7 +3,7 @@
 [tool.bumpversion]
 current_version = "1.6.1"
 commit = true
-tag = false
+tag = true
 tag_name = "{new_version}"
 message = "Version bumped to {new_version}"
 
@@ -11,7 +11,4 @@ message = "Version bumped to {new_version}"
 filename = "TikTokBusinessSDK.podspec"
 
 [[tool.bumpversion.files]]
-filename = "./TikTokBusinessSDK/TikTokBusinessSDKMacros.h"
-
-[[tool.bumpversion.files]]
-filename = "./Examples/TikTokBusinessSDK-Pod/Podfile"
+filename = "./TikTokBusinessSDK/Core/TikTokBusinessSDKMacros.h"
