@@ -11,9 +11,6 @@ message = "Version bumped to {new_version}"
 filename = "TikTokBusinessSDK.podspec"
 
 [[tool.bumpversion.files]]
-filename = "TikTokBusinessSDK-Event.podspec"
-
-[[tool.bumpversion.files]]
 filename = "./TikTokBusinessSDK/TikTokBusinessSDKMacros.h"
 
 [[tool.bumpversion.files]]
