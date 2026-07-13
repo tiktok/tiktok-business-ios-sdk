@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'TikTokBusinessSDK'
-  s.version          = '1.6.1'
+  s.version          = '1.7.0'
   s.summary          = 'TikTok Business SDK for iOS'
 
   s.description      = <<-DESC
