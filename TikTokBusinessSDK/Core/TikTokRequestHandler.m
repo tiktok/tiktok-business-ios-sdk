@@ -237,7 +237,9 @@
                 }
                 businessSDKConfig = tmpConfigDict.copy;
             }
-            [TikTokUnityBridge sendConfigCallback:@{@"business_sdk_config": TTSafeDictionary(businessSDKConfig)}];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [TikTokUnityBridge sendConfigCallback:@{@"business_sdk_config": TTSafeDictionary(businessSDKConfig)}];
+            });
             
             completionHandler(isSwitchOn, businessSDKConfig);
             
