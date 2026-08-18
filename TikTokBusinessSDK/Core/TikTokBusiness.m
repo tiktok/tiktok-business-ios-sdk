@@ -282,20 +282,29 @@ withType:(NSString *)type
 
 + (void)requestTrackingAuthorizationWithCompletionHandler:(void (^_Nullable)(NSUInteger status))completion
 {
-    NSString *trackingDesc = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSUserTrackingUsageDescription"];
-    if (@available(iOS 14, *)) {
-        if (trackingDesc) {
+    TTSDKRunOnMainThread(^{
+        if (@available(iOS 14, *)) {
+            NSString *trackingDesc = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSUserTrackingUsageDescription"];
+            if (trackingDesc.length == 0) {
+                [[TikTokFactory getLogger] warn:@"Please set NSUserTrackingUsageDescription in Property List before calling App Tracking Dialog"];
+                if (completion) {
+                    completion(ATTrackingManager.trackingAuthorizationStatus);
+                }
+                return;
+            }
             [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
-                if(completion) {
+                if (completion) {
                     completion(status);
                 }
             }];
-        } else {
-            [[TikTokFactory getLogger] warn:@"Please set NSUserTrackingUsageDescription in Property List before calling App Tracking Dialog"];
+            return;
         }
-    } else {
-        // Fallback on earlier versions
-    }
+
+        // ATT does not apply before iOS 14; tracking is treated as authorized.
+        if (completion) {
+            completion(3);
+        }
+    });
 }
 
 + (TikTokEventLogger *)getEventLogger
@@ -333,6 +342,18 @@ withType:(NSString *)type
 {
     if (self.eventLogger != nil) {
         [self.logger warn:@"TikTok SDK has been initialized already!"];
+        if (completionHandler) {
+            if (self.isInitialized) {
+                completionHandler(YES, nil);
+            } else {
+                NSError *error = [NSError errorWithDomain:@"com.TikTokBusinessSDK.error"
+                                                     code:-3
+                                                 userInfo:@{
+                    NSLocalizedDescriptionKey : @"TikTok SDK initialization was already attempted but did not complete",
+                }];
+                completionHandler(NO, error);
+            }
+        }
         return;
     }
     NSNumber *initStartTimestamp = [TikTokAppEventUtility getCurrentTimestampAsNumber];
