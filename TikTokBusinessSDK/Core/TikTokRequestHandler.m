@@ -934,6 +934,9 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
     if (NSClassFromString(@"UnityViewControllerBase") || NSClassFromString(@"UnityView")) {
         libraryName = @"tiktok/tiktok-business-unity-ios-sdk";
     }
+    if (NSClassFromString(@"TiktokBusinessReactNativeSdk")) {
+        libraryName = @"tiktok/tiktok-business-rn-ios-sdk";
+    }
     if (!NSClassFromString(@"TTSDKCrashInstallationConsole")) {
         libraryName = [NSString stringWithFormat:@"%@-merged-bundle",libraryName];
     }
