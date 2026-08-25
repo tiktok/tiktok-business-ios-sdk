@@ -22,6 +22,7 @@
 #import "TikTokUnityBridge.h"
 #import "TikTokCypher.h"
 #import "TikTokBaseEventPersistence.h"
+#import "TikTokDebugInfo.h"
 
 @interface TikTokRequestHandler()
 
@@ -847,12 +848,19 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
     NSDictionary *device = [self getDeviceInfo:deviceInfo withConfig:config isMonitor:YES];
     // Library Info
     NSDictionary *library = [self getLibraryWithConfig:config];
+    // debug info
+    NSDictionary *monitorDebugInfoProperties = @{
+        @"type": @"metric",
+        @"name": @"debug_info",
+        @"meta": [TikTokDebugInfo debugInfo]
+    };
     
     NSDictionary *parametersDict = @{
         @"app": app,
         @"device": device,
         @"library": library,
-        @"debug":@(config.debugModeEnabled)
+        @"debug":@(config.debugModeEnabled),
+        @"monitors": @[monitorDebugInfoProperties]
     };
     
     return parametersDict;
