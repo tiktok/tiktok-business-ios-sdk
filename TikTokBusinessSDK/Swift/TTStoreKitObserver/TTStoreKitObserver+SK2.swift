@@ -51,15 +51,6 @@ extension TTStoreKitObserver {
             }
             await handle(transaction: transaction, isRestored: true)
         }
-
-        for await result in Transaction.unfinished {
-            guard
-                case .verified(let transaction) = result
-            else {
-                continue
-            }
-            await handle(transaction: transaction, isRestored: false)
-        }
     }
     
     fileprivate func fetchNewTransactions() async {
