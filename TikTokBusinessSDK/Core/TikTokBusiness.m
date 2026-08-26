@@ -285,7 +285,7 @@ withType:(NSString *)type
     TTSDKRunOnMainThread(^{
         if (@available(iOS 14, *)) {
             NSString *trackingDesc = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSUserTrackingUsageDescription"];
-            if (trackingDesc.length == 0) {
+            if (![trackingDesc isKindOfClass:NSString.class] || trackingDesc.length == 0) {
                 [[TikTokFactory getLogger] warn:@"Please set NSUserTrackingUsageDescription in Property List before calling App Tracking Dialog"];
                 if (completion) {
                     completion(ATTrackingManager.trackingAuthorizationStatus);
