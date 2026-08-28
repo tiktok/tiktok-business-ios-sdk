@@ -1,7 +1,7 @@
 # brew install bump-my-version
 # bump-my-version bump major/minor/patch
 [tool.bumpversion]
-current_version = "1.7.1"
+current_version = "1.7.2"
 commit = true
 tag = true
 tag_name = "{new_version}"

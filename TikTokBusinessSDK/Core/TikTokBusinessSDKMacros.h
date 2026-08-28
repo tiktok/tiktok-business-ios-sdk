@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define SDK_VERSION @"1.7.1"
+#define SDK_VERSION @"1.7.2"
 
 typedef NS_ENUM(NSInteger, TikTokBusinessSDKIntegrationType) {
     TikTokBusinessSDKIntegrationTypeUnknown = 0,
