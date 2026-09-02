@@ -13,6 +13,10 @@
 {
     NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+    // A fixed-format date formatter must use en_US_POSIX, otherwise the user's
+    // 24-Hour Time setting rewrites the format string and the output is not
+    // ISO 8601 (Apple QA1480).
+    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
     [dateFormatter setTimeZone:timeZone];
     [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
     NSDate *now = [NSDate date];
