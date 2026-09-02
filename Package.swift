@@ -45,6 +45,7 @@ let package = Package(
                 .headerSearchPath("Storage"),
             ],
             linkerSettings: [
+                .linkedLibrary("c++"),
                 .linkedFramework("UIKit"),
                 .linkedFramework("CoreTelephony"),
                 .linkedFramework("AdSupport"),
