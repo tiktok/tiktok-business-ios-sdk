@@ -13,6 +13,7 @@
 #import "TikTokBUsinessSDKMacros.h"
 #import "TikTokTypeUtility.h"
 #import "TikTokBusiness+private.h"
+#import "TikTokDebugInfo.h"
 
 #define TT_DB_LIMIT 500
 
@@ -83,6 +84,10 @@
                     continue;
                 }
                 TikTokAppEvent *event = [events objectAtIndex:i];
+                if ([TikTokDebugInfo isRetiredMonitor:event.properties] ||
+                    ([event.type isEqualToString:@"monitor"] && ![TikTokBusiness canCollectDiagnosticEvents])) {
+                    continue;
+                }
 
                 NSError *errorArchiving;
                 NSData *eventData = [NSKeyedArchiver archivedDataWithRootObject:event requiringSecureCoding:YES error:&errorArchiving];
@@ -129,6 +134,14 @@
                 event = (TikTokAppEvent *)obj;
                 event.dbID = [NSString stringWithFormat:@"%ld",(long)eID];
                 event.retryTimes = retry_times;
+                // Delete retired telemetry even when it came from an older binary.
+                if ([TikTokDebugInfo isRetiredMonitor:event.properties] ||
+                    ([event.type isEqualToString:@"monitor"] && ![TikTokBusiness canCollectDiagnosticEvents])) {
+                    [self.db deleteTable:[[self class] tableName]
+                               withWhere:[NSString stringWithFormat:@"id = %ld", (long)eID]
+                                 orderBy:TTDBOrderByNone limit:TTDBLimitNone];
+                    continue;
+                }
 
                 [dbIDs addObject:TTSafeString(event.dbID)];
             }

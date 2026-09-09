@@ -34,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 */
 + (BOOL)shouldDiscardEvents;
 
+// Optional diagnostic monitors require explicit local debug mode in consent mode.
++ (BOOL)canCollectDiagnosticEvents;
+
 // A generation is invalidated synchronously on withdrawal. Queue work, request starts,
 // and callbacks use the same lock as withdrawal so old work cannot cross reconsent.
 + (NSUInteger)trackingGeneration;

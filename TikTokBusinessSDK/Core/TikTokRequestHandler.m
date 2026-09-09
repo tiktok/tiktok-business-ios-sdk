@@ -108,7 +108,7 @@
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     
-    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", @"https://", self.apiDomain == nil ? @"analytics.us.tiktok.com" : self.apiDomain, TT_CACHE_CONFIG_PATH];
+    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", @"https://", [self apiDomainForConfig:config], TT_CACHE_CONFIG_PATH];
     TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfo];
     NSString *queryString = [self queryStringFromDict:@{
         @"tiktok_app_id": TTSafeString(config.tiktokAppId),
@@ -318,7 +318,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     
-    NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", self.apiDomain == nil ? @"analytics.us.tiktok.com" : self.apiDomain, TT_CONFIG_PATH];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", [self apiDomainForConfig:config], TT_CONFIG_PATH];
     [request setURL:[NSURL URLWithString:url]];
     [request setHTTPMethod:@"POST"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -402,6 +402,8 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
     // format events into object[]
     NSMutableArray *batch = [[NSMutableArray alloc] init];
     for (TikTokAppEvent* event in eventsToBeFlushed) {
+        // Old cached enhanced events cannot override the current local opt-out.
+        if (event.isEDPEvent && !config.autoEDPEventEnabled) continue;
         if(![event.type isEqual:@"monitor"]){
             NSMutableDictionary *user = [NSMutableDictionary new];
             if(event.userInfo != nil) {
@@ -434,7 +436,8 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
                 [eventDict setValue:@(YES) forKey:@"limited_data_use"];
             }
             
-            if (TTCheckValidString(event.screenshot)) {
+            if (config.debugModeEnabled && [TikTokBusiness canCollectDiagnosticEvents] &&
+                TTCheckValidString(event.screenshot)) {
                 [eventDict setObject:event.screenshot forKey:@"screenshot"];
             }
             [batch addObject:eventDict];
@@ -486,7 +489,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
         
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
         
-        NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", self.apiDomain == nil ? @"analytics.us.tiktok.com" : self.apiDomain, TT_BATCH_EVENT_PATH];
+        NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", [self apiDomainForConfig:config], TT_BATCH_EVENT_PATH];
         [request setURL:[NSURL URLWithString:url]];
         [request setHTTPMethod:@"POST"];
         [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -599,6 +602,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
               withConfig:(TikTokConfig *)config {
     NSUInteger generation = [TikTokBusiness trackingGeneration];
     if ([TikTokBusiness shouldDiscardEvents]) return;
+    if (![TikTokBusiness canCollectDiagnosticEvents]) return;
     TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfo];
     // APP Info
     NSDictionary *app = [self getAPPWithDeviceInfo:deviceInfo config:config];
@@ -612,6 +616,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
     // format events into object[]
     NSMutableArray *monitorBatch = [[NSMutableArray alloc] init];
     for (TikTokAppEvent* event in eventsToBeFlushed) {
+        if ([TikTokDebugInfo isRetiredMonitor:event.properties]) continue;
         [self.logger verbose:@"Event is of type: %@", event.type];
         if([event.type isEqualToString:@"monitor"]) {
             
@@ -691,7 +696,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
         
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
         
-        NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", self.apiDomain == nil ? @"analytics.us.tiktok.com" : self.apiDomain, TT_MONITOR_EVENT_PATH];
+        NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", [self apiDomainForConfig:config], TT_MONITOR_EVENT_PATH];
         [request setURL:[NSURL URLWithString:url]];
         [request setHTTPMethod:@"POST"];
         [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -796,7 +801,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     
-    NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", self.apiDomain == nil ? @"analytics.us.tiktok.com" : self.apiDomain, TT_FETCH_DDL_PATH];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@", @"https://", [self apiDomainForConfig:config], TT_FETCH_DDL_PATH];
     [request setURL:[NSURL URLWithString:url]];
     [request setHTTPMethod:@"POST"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
@@ -886,6 +891,13 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
 
 // MARK: - Utils
 
+- (NSString *)apiDomainForConfig:(TikTokConfig *)config {
+    // Consent-mode routing is restricted to the reviewed, declared tracking host.
+    // Remote config cannot silently introduce another tracking recipient.
+    if (config.discardEventsWhileTrackingDisabled) return @"analytics.us.tiktok.com";
+    return self.apiDomain ?: @"analytics.us.tiktok.com";
+}
+
 - (NSDictionary *)paramDictForConfig:(TikTokConfig *)config {
     TikTokDeviceInfo *deviceInfo = [TikTokDeviceInfo deviceInfo];
     // APP Info
@@ -894,21 +906,14 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
     NSDictionary *device = [self getDeviceInfo:deviceInfo withConfig:config isMonitor:YES];
     // Library Info
     NSDictionary *library = [self getLibraryWithConfig:config];
-    // debug info
-    NSDictionary *monitorDebugInfoProperties = @{
-        @"type": @"metric",
-        @"name": @"debug_info",
-        @"meta": [TikTokDebugInfo debugInfo]
-    };
-    
+    // Configuration must not piggyback optional detailed device diagnostics.
     NSDictionary *parametersDict = @{
         @"app": app,
         @"device": device,
         @"library": library,
-        @"debug":@(config.debugModeEnabled),
-        @"monitors": @[monitorDebugInfoProperties]
+        @"debug":@(config.debugModeEnabled)
     };
-    
+
     return parametersDict;
 }
 
@@ -1036,6 +1041,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
 }
 
 - (void)reportApiErrWithMeta:(NSDictionary *)meta {
+    if (![TikTokBusiness canCollectDiagnosticEvents]) return;
     NSDictionary *apiErrorProperties = @{
         @"monitor_type": @"metric",
         @"monitor_name": @"api_err",
@@ -1046,6 +1052,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
 }
 
 - (void)reportNetworkReqforPath:(NSString *)path duration:(long long)duration reqID:(NSString *)reqID error:(NSError *)error {
+    if (![TikTokBusiness canCollectDiagnosticEvents]) return;
     NSMutableDictionary *meta = @{
         @"duration": @(duration),
         @"result": @(error!=nil?1:0),
@@ -1068,6 +1075,7 @@ withCompletionHandler:(void (^)(NSDictionary *businessSDKConfig, NSError *error)
 }
 
 - (void)reportGzipErrorCode:(NSInteger)code path:(NSString *)path {
+    if (![TikTokBusiness canCollectDiagnosticEvents]) return;
     long long timestamp = [TikTokAppEventUtility getCurrentTimestamp];
     NSDictionary *meta = @{
         @"ts": @(timestamp),

@@ -27,52 +27,22 @@
 #import "TTSDKCrashMonitor_BootTime.h"
 
 #import "TTSDKCrashMonitorContext.h"
-#import "TTSDKDate.h"
-#import "TTSDKSysCtl.h"
-
-#import <Foundation/Foundation.h>
-#import <sys/types.h>
-
-static volatile bool g_isEnabled = false;
-
-__attribute__((unused)) // For tests. Declared as extern in TestCase
-void ttsdkcm_bootTime_resetState(void)
-{
-    g_isEnabled = false;
-}
-
-/** Get a sysctl value as an NSDate.
- *
- * @param name The sysctl name.
- *
- * @return The result of the sysctl call.
- */
-static const char *dateSysctl(const char *name)
-{
-    struct timeval value = ttsdksysctl_timevalForName(name);
-    char *buffer = malloc(21);
-    ttsdkdate_utcStringFromTimestamp(value.tv_sec, buffer);
-    return buffer;
-}
+// This optional monitor remains ABI-compatible, but never collects raw system
+// boot time. Attribution does not require it, including in diagnostic builds.
+__attribute__((unused))
+void ttsdkcm_bootTime_resetState(void) {}
 
 #pragma mark - API -
 
 static const char *monitorId(void) { return "BootTime"; }
 
-static void setEnabled(bool isEnabled)
-{
-    if (isEnabled != g_isEnabled) {
-        g_isEnabled = isEnabled;
-    }
-}
+static void setEnabled(bool isEnabled) { (void)isEnabled; }
 
-static bool isEnabled(void) { return g_isEnabled; }
+static bool isEnabled(void) { return false; }
 
 static void addContextualInfoToEvent(TTSDKCrash_MonitorContext *eventContext)
 {
-    if (g_isEnabled) {
-        eventContext->System.bootTime = dateSysctl("kern.boottime");
-    }
+    eventContext->System.bootTime = NULL;
 }
 
 TTSDKCrashMonitorAPI *ttsdkcm_boottime_getAPI(void)

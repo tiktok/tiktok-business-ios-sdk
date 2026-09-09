@@ -239,6 +239,15 @@ withType:(NSString *)type
     }
 }
 
++ (BOOL)canCollectDiagnosticEvents
+{
+    @synchronized (TikTokBusiness.class) {
+        TikTokBusiness *instance = [TikTokBusiness getInstance];
+        return !instance.discardEventsWhileTrackingDisabled ||
+            (instance.trackingEnabled && instance.config.debugModeEnabled);
+    }
+}
+
 + (NSUInteger)trackingGeneration
 {
     @synchronized (TikTokBusiness.class) {
@@ -396,6 +405,7 @@ withType:(NSString *)type
         }
         return;
     }
+    [TikTokDebugInfo clearLegacyTelemetry];
     NSNumber *initStartTimestamp = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     // Adopt the consent flags first, so that the monitor events below are already covered
     // by the discard gate when an app initializes after a consent withdrawal.
@@ -892,10 +902,11 @@ withType:(NSString *)type
 
 - (void)clearPersistedEventsWithCompletion:(void (^)(BOOL))completion
 {
+    BOOL legacyTelemetryCleared = [TikTokDebugInfo clearLegacyTelemetry];
     if (self.eventLogger) {
         [self.eventLogger clearPersistedEventsWithCompletion:^(BOOL success) {
             BOOL crashCleared = [self clearPersistedCrashReports];
-            if (completion) completion(success && crashCleared);
+            if (completion) completion(success && crashCleared && legacyTelemetryCleared);
         }];
         return;
     }
@@ -904,7 +915,7 @@ withType:(NSString *)type
         BOOL appCleared = [[TikTokAppEventPersistence persistence] clearEvents];
         BOOL monitorCleared = [[TikTokMonitorEventPersistence persistence] clearEvents];
         BOOL crashCleared = [self clearPersistedCrashReports];
-        success = appCleared && monitorCleared && crashCleared;
+        success = appCleared && monitorCleared && crashCleared && legacyTelemetryCleared;
     }
     if (completion) dispatch_async(dispatch_get_main_queue(), ^{ completion(success); });
 }
@@ -1173,17 +1184,7 @@ withType:(NSString *)type
                 [self trackEvent:@"LaunchAPP" withProperties:@{@"type":@"auto"} withId:@""];
             }
             
-            BOOL debugInfoEnabled = [[globalConfig objectForKey:@"enable_debug_info"] boolValue];
-            if (debugInfoEnabled) {
-                NSDictionary *monitorDebugInfoProperties = @{
-                    @"monitor_type": @"metric",
-                    @"monitor_name": @"debug_info",
-                    @"meta": [TikTokDebugInfo debugInfo]
-                };
-                TikTokAppEvent *monitorDebugInfoEvent = [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:monitorDebugInfoProperties withType:@"monitor"];
-                [self.eventLogger addEvent:monitorDebugInfoEvent];
-                [self.eventLogger flushMonitorEvents];
-            }
+            // Detailed debug_info telemetry is retired, regardless of remote settings.
 
             // Enabled: Auto Tracking, 2DRetention Tracking
             // Install Date: Available

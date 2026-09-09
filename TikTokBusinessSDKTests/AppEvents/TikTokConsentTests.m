@@ -21,10 +21,16 @@
 #import "TTSDKCrashReportStore.h"
 #import "TTSDKCrashConfiguration+Private.h"
 #import "TTSDKCrashReportStoreC.h"
+#import "TTSDKCrashMonitor_BootTime.h"
+#import "TTSDKCrashMonitorContext.h"
+#import "TikTokDebugInfo.h"
+#import "TikTokCypher.h"
+#import "TikTokEDPConfig.h"
 
 // A deterministic transport: no test contacts TikTok and responses can arrive
 // after cancellation, just as an already-running NSURLSession callback can.
 @interface TTConsentTask : NSURLSessionDataTask
+@property (nonatomic, strong) NSURLRequest *request;
 @property (nonatomic) BOOL resumed;
 @property (nonatomic) BOOL cancelled;
 @property (nonatomic, copy) void (^result)(NSData *, NSURLResponse *, NSError *);
@@ -41,6 +47,7 @@
 - (instancetype)init { self = [super init]; if (self) _requests = [NSMutableArray new]; return self; }
 - (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *, NSURLResponse *, NSError *))completionHandler {
     TTConsentTask *task = [TTConsentTask new];
+    task.request = request;
     task.result = completionHandler;
     [self.requests addObject:task];
     return task;
@@ -291,6 +298,150 @@
     [self purgeAndWait];
     XCTAssertEqual(store.reportCount, 0);
     TTSDKCrashReportStoreCConfiguration_Release(&native);
+}
+
+- (NSDictionary *)payloadForTask:(TTConsentTask *)task {
+    NSData *body = task.request.HTTPBody;
+    if ([TikTokCypher isGzippedData:body]) {
+        TikTokCypherResultErrorCode error = TikTokCypherResultNone;
+        body = [TikTokCypher gzipUncompressData:body error:&error];
+        XCTAssertEqual(error, TikTokCypherResultNone);
+    }
+    NSError *error;
+    NSDictionary *payload = [NSJSONSerialization JSONObjectWithData:body options:0 error:&error];
+    XCTAssertNil(error);
+    return payload;
+}
+
+- (TikTokAppEvent *)monitorNamed:(NSString *)name {
+    return [[TikTokAppEvent alloc] initWithEventName:@"MonitorEvent" withProperties:@{
+        @"monitor_type":@"metric", @"monitor_name":name,
+        @"meta":@{@"legacy_payload":@"should not leave device"}
+    } withType:@"monitor"];
+}
+
+// Seed bytes exactly as an older binary did, bypassing this version's new-write gate.
+- (void)seedLegacyMonitor:(TikTokAppEvent *)event {
+    TikTokDatabase *db = [[TikTokMonitorEventPersistence persistence] valueForKey:@"db"];
+    NSError *error;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:event requiringSecureCoding:YES error:&error];
+    XCTAssertNil(error);
+    BOOL inserted = [db insertIntoTable:@"monitor_event_table" fields:@{
+        @"event_data":data, @"ts":event.timestamp, @"retry_times":@0,
+        @"sending":@0, @"is_edp_event":@0
+    }];
+    XCTAssertTrue(inserted);
+}
+
+- (void)testRawBootTelemetryRetiredAndLegacyHistoryPurged {
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+    [defaults setObject:@{@"old-boot":@123} forKey:TTBTMsDictKey];
+    [defaults setObject:@{@"old-boot":@123} forKey:TTBTSDictKey];
+    [self purgeAndWait];
+    XCTAssertNil([defaults objectForKey:TTBTMsDictKey]);
+    XCTAssertNil([defaults objectForKey:TTBTSDictKey]);
+    XCTAssertEqual([TikTokDebugInfo debugInfo].count, 0);
+    TTSDKCrashMonitorAPI *api = ttsdkcm_boottime_getAPI();
+    api->setEnabled(true);
+    XCTAssertFalse(api->isEnabled(), @"Even optional crash instrumentation cannot collect raw boot time");
+    TTSDKCrash_MonitorContext context = {0};
+    api->addContextualInfoToEvent(&context);
+    XCTAssertTrue(context.System.bootTime == NULL);
+}
+
+- (void)testConfigurationPayloadHasNoDetailedTelemetryAndRemoteCannotChangeConsentHost {
+    TikTokConfig *config = [self activeConsentConfig];
+    [TikTokBusiness initializeSdk:config];
+    XCTAssertEqual(self.session.requests.count, 2);
+    for (TTConsentTask *task in self.session.requests) {
+        NSDictionary *payload = [self payloadForTask:task];
+        XCTAssertNil(payload[@"monitors"], @"Neither configuration endpoint may attach debug_info");
+        XCTAssertNotNil(payload[@"app"]);
+        XCTAssertNotNil(payload[@"device"]);
+    }
+    [self completeTask:self.session.requests.firstObject status:200 config:@{
+        @"enable_sdk":@YES, @"enable_debug_info":@YES,
+        @"domain":@"undeclared-tracker.invalid"
+    }];
+    [[TikTokFactory getRequestHandler] sendBatchRequest:@[[self seededEvent]] withConfig:config];
+    [[TikTokFactory getRequestHandler] getDebugMode:config withCompletionHandler:^(NSDictionary *global, NSError *error) {}];
+    for (TTConsentTask *task in self.session.requests) {
+        XCTAssertEqualObjects(task.request.URL.host, @"analytics.us.tiktok.com");
+    }
+    XCTAssertEqual([[TikTokMonitorEventPersistence persistence] eventsCount], 0);
+}
+
+- (void)testProductionDropsNewAndLegacyOptionalMonitorsWithoutStoppingAppEvents {
+    TikTokAppEvent *debug = [self monitorNamed:@"debug_info"];
+    TikTokAppEvent *network = [self monitorNamed:@"network_req"];
+    [self seedLegacyMonitor:debug];
+    [self seedLegacyMonitor:network];
+    XCTAssertEqual([[TikTokMonitorEventPersistence persistence] eventsCount], 2);
+    TikTokConfig *config = [self activeConsentConfig];
+    [TikTokBusiness initializeSdk:config];
+    XCTAssertFalse([TikTokBusiness canCollectDiagnosticEvents]);
+    XCTAssertEqual([[TikTokMonitorEventPersistence persistence] retrievePersistedEvents].count, 0);
+    XCTAssertEqual([[TikTokMonitorEventPersistence persistence] eventsCount], 0);
+    [[TikTokMonitorEventPersistence persistence] persistEvents:@[debug, network]];
+    XCTAssertEqual([[TikTokMonitorEventPersistence persistence] eventsCount], 0);
+    NSUInteger count = self.session.requests.count;
+    [[TikTokFactory getRequestHandler] sendMonitorRequest:@[debug, network] withConfig:config];
+    XCTAssertEqual(self.session.requests.count, count);
+    TikTokAppEvent *subscription = [[TikTokAppEvent alloc] initWithEventName:@"Subscribe"
+        withProperties:@{@"product":@"speaking_coach", @"plan":@"pro"} withType:@"track"];
+    subscription.screenshot = @"legacy-screen-content";
+    TikTokAppEvent *legacyEDP = [[TikTokAppEvent alloc] initWithEventName:@"page_show"
+        withProperties:@{@"monitor_type":@"enhanced_data_postback", @"page_components":@"legacy-conversation"} withType:@"track"];
+    XCTAssertTrue(legacyEDP.isEDPEvent);
+    [[TikTokFactory getRequestHandler] sendBatchRequest:@[subscription, legacyEDP] withConfig:config];
+    XCTAssertEqual(self.session.requests.count, count + 1);
+    NSDictionary *payload = [self payloadForTask:self.session.requests.lastObject];
+    NSArray *batch = payload[@"batch"];
+    XCTAssertEqual(batch.count, 1);
+    XCTAssertEqualObjects(batch.firstObject[@"event"], @"Subscribe");
+    XCTAssertNil(batch.firstObject[@"screenshot"], @"Legacy screenshots must not leave a production binary");
+}
+
+- (void)testDiagnosticsRequireLocalDebugAndConsentButRetiredDebugInfoNeverReturns {
+    TikTokConfig *config = [self activeConsentConfig];
+    [config enableDebugMode];
+    [TikTokBusiness initializeSdk:config];
+    XCTAssertTrue([TikTokBusiness canCollectDiagnosticEvents]);
+    TikTokAppEvent *debug = [self monitorNamed:@"debug_info"];
+    [self seedLegacyMonitor:debug];
+    NSArray *events = [[TikTokMonitorEventPersistence persistence] retrievePersistedEvents];
+    for (TikTokAppEvent *event in events) {
+        XCTAssertFalse([TikTokDebugInfo isRetiredMonitor:event.properties]);
+    }
+    NSUInteger count = self.session.requests.count;
+    [[TikTokFactory getRequestHandler] sendMonitorRequest:@[debug] withConfig:config];
+    XCTAssertEqual(self.session.requests.count, count);
+    TikTokAppEvent *network = [self monitorNamed:@"network_req"];
+    [[TikTokFactory getRequestHandler] sendMonitorRequest:@[network] withConfig:config];
+    XCTAssertEqual(self.session.requests.count, count + 1);
+    [TikTokBusiness setTrackingEnabled:NO];
+    [self purgeAndWait];
+    XCTAssertFalse([TikTokBusiness canCollectDiagnosticEvents]);
+    [[TikTokFactory getRequestHandler] sendMonitorRequest:@[network] withConfig:config];
+    XCTAssertEqual(self.session.requests.count, count + 1);
+}
+
+- (void)testRemoteEDPConfigCannotEnableLocallyDisabledCollection {
+    [TikTokBusiness initializeSdk:[self activeConsentConfig]];
+    [self completeTask:self.session.requests.firstObject status:200 config:@{
+        @"enable_sdk":@YES,
+        @"enhanced_data_postback_native_config":@{
+            @"enable_sdk":@YES, @"enable_from_ttconfig":@YES,
+            @"enable_app_launch_track":@YES, @"enable_page_show_track":@YES,
+            @"enable_click_track":@YES, @"enable_pay_show_track":@YES
+        }
+    }];
+    XCTAssertTrue(TikTokEDPConfig.sharedConfig.enable_sdk);
+    XCTAssertFalse(TikTokEDPConfig.sharedConfig.enable_from_ttconfig);
+    dispatch_sync([[TikTokBusiness getEventLogger] valueForKey:@"loggerQueue"], ^{});
+    for (TikTokAppEvent *event in [[TikTokAppEventPersistence persistence] retrievePersistedEvents]) {
+        XCTAssertFalse(event.isEDPEvent, @"Remote enable must not capture launch or UI contents");
+    }
 }
 
 @end
