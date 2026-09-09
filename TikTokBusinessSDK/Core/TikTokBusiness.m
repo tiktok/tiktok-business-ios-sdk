@@ -61,6 +61,7 @@
 @property (nonatomic) BOOL paymentTrackingEnabled;
 @property (nonatomic) BOOL SKAdNetworkSupportEnabled;
 @property (nonatomic) BOOL discardEventsWhileTrackingDisabled;
+@property (nonatomic) NSUInteger consentGeneration;
 @property (nonatomic, strong, nullable) TikTokRequestHandler *requestHandler;
 @property (nonatomic, strong, readwrite) dispatch_queue_t isolationQueue;
 @property (nonatomic, assign, readwrite) BOOL isDebugMode;
@@ -225,10 +226,37 @@ withType:(NSString *)type
     [[TikTokBusiness getInstance] clearPersistedEvents];
 }
 
++ (void)clearPersistedEventsWithCompletion:(void (^)(BOOL))completion
+{
+    [[TikTokBusiness getInstance] clearPersistedEventsWithCompletion:completion];
+}
+
 + (BOOL)shouldDiscardEvents
 {
-    TikTokBusiness *instance = [TikTokBusiness getInstance];
-    return instance.discardEventsWhileTrackingDisabled && !instance.trackingEnabled;
+    @synchronized (TikTokBusiness.class) {
+        TikTokBusiness *instance = [TikTokBusiness getInstance];
+        return instance.discardEventsWhileTrackingDisabled && !instance.trackingEnabled;
+    }
+}
+
++ (NSUInteger)trackingGeneration
+{
+    @synchronized (TikTokBusiness.class) {
+        return [TikTokBusiness getInstance].consentGeneration;
+    }
+}
+
++ (BOOL)performWithTrackingGeneration:(NSUInteger)generation block:(dispatch_block_t)block
+{
+    @synchronized (TikTokBusiness.class) {
+        TikTokBusiness *instance = [TikTokBusiness getInstance];
+        if (instance.discardEventsWhileTrackingDisabled &&
+            (!instance.trackingEnabled || instance.consentGeneration != generation)) {
+            return NO;
+        }
+        block();
+        return YES;
+    }
 }
 
 + (void)setCustomUserAgent:(NSString *)customUserAgent
@@ -419,7 +447,7 @@ withType:(NSString *)type
     self.requestHandler = [TikTokFactory getRequestHandler];
     self.eventLogger = [[TikTokEventLogger alloc] initWithConfig:tiktokConfig];
     self.initialized = NO;
-    [self startTimer];
+    if (![TikTokBusiness shouldDiscardEvents]) [self startTimer];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:@"true" forKey:@"AreTimersOn"];
@@ -471,6 +499,9 @@ withType:(NSString *)type
 }
 
 - (void)setUpCrashMonitor {
+    // This optional subsystem cannot be safely uninstalled on consent withdrawal.
+    // Consent-mode applications therefore never install crash capture/storage.
+    if (self.discardEventsWhileTrackingDisabled) return;
     Class installationClass = NSClassFromString(@"TTSDKCrashInstallationConsole");
     if (!installationClass) {
         return;
@@ -540,6 +571,7 @@ withType:(NSString *)type
 }
 
 - (void)sendCrashReport:(NSString *)report {
+    if (self.discardEventsWhileTrackingDisabled) return;
     if (![TikTokErrorHandler isSDKCrashReport:report]) {
         [self.logger verbose:@"Crash report does not belong to SDK"];
         return;
@@ -637,12 +669,15 @@ withType:(NSString *)type
         [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:eventName withValue:valueString currency:TTSafeString(currency)];
     }
     
+    NSUInteger generation = [TikTokBusiness trackingGeneration];
     TikTokAppEvent *appEvent = [[TikTokAppEvent alloc] initWithEventName:eventName withProperties:properties withEventID:eventId];
     if (self.screenshotEnabled) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSString *screenshot = [self screenShot];
-            appEvent.screenshot = screenshot;
-            [self addEvent:appEvent];
+            [TikTokBusiness performWithTrackingGeneration:generation block:^{
+                NSString *screenshot = [self screenShot];
+                appEvent.screenshot = screenshot;
+                [self addEvent:appEvent];
+            }];
         });
     } else {
         [self addEvent:appEvent];
@@ -696,6 +731,7 @@ withType:(NSString *)type
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
+    if ([TikTokBusiness shouldDiscardEvents]) return;
     NSNumber *backgroundMonitorTime = [TikTokAppEventUtility getCurrentTimestampAsNumber];
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
@@ -709,6 +745,7 @@ withType:(NSString *)type
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
+    if ([TikTokBusiness shouldDiscardEvents]) return;
     // Enabled: Tracking, Auto Logging, 2DRetention Logging
     // Install Date: Available
     // 2D Limit has not been passed
@@ -818,44 +855,85 @@ withType:(NSString *)type
 
 - (void)setTrackingEnabled:(BOOL)trackingEnabled
 {
-    _trackingEnabled = trackingEnabled;
-    if (!self.discardEventsWhileTrackingDisabled || !self.eventLogger) {
-        // The consent side effects below only apply once the SDK is set up, so that
-        // initialization itself neither purges nor restarts anything.
-        return;
-    }
-    if (trackingEnabled) {
+    @synchronized (TikTokBusiness.class) {
+        _trackingEnabled = trackingEnabled;
+        if (!self.discardEventsWhileTrackingDisabled || !self.eventLogger) return;
+        if (!trackingEnabled) {
+            self.consentGeneration += 1;
+            [self.requestHandler cancelPendingRequests];
+            [self clearPersistedEvents];
+        }
+        NSUInteger generation = self.consentGeneration;
         TTSDKRunOnMainThread(^{
-            if (!self.sessionActivityTimer) {
-                [self startTimer];
+            @synchronized (TikTokBusiness.class) {
+                if (generation != self.consentGeneration) return;
+                if (!self.trackingEnabled) {
+                    [self stopTimer];
+                    [self.eventLogger.flushTimer invalidate];
+                    self.eventLogger.flushTimer = nil;
+                    [self stopStoreKitObserve];
+                    return;
+                }
+                if (!self.sessionActivityTimer) [self startTimer];
+                if (!self.eventLogger.flushTimer) [self.eventLogger initializeFlushTimer];
+                if (self.automaticTrackingEnabled && self.paymentTrackingEnabled) [self startStoreKitObserve];
             }
         });
-        if (self.config && !self.isGlobalConfigFetched) {
+        if (trackingEnabled && self.config && !self.isGlobalConfigFetched) {
             [self getGlobalConfig:self.config isFirstInitialization:NO];
         }
-    } else {
-        TTSDKRunOnMainThread(^{
-            [self stopTimer];
-        });
-        [self clearPersistedEvents];
     }
 }
 
 - (void)clearPersistedEvents
 {
+    [self clearPersistedEventsWithCompletion:nil];
+}
+
+- (void)clearPersistedEventsWithCompletion:(void (^)(BOOL))completion
+{
     if (self.eventLogger) {
-        // Go through the event logger queue so that events which are already queued but
-        // not persisted yet are purged as well.
-        [self.eventLogger clearPersistedEvents];
+        [self.eventLogger clearPersistedEventsWithCompletion:^(BOOL success) {
+            BOOL crashCleared = [self clearPersistedCrashReports];
+            if (completion) completion(success && crashCleared);
+        }];
         return;
     }
-    // The SDK may not be initialized yet, for instance when an app purges the events of a
-    // previous session before calling initializeSdk: again.
-    BOOL appEventsCleared = [[TikTokAppEventPersistence persistence] clearEvents];
-    BOOL monitorEventsCleared = [[TikTokMonitorEventPersistence persistence] clearEvents];
-    if (!appEventsCleared || !monitorEventsCleared) {
-        [self.logger warn:@"[TikTokBusiness] Failed to clear persisted events"];
+    BOOL success;
+    @synchronized (TikTokBusiness.class) {
+        BOOL appCleared = [[TikTokAppEventPersistence persistence] clearEvents];
+        BOOL monitorCleared = [[TikTokMonitorEventPersistence persistence] clearEvents];
+        BOOL crashCleared = [self clearPersistedCrashReports];
+        success = appCleared && monitorCleared && crashCleared;
     }
+    if (completion) dispatch_async(dispatch_get_main_queue(), ^{ completion(success); });
+}
+
+// Resolve dynamically, as upstream treats the crash subsystem as optional. Opening
+// its report store does not install crash monitors or send any reports.
+- (BOOL)clearPersistedCrashReports
+{
+    Class storeClass = NSClassFromString(@"TTSDKCrashReportStore");
+    if (!storeClass) return YES;
+    SEL selector = NSSelectorFromString(@"defaultStoreWithError:");
+    NSMethodSignature *signature = [storeClass methodSignatureForSelector:selector];
+    if (!signature) return NO;
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    invocation.target = storeClass;
+    invocation.selector = selector;
+    NSError *__autoreleasing error = nil;
+    NSError *__autoreleasing *errorPointer = &error;
+    [invocation setArgument:&errorPointer atIndex:2];
+    [invocation invoke];
+    __unsafe_unretained id result;
+    [invocation getReturnValue:&result];
+    id store = result;
+    if (!store || error || ![store respondsToSelector:NSSelectorFromString(@"deleteAllReports")]) return NO;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    [store performSelector:NSSelectorFromString(@"deleteAllReports")];
+#pragma clang diagnostic pop
+    return [[store valueForKey:@"reportCount"] integerValue] == 0;
 }
 
 - (void)setCustomUserAgent:(NSString *)customUserAgent
@@ -955,6 +1033,7 @@ withType:(NSString *)type
         return;
     }
     
+    NSUInteger generation = [TikTokBusiness trackingGeneration];
     [self.requestHandler getRemoteSwitch:tiktokConfig
                                  isRetry:NO
                    withCompletionHandler:^(BOOL isRemoteSwitchOn, NSDictionary *globalConfig) {
@@ -1010,8 +1089,10 @@ withType:(NSString *)type
                 
                 if ([TikTokEDPConfig sharedConfig].enable_sdk && [TikTokEDPConfig sharedConfig].enable_from_ttconfig) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [UIViewController TT_StartUIViewControllerEDPMonitoring];
-                        [UIApplication TT_StartUIApplicationEDPMonitoring];
+                        [TikTokBusiness performWithTrackingGeneration:generation block:^{
+                            [UIViewController TT_StartUIViewControllerEDPMonitoring];
+                            [UIApplication TT_StartUIApplicationEDPMonitoring];
+                        }];
                     });
                 } else {
                     [self.eventLogger clearEDPEvents];
@@ -1052,7 +1133,7 @@ withType:(NSString *)type
             BOOL globalConfigRetentionTrackingEnabled = [globalConfig objectForKey:@"auto_track_Retention_enable"]!=nil ? [[globalConfig objectForKey:@"auto_track_Retention_enable"] boolValue] : YES;
             self.retentionTrackingEnabled = self.retentionTrackingEnabled && globalConfigRetentionTrackingEnabled;
             BOOL globalConfigPaymentTrackingEnabled = [globalConfig objectForKey:@"auto_track_Payment_enable"]!=nil ? [[globalConfig objectForKey:@"auto_track_Payment_enable"] boolValue] : YES;
-            self.paymentTrackingEnabled = globalConfigPaymentTrackingEnabled;
+            self.paymentTrackingEnabled = tiktokConfig.paymentTrackingStatus != TikTokPaymentTrackStatus_disabled && globalConfigPaymentTrackingEnabled;
             NSNumber *isStoreKit2ObserveEnabled = [globalConfig objectForKey:@"enable_ios_sk2_observe"];
             if (isStoreKit2ObserveEnabled && [isStoreKit2ObserveEnabled isKindOfClass:NSNumber.class]) {
                 self.isStoreKit2ObserveEnabled = [isStoreKit2ObserveEnabled boolValue];
@@ -1134,7 +1215,9 @@ withType:(NSString *)type
     [self.requestHandler getDebugMode:tiktokConfig withCompletionHandler:^(NSDictionary *businessSDKConfig, NSError * _Nonnull error) {
         if (!error && TTCheckValidDictionary(businessSDKConfig)) {
             self.remoteDebugEnabled = [[businessSDKConfig objectForKey:@"enable_debug_mode"] boolValue];
-            self.screenshotEnabled = [[businessSDKConfig objectForKey:@"enable_screenshot"] boolValue];
+            // Remote debug settings cannot opt a production app into screenshots.
+            self.screenshotEnabled = self.isDebugMode && self.remoteDebugEnabled &&
+                [[businessSDKConfig objectForKey:@"enable_screenshot"] boolValue];
         }
     }];
 }
@@ -1298,6 +1381,8 @@ withType:(NSString *)type
 }
 
 - (void)startStoreKitObserve {
+    if ([TikTokBusiness shouldDiscardEvents] || !self.paymentTrackingEnabled ||
+        self.config.paymentTrackingStatus == TikTokPaymentTrackStatus_disabled) return;
     if (@available(iOS 15.0, *)) {
         if (self.isStoreKit2ObserveEnabled) {
             Class TikTokStoreKitObserver = NSClassFromString(@"TikTokStoreKitObserver");
@@ -1315,7 +1400,6 @@ withType:(NSString *)type
         Class TikTokStoreKitObserver = NSClassFromString(@"TikTokStoreKitObserver");
         if ([TikTokStoreKitObserver respondsToSelector:@selector(stop)]) {
             [TikTokStoreKitObserver performSelector:@selector(stop)];
-            return;
         }
     }
     [TikTokPaymentObserver stopObservingTransactions];

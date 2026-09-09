@@ -34,6 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
 */
 + (BOOL)shouldDiscardEvents;
 
+// A generation is invalidated synchronously on withdrawal. Queue work, request starts,
+// and callbacks use the same lock as withdrawal so old work cannot cross reconsent.
++ (NSUInteger)trackingGeneration;
++ (BOOL)performWithTrackingGeneration:(NSUInteger)generation block:(dispatch_block_t)block;
+
 @end
 
 NS_ASSUME_NONNULL_END

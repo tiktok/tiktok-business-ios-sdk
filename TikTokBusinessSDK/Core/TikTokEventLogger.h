@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
  *        queued but not persisted yet.
  */
 - (void)clearPersistedEvents;
+- (void)clearPersistedEventsWithCompletion:(nullable void (^)(BOOL success))completion;
 
 @end
 

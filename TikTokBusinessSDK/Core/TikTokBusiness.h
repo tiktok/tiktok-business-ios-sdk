@@ -138,6 +138,10 @@ NS_ASSUME_NONNULL_BEGIN
 */
 + (void)clearPersistedEvents;
 
+/// Completes on the main queue after queued writes and the store purge have finished.
+/// A NO result must keep tracking disabled. Call before any consent reactivation.
++ (void)clearPersistedEventsWithCompletion:(void (^)(BOOL success))completion;
+
 /**
  * @brief Use this method to disable collection of User Agent automatically and set a custom User Agent
 */

@@ -48,6 +48,10 @@ withCompletionHandler:(void (^)(NSDictionary * _Nullable businessSDKConfig, NSEr
  */
 - (void)fetchDeferredDeeplinkWithConfig:(TikTokConfig * _Nullable)config completion:(void (^)(NSURL * _Nullable, NSError * _Nullable))completion;
 
+/// Cancel all requests synchronously at the SDK consent boundary. Already transmitted
+/// bytes cannot be recalled; stale callbacks and retries are discarded by generation.
+- (void)cancelPendingRequests;
+
 @end
 
 NS_ASSUME_NONNULL_END
