@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TikTokDebugInfo : NSObject
 
 + (NSDictionary *)debugInfo;
++ (BOOL)clearLegacyTelemetry;
++ (BOOL)isRetiredMonitor:(NSDictionary *)properties;
 
 @end
 

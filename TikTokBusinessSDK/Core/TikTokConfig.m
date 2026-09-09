@@ -147,6 +147,7 @@
     _SKAdNetworkSupportEnabled = YES;
     _debugModeEnabled = NO;
     _autoEDPEventEnabled = YES;
+    _discardEventsWhileTrackingDisabled = NO;
     
     self.logger = [TikTokFactory getLogger];
     return self;
@@ -174,6 +175,7 @@
     _SKAdNetworkSupportEnabled = YES;
     _debugModeEnabled = NO;
     _autoEDPEventEnabled = YES;
+    _discardEventsWhileTrackingDisabled = NO;
     
     self.logger = [TikTokFactory getLogger];
     return self;

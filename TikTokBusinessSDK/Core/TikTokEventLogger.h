@@ -61,6 +61,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// Clear the events from EDP
 - (void)clearEDPEvents;
 
+/**
+ * @brief Purge the persisted app events and monitor events, and everything that is
+ *        queued but not persisted yet.
+ */
+- (void)clearPersistedEvents;
+- (void)clearPersistedEventsWithCompletion:(nullable void (^)(BOOL success))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

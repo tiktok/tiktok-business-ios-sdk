@@ -128,6 +128,21 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setTrackingEnabled: (BOOL)enabled;
 
 /**
+ * @brief Purge every event that is currently persisted or queued, for both the app event
+ *        store and the monitor event store.
+ *
+ * @note This works regardless of TikTokConfig.discardEventsWhileTrackingDisabled and of
+ *       whether tracking is enabled. Call it before enabling tracking again, or before
+ *       initializing the SDK after a consent withdrawal, to guarantee that events
+ *       collected earlier are never transmitted. It is safe to call before initializeSdk:.
+*/
++ (void)clearPersistedEvents;
+
+/// Completes on the main queue after queued writes and the store purge have finished.
+/// A NO result must keep tracking disabled. Call before any consent reactivation.
++ (void)clearPersistedEventsWithCompletion:(void (^)(BOOL success))completion;
+
+/**
  * @brief Use this method to disable collection of User Agent automatically and set a custom User Agent
 */
 + (void)setCustomUserAgent: (NSString *)customUserAgent;

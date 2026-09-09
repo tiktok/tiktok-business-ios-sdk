@@ -25,6 +25,23 @@ NS_ASSUME_NONNULL_BEGIN
 */
 + (TikTokEventLogger *)getEventLogger;
 
+/**
+ * @brief This method is used internally as the single consent gate.
+ *        It returns YES when the app opted in to
+ *        TikTokConfig.discardEventsWhileTrackingDisabled and tracking is currently
+ *        disabled. Callers must then drop the event instead of persisting, queueing or
+ *        transmitting it, and must not issue any request.
+*/
++ (BOOL)shouldDiscardEvents;
+
+// Optional diagnostic monitors require explicit local debug mode in consent mode.
++ (BOOL)canCollectDiagnosticEvents;
+
+// A generation is invalidated synchronously on withdrawal. Queue work, request starts,
+// and callbacks use the same lock as withdrawal so old work cannot cross reconsent.
++ (NSUInteger)trackingGeneration;
++ (BOOL)performWithTrackingGeneration:(NSUInteger)generation block:(dispatch_block_t)block;
+
 @end
 
 NS_ASSUME_NONNULL_END

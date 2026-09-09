@@ -9,6 +9,7 @@
 #import "TikTokEventLogger.h"
 #import "TikTokAppEventUtility.h"
 #import "TikTokBusiness.h"
+#import "TikTokBusiness+private.h"
 #import "TikTokConfig.h"
 #import "TikTokLogger.h"
 #import "TikTokFactory.h"
@@ -75,11 +76,13 @@
 
 - (void)initializeFlushTimerWithSeconds:(long)seconds
 {
+    if ([TikTokBusiness shouldDiscardEvents]) return;
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     tt_weakify(self)
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:seconds
         repeats:NO block:^(NSTimer *timer) {
         tt_strongify(self)
+        if ([TikTokBusiness shouldDiscardEvents]) return;
         if ([[preferences objectForKey:@"AreTimersOn"]  isEqual: @"true"]) {
             [self flush:TikTokAppEventsFlushReasonTimer];
             [self flushMonitorEvents];
@@ -95,6 +98,7 @@
 
 - (void)initializeFlushTimer
 {
+    if ([TikTokBusiness shouldDiscardEvents]) return;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     tt_weakify(self)
     self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:FLUSH_PERIOD_IN_SECONDS
@@ -109,20 +113,45 @@
 
 - (void)addEvent:(TikTokAppEvent *)event
 {
+    NSUInteger generation = [TikTokBusiness trackingGeneration];
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        [self.logger verbose:@"[TikTokAppEventQueue] Tracking is disabled, no event added"];
+        return;
+    }
     if([[TikTokBusiness getInstance] isRemoteSwitchOn] == NO) {
         [self.logger verbose:@"[TikTokAppEventQueue] Remote switch is off, no event added"];
         return;
     }
     if ([event.type isEqualToString:@"monitor"]) {
         dispatch_async(self.loggerQueue, ^{
-            [[TikTokMonitorEventPersistence persistence] persistEvents:@[event]];
+            [TikTokBusiness performWithTrackingGeneration:generation block:^{
+                [[TikTokMonitorEventPersistence persistence] persistEvents:@[event]];
+            }];
         });
     } else {
         dispatch_async(self.loggerQueue, ^{
-            [[TikTokAppEventPersistence persistence] persistEvents:@[event]];
+            [TikTokBusiness performWithTrackingGeneration:generation block:^{
+                [[TikTokAppEventPersistence persistence] persistEvents:@[event]];
+            }];
         });
     }
     
+}
+
+- (void)clearPersistedEvents {
+    [self clearPersistedEventsWithCompletion:nil];
+}
+
+- (void)clearPersistedEventsWithCompletion:(void (^)(BOOL))completion {
+    dispatch_async(self.loggerQueue, ^{
+        BOOL success;
+        @synchronized (TikTokBusiness.class) {
+            BOOL appCleared = [[TikTokAppEventPersistence persistence] clearEvents];
+            BOOL monitorCleared = [[TikTokMonitorEventPersistence persistence] clearEvents];
+            success = appCleared && monitorCleared;
+        }
+        if (completion) dispatch_async(dispatch_get_main_queue(), ^{ completion(success); });
+    });
 }
 
 - (void)clearEDPEvents {
@@ -135,6 +164,12 @@
 
 - (void)flush:(TikTokAppEventsFlushReason)flushReason
 {
+    NSUInteger generation = [TikTokBusiness trackingGeneration];
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        [self.logger info:@"[TikTokAppEventQueue] Tracking is disabled, no flush logic invoked"];
+        return;
+    }
+    
     if (!TTCheckValidString(self.config.appId)) {
         [self.logger info:@"[TikTokAppEventQueue] Invalid App ID, no flush logic invoked"];
         return;
@@ -164,6 +199,7 @@
     tt_weakify(self)
     dispatch_async(self.loggerQueue, ^{
         tt_strongify(self)
+        [TikTokBusiness performWithTrackingGeneration:generation block:^{
         @try {
             NSInteger flushSize = 0;
             [self.logger info:@"[TikTokAppEventQueue] Start flush, with flush reason: %lu", flushReason];
@@ -193,12 +229,19 @@
         } @catch (NSException *exception) {
             [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flush" exception:exception];
         }
+        }];
     });
 }
 
 
 - (void)flushMonitorEvents {
+    NSUInteger generation = [TikTokBusiness trackingGeneration];
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        [self.logger info:@"[TikTokAppEventQueue] Tracking is disabled, no monitor flush logic invoked"];
+        return;
+    }
     dispatch_async(self.loggerQueue, ^{
+        [TikTokBusiness performWithTrackingGeneration:generation block:^{
         @try {
             NSArray *eventsFromDisk =
             [[TikTokMonitorEventPersistence persistence] retrievePersistedEvents];
@@ -207,6 +250,7 @@
         } @catch (NSException *exception) {
             [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failure on flush" exception:exception];
         }
+        }];
     });
 }
 

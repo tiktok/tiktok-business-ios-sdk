@@ -12,6 +12,8 @@
 #import "TikTokAppEvent.h"
 #import "TikTokBUsinessSDKMacros.h"
 #import "TikTokTypeUtility.h"
+#import "TikTokBusiness+private.h"
+#import "TikTokDebugInfo.h"
 
 #define TT_DB_LIMIT 500
 
@@ -55,7 +57,7 @@
     if (self) {
         self.db = [TikTokDatabase databaseWithName:NSStringFromClass([self class])];
         if ([self.db openDatabase]) {
-            
+
             if (![self.db createTableWithName:[[self class] tableName] fields:[[self class] tableFields]]) {
                 [TikTokErrorHandler handleErrorWithOrigin:NSStringFromClass([self class]) message:@"Failed to create table"];
             }
@@ -67,38 +69,49 @@
 }
 
 - (BOOL)persistEvents:(NSArray *)events {
-    if ([self.db openDatabase]) {
-        if ([self eventsCount] > TT_DB_LIMIT) {
+    @synchronized (TikTokBusiness.class) {
+        // Lowest common entry point of every event store, so that no event of any kind is
+        // written to disk once the app has withdrawn consent.
+        if ([TikTokBusiness shouldDiscardEvents]) {
             return NO;
         }
-        for (int i = 0; i < events.count; i++) {
-            if (![[events objectAtIndex:i] isKindOfClass:[TikTokAppEvent class]]) {
-                continue;
-            }
-            TikTokAppEvent *event = [events objectAtIndex:i];
-            
-            NSError *errorArchiving;
-            NSData *eventData = [NSKeyedArchiver archivedDataWithRootObject:event requiringSecureCoding:YES error:&errorArchiving];
-            if (errorArchiving) {
-                NSLog(@"Failed to serialize event to data: %@", errorArchiving.localizedDescription);
-                NSAssert(NO, @"Failed to serialize event to data: %@", errorArchiving.localizedDescription);
-                [self.db closeDatabase];
+        if ([self.db openDatabase]) {
+            if ([self eventsCount] > TT_DB_LIMIT) {
                 return NO;
             }
-            if (![self.db insertIntoTable:[[self class] tableName] fields:@{
-                @"event_data":eventData,
-                @"ts": TTSafeString(event.timestamp),
-                @"retry_times": @(event.retryTimes),
-                @"sending": @(0),
-                @"is_edp_event": @(event.isEDPEvent)
-            }]) {
-                [self.db closeDatabase];
-                return NO;
+            for (int i = 0; i < events.count; i++) {
+                if (![[events objectAtIndex:i] isKindOfClass:[TikTokAppEvent class]]) {
+                    continue;
+                }
+                TikTokAppEvent *event = [events objectAtIndex:i];
+                if ([TikTokDebugInfo isRetiredMonitor:event.properties] ||
+                    ([event.type isEqualToString:@"monitor"] && ![TikTokBusiness canCollectDiagnosticEvents])) {
+                    continue;
+                }
+
+                NSError *errorArchiving;
+                NSData *eventData = [NSKeyedArchiver archivedDataWithRootObject:event requiringSecureCoding:YES error:&errorArchiving];
+                if (errorArchiving) {
+                    NSLog(@"Failed to serialize event to data: %@", errorArchiving.localizedDescription);
+                    NSAssert(NO, @"Failed to serialize event to data: %@", errorArchiving.localizedDescription);
+                    [self.db closeDatabase];
+                    return NO;
+                }
+                if (![self.db insertIntoTable:[[self class] tableName] fields:@{
+                    @"event_data":eventData,
+                    @"ts": TTSafeString(event.timestamp),
+                    @"retry_times": @(event.retryTimes),
+                    @"sending": @(0),
+                    @"is_edp_event": @(event.isEDPEvent)
+                }]) {
+                    [self.db closeDatabase];
+                    return NO;
+                }
             }
+
         }
-        
+        return YES;
     }
-    return YES;
 }
 
 - (NSArray *)retrievePersistedEvents {
@@ -121,7 +134,15 @@
                 event = (TikTokAppEvent *)obj;
                 event.dbID = [NSString stringWithFormat:@"%ld",(long)eID];
                 event.retryTimes = retry_times;
-                
+                // Delete retired telemetry even when it came from an older binary.
+                if ([TikTokDebugInfo isRetiredMonitor:event.properties] ||
+                    ([event.type isEqualToString:@"monitor"] && ![TikTokBusiness canCollectDiagnosticEvents])) {
+                    [self.db deleteTable:[[self class] tableName]
+                               withWhere:[NSString stringWithFormat:@"id = %ld", (long)eID]
+                                 orderBy:TTDBOrderByNone limit:TTDBLimitNone];
+                    continue;
+                }
+
                 [dbIDs addObject:TTSafeString(event.dbID)];
             }
             if (!error && event) {
@@ -131,7 +152,7 @@
         if (dbIDs.count > 0) {
             NSString *dbIDList = [dbIDs componentsJoinedByString:@", "];
             NSString *sendingWhereCondition = [NSString stringWithFormat:@"id IN (%@)",dbIDList];
-            
+
             [self.db updateTable:[[self class] tableName] setField:@"sending" value:@(1) withWhere:sendingWhereCondition];
         }
     }
@@ -143,11 +164,10 @@
 }
 
 - (BOOL)clearEvents{
-    if ([self.db openDatabase]) {
-        if (![self.db deleteTable:[[self class] tableName] withWhere:nil orderBy:TTDBOrderByNone limit:TTDBLimitNone]) {
-            [self.db closeDatabase];
-            return NO;
-        }
+    if (![self.db openDatabase]) return NO;
+    if (![self.db deleteTable:[[self class] tableName] withWhere:nil orderBy:TTDBOrderByNone limit:TTDBLimitNone]) {
+        [self.db closeDatabase];
+        return NO;
     }
     return YES;
 }

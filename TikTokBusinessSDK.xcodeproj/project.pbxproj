@@ -540,6 +540,7 @@
 		2BE60BA12B1F2A2100AB386C /* TikTokConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BE60B9F2B1F2A2100AB386C /* TikTokConstants.m */; };
 		2BEC2CDE2E20E7130086C546 /* TikTokDebugInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BEC2CDC2E20E7130086C546 /* TikTokDebugInfo.h */; };
 		2BEC2CDF2E20E7130086C546 /* TikTokDebugInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BEC2CDD2E20E7130086C546 /* TikTokDebugInfo.m */; };
+		3C80992264679B07D75AE646 /* TikTokConsentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EF382BE3B910D7FA43B73915 /* TikTokConsentTests.m */; };
 		8B1811DB251EABF800CBBE2E /* TikTokPaymentObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B1811D9251EABF800CBBE2E /* TikTokPaymentObserver.h */; };
 		8B1811DC251EABF800CBBE2E /* TikTokPaymentObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B1811DA251EABF800CBBE2E /* TikTokPaymentObserver.m */; };
 		8B23DF8F2502BA73008351FA /* TikTokBusinessSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B23DF8D2502BA73008351FA /* TikTokBusinessSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -909,6 +910,7 @@
 		8BB88F34250A986600EC9D74 /* FormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormViewController.swift; sourceTree = "<group>"; };
 		8BB88F36250A9A4100EC9D74 /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		8BEA4660252E96F800E12E0E /* PurchaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseViewController.swift; sourceTree = "<group>"; };
+		EF382BE3B910D7FA43B73915 /* TikTokConsentTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = TikTokConsentTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -968,6 +970,7 @@
 				2BB03E1F2BF624D800827FF2 /* TikTokConfigTests.m */,
 				2B870C032BF1FB21009CB42C /* TikTokContentsEventTests.m */,
 				2B870C012BF1F619009CB42C /* TikTokBaseEventTests.m */,
+				EF382BE3B910D7FA43B73915 /* TikTokConsentTests.m */,
 			);
 			path = AppEvents;
 			sourceTree = "<group>";
@@ -2025,6 +2028,7 @@
 				2B1404B52C29919100CF56B2 /* TikTokRequestHandlerTests.m in Sources */,
 				2B870CA22BF365BA009CB42C /* TikTokDeviceInfoTests.m in Sources */,
 				2BD66DE72C32D30B009AEE65 /* TikTokSKAdNetworkSupportTests.m in Sources */,
+				3C80992264679B07D75AE646 /* TikTokConsentTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
