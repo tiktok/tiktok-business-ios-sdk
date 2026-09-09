@@ -60,6 +60,7 @@
 @property (nonatomic) BOOL retentionTrackingEnabled;
 @property (nonatomic) BOOL paymentTrackingEnabled;
 @property (nonatomic) BOOL SKAdNetworkSupportEnabled;
+@property (nonatomic) BOOL discardEventsWhileTrackingDisabled;
 @property (nonatomic, strong, nullable) TikTokRequestHandler *requestHandler;
 @property (nonatomic, strong, readwrite) dispatch_queue_t isolationQueue;
 @property (nonatomic, assign, readwrite) BOOL isDebugMode;
@@ -219,6 +220,17 @@ withType:(NSString *)type
     [[TikTokBusiness getInstance] setTrackingEnabled:enabled];
 }
 
++ (void)clearPersistedEvents
+{
+    [[TikTokBusiness getInstance] clearPersistedEvents];
+}
+
++ (BOOL)shouldDiscardEvents
+{
+    TikTokBusiness *instance = [TikTokBusiness getInstance];
+    return instance.discardEventsWhileTrackingDisabled && !instance.trackingEnabled;
+}
+
 + (void)setCustomUserAgent:(NSString *)customUserAgent
 {
     [[TikTokBusiness getInstance] setCustomUserAgent:customUserAgent];
@@ -357,6 +369,12 @@ withType:(NSString *)type
         return;
     }
     NSNumber *initStartTimestamp = [TikTokAppEventUtility getCurrentTimestampAsNumber];
+    // Adopt the consent flags first, so that the monitor events below are already covered
+    // by the discard gate when an app initializes after a consent withdrawal.
+    self.discardEventsWhileTrackingDisabled = tiktokConfig.discardEventsWhileTrackingDisabled;
+    if (self.discardEventsWhileTrackingDisabled) {
+        self.trackingEnabled = tiktokConfig.trackingEnabled;
+    }
     if (!TTCheckValidString(tiktokConfig.appId) || !TTCheckValidString(tiktokConfig.tiktokAppId)) {
         NSNumber *initEndTimestamp = [TikTokAppEventUtility getCurrentTimestampAsNumber];
         NSDictionary *configMonitorEndMeta = @{
@@ -600,6 +618,11 @@ withType:(NSString *)type
     withProperties: (NSDictionary *)properties
             withId: (NSString *)eventId
 {
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        [self.logger verbose:@"[TikTokBusiness] Tracking is disabled, event %@ discarded", eventName];
+        return;
+    }
+    
     if(self.SKAdNetworkSupportEnabled) {
         id value = [properties objectForKey:@"value"];
         NSString *valueString;
@@ -796,6 +819,43 @@ withType:(NSString *)type
 - (void)setTrackingEnabled:(BOOL)trackingEnabled
 {
     _trackingEnabled = trackingEnabled;
+    if (!self.discardEventsWhileTrackingDisabled || !self.eventLogger) {
+        // The consent side effects below only apply once the SDK is set up, so that
+        // initialization itself neither purges nor restarts anything.
+        return;
+    }
+    if (trackingEnabled) {
+        TTSDKRunOnMainThread(^{
+            if (!self.sessionActivityTimer) {
+                [self startTimer];
+            }
+        });
+        if (self.config && !self.isGlobalConfigFetched) {
+            [self getGlobalConfig:self.config isFirstInitialization:NO];
+        }
+    } else {
+        TTSDKRunOnMainThread(^{
+            [self stopTimer];
+        });
+        [self clearPersistedEvents];
+    }
+}
+
+- (void)clearPersistedEvents
+{
+    if (self.eventLogger) {
+        // Go through the event logger queue so that events which are already queued but
+        // not persisted yet are purged as well.
+        [self.eventLogger clearPersistedEvents];
+        return;
+    }
+    // The SDK may not be initialized yet, for instance when an app purges the events of a
+    // previous session before calling initializeSdk: again.
+    BOOL appEventsCleared = [[TikTokAppEventPersistence persistence] clearEvents];
+    BOOL monitorEventsCleared = [[TikTokMonitorEventPersistence persistence] clearEvents];
+    if (!appEventsCleared || !monitorEventsCleared) {
+        [self.logger warn:@"[TikTokBusiness] Failed to clear persisted events"];
+    }
 }
 
 - (void)setCustomUserAgent:(NSString *)customUserAgent
@@ -890,6 +950,11 @@ withType:(NSString *)type
 - (void)getGlobalConfig:(TikTokConfig *)tiktokConfig
   isFirstInitialization: (BOOL)isFirstInitialization
 {
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        [self.logger info:@"[TikTokBusiness] Tracking is disabled, global config not fetched"];
+        return;
+    }
+    
     [self.requestHandler getRemoteSwitch:tiktokConfig
                                  isRetry:NO
                    withCompletionHandler:^(BOOL isRemoteSwitchOn, NSDictionary *globalConfig) {
@@ -1132,6 +1197,15 @@ withType:(NSString *)type
                                              code:-1
                                          userInfo:@{
             NSLocalizedDescriptionKey : @"SDK not initialized",
+        }];
+        completion(nil, error);
+        return;
+    }
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        NSError *error = [NSError errorWithDomain:@"com.TikTokBusinessSDK.error"
+                                             code:-4
+                                         userInfo:@{
+            NSLocalizedDescriptionKey : @"Tracking is disabled, deferred deeplink not fetched",
         }];
         completion(nil, error);
         return;

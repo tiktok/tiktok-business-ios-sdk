@@ -35,6 +35,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL autoEDPEventEnabled;
 @property (nonatomic, assign) BOOL isLowPerf;
 @property (nonatomic) long initialFlushDelay;
+/**
+ * @brief When YES, events generated while tracking is disabled are discarded instead of
+ *        being persisted, and TikTokBusiness setTrackingEnabled:NO purges everything that
+ *        is already persisted. No request is sent while tracking is disabled.
+ *
+ * @note Defaults to NO, which keeps the documented behaviour of caching events locally
+ *       until tracking is enabled again. Set it to YES when the app has to be able to
+ *       honour a consent withdrawal, so that events collected after the withdrawal are
+ *       never transmitted, including after tracking is enabled again.
+*/
+@property (nonatomic, assign) BOOL discardEventsWhileTrackingDisabled;
 
 + (nullable TikTokConfig *)configWithAccessToken:(nonnull NSString *)accessToken
                                            appId:(nonnull NSString *)appId

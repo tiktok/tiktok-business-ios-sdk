@@ -12,6 +12,7 @@
 #import "TikTokAppEvent.h"
 #import "TikTokBUsinessSDKMacros.h"
 #import "TikTokTypeUtility.h"
+#import "TikTokBusiness+private.h"
 
 #define TT_DB_LIMIT 500
 
@@ -67,6 +68,11 @@
 }
 
 - (BOOL)persistEvents:(NSArray *)events {
+    // Lowest common entry point of every event store, so that no event of any kind is
+    // written to disk once the app has withdrawn consent.
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        return NO;
+    }
     if ([self.db openDatabase]) {
         if ([self eventsCount] > TT_DB_LIMIT) {
             return NO;

@@ -25,6 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 */
 + (TikTokEventLogger *)getEventLogger;
 
+/**
+ * @brief This method is used internally as the single consent gate.
+ *        It returns YES when the app opted in to
+ *        TikTokConfig.discardEventsWhileTrackingDisabled and tracking is currently
+ *        disabled. Callers must then drop the event instead of persisting, queueing or
+ *        transmitting it, and must not issue any request.
+*/
++ (BOOL)shouldDiscardEvents;
+
 @end
 
 NS_ASSUME_NONNULL_END

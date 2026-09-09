@@ -9,6 +9,7 @@
 #import "TikTokEventLogger.h"
 #import "TikTokAppEventUtility.h"
 #import "TikTokBusiness.h"
+#import "TikTokBusiness+private.h"
 #import "TikTokConfig.h"
 #import "TikTokLogger.h"
 #import "TikTokFactory.h"
@@ -109,6 +110,10 @@
 
 - (void)addEvent:(TikTokAppEvent *)event
 {
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        [self.logger verbose:@"[TikTokAppEventQueue] Tracking is disabled, no event added"];
+        return;
+    }
     if([[TikTokBusiness getInstance] isRemoteSwitchOn] == NO) {
         [self.logger verbose:@"[TikTokAppEventQueue] Remote switch is off, no event added"];
         return;
@@ -125,6 +130,17 @@
     
 }
 
+- (void)clearPersistedEvents {
+    dispatch_async(self.loggerQueue, ^{
+        if (![[TikTokAppEventPersistence persistence] clearEvents]) {
+            [self.logger info:@"[TikTokAppEventQueue] clearEvents for app events failed."];
+        }
+        if (![[TikTokMonitorEventPersistence persistence] clearEvents]) {
+            [self.logger info:@"[TikTokAppEventQueue] clearEvents for monitor events failed."];
+        }
+    });
+}
+
 - (void)clearEDPEvents {
     dispatch_async(self.loggerQueue, ^{
         if (![[TikTokAppEventPersistence persistence] clearEDPEvents]) {
@@ -135,6 +151,11 @@
 
 - (void)flush:(TikTokAppEventsFlushReason)flushReason
 {
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        [self.logger info:@"[TikTokAppEventQueue] Tracking is disabled, no flush logic invoked"];
+        return;
+    }
+    
     if (!TTCheckValidString(self.config.appId)) {
         [self.logger info:@"[TikTokAppEventQueue] Invalid App ID, no flush logic invoked"];
         return;
@@ -198,6 +219,10 @@
 
 
 - (void)flushMonitorEvents {
+    if ([TikTokBusiness shouldDiscardEvents]) {
+        [self.logger info:@"[TikTokAppEventQueue] Tracking is disabled, no monitor flush logic invoked"];
+        return;
+    }
     dispatch_async(self.loggerQueue, ^{
         @try {
             NSArray *eventsFromDisk =
