@@ -51,7 +51,8 @@ let package = Package(
                 .linkedFramework("AppTrackingTransparency"),
                 .linkedFramework("WebKit"),
                 .linkedFramework("CoreGraphics"),
-                .linkedFramework("StoreKit")
+                .linkedFramework("StoreKit"),
+                .linkedLibrary("sqlite3")
             ]
         ),
         .target(
