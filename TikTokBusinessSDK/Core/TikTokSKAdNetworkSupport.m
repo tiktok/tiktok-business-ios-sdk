@@ -32,6 +32,8 @@ static const long long thirdWindowEnds = 3024000000;
 @property (nonatomic, assign, readwrite) SEL skAdNetworkUpdateConversionValue;
 @property (nonatomic, strong) TikTokLogger *logger;
 
+- (nullable NSNumber *)parseEventValue:(nullable NSString *)value;
+
 @end
 
 
@@ -76,15 +78,24 @@ static const long long thirdWindowEnds = 3024000000;
     }
 }
 
+- (nullable NSNumber *)parseEventValue:(nullable NSString *)value
+{
+    if (value == nil) {
+        return nil;
+    }
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    formatter.numberStyle = NSNumberFormatterDecimalStyle;
+    formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    return [formatter numberFromString:value];
+}
+
 - (void)matchEventToSKANConfig:(NSString *)eventName withValue:(nullable NSString *)value currency:(nullable NSString *)currency
 {
     NSInteger currentWindow = [self getConversionWindowForTimestamp:[TikTokAppEventUtility getCurrentTimestamp]];
     if (currentWindow == -1) {
         return;
     }
-    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-    formatter.numberStyle = NSNumberFormatterDecimalStyle;
-    NSNumber *eventValue = [formatter numberFromString:value];
+    NSNumber *eventValue = [self parseEventValue:value];
     // Persist current event
     [[TikTokSKANEventPersistence persistence] persistSKANEventWithName:eventName value:eventValue currency:currency];
     

@@ -12,6 +12,10 @@
 #import "TikTokCurrencyUtility.h"
 #import "TikTokCurrencyUtility.h"
 
+@interface TikTokSKAdNetworkSupport (Testing)
+- (nullable NSNumber *)parseEventValue:(nullable NSString *)value;
+@end
+
 @interface TikTokSKAdNetworkSupportTests : XCTestCase
 
 @end
@@ -34,6 +38,12 @@
 
 - (void)testMatch {
     [[TikTokSKAdNetworkSupport sharedInstance] matchEventToSKANConfig:@"Purchase" withValue:@"30" currency:@"USD"];
+}
+
+- (void)testParsesDecimalEventValueWithInvariantLocale {
+    NSNumber *value = [[TikTokSKAdNetworkSupport sharedInstance] parseEventValue:@"19.99"];
+    XCTAssertNotNil(value);
+    XCTAssertEqualWithAccuracy(value.doubleValue, 19.99, 0.000001);
 }
 
 - (void)testExchange {
